@@ -838,9 +838,22 @@ const lodgingOf = bid => (BASE_POINTS[bid]||[]).filter(p=>p.theme==="lodging");
 const zonesOf = b => (b && b.zones) || [];
 const zoneOriginId = (bid, zname) => "zone:" + bid + ":" + zname;
 
-const DAY_PALETTE = [["#C0392B","#E8776B"],["#D2691E","#EFA05A"],["#B8860B","#D9BE55"],
-                     ["#3E8E4F","#6CC191"],["#2C7FB8","#6FB4E0"]];
-const dayColor = i => DAY_PALETTE[i % DAY_PALETTE.length][DARK ? 1 : 0];
+const DAY_MIX_STEPS = [0, .32, .44, .50];
+const hexMix = (hex, target, ratio) => {
+  const n = parseInt(hex.slice(1), 16), t = parseInt(target.slice(1), 16);
+  const step = (shift) => {
+    const a = (n >> shift) & 255, b = (t >> shift) & 255;
+    return Math.round(a + (b - a) * ratio);
+  };
+  return "#" + [16, 8, 0].map(step).map(v => v.toString(16).padStart(2, "0")).join("");
+};
+const dayColor = (i, cat) => {
+  const c = CT[cat];
+  const base = catColor(c);
+  if (!c) return base;                    // 理論上到不了：trip.cat 必填且斷言擋
+  const ratio = DAY_MIX_STEPS[Math.min(i, DAY_MIX_STEPS.length - 1)];
+  return ratio ? hexMix(base, DARK ? "#000000" : "#ffffff", ratio) : base;
+};
 
 const DAY_DRIVE_WARN_MIN = 180;
 const hm = m => m>=60 ? (m%60 ? `${Math.floor(m/60)} 小時 ${m%60} 分` : `${Math.floor(m/60)} 小時`)
@@ -1127,9 +1140,10 @@ function draw(){
 function drawLegs(){
   const days=tripLegs();
   if (!days) return;
+  const trip = TRIP_BY_ID[S.trip];
   const casing = DARK ? "#000000" : "#ffffff";
   days.forEach((d,i)=>{
-    const c=dayColor(i);
+    const c=dayColor(i, trip && trip.cat);
     (d.legs||[]).forEach(lg=>{
       if (!lg.coords || lg.coords.length<2) return;
       L.polyline(lg.coords, {color:casing, weight:8, opacity:.5, lineJoin:"round",
@@ -1848,9 +1862,10 @@ function renderTrips(){
     box.appendChild(e);
     return box;
   }
+  const trip = TRIP_BY_ID[S.trip];
   days.forEach((d,i)=>{
     const wrap=document.createElement("div"); wrap.className="tday";
-    wrap.style.setProperty("--dc", dayColor(i));
+    wrap.style.setProperty("--dc", dayColor(i, trip && trip.cat));
     const over = DAY_DRIVE_WARN_MIN!=null && d.min>DAY_DRIVE_WARN_MIN;
     const head=document.createElement("div"); head.className="tdhead";
     head.innerHTML =
