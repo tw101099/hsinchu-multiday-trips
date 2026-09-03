@@ -73,8 +73,9 @@ body{
 }
 button{font:inherit; color:inherit; cursor:pointer}
 .num{font-family:var(--mono); font-size:.92em; letter-spacing:-.01em}
+
 .ic{width:14px; height:14px; flex:none; stroke:currentColor; fill:none; stroke-width:1.5;
-    stroke-linecap:round; stroke-linejoin:round; vertical-align:-2px; margin-right:4px}
+    stroke-linecap:round; stroke-linejoin:round; margin-right:4px}
 
 .app{display:flex; flex-direction:column; height:100dvh; overflow:hidden; padding-bottom:env(safe-area-inset-bottom)}
 
@@ -220,7 +221,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .mapcard .x{flex:none; border:0; background:none; color:var(--ink3); font-size:16px; line-height:1; padding:0 2px}
 .mapcard .x:hover{color:var(--accent)}
 .mapcard .sub{margin:3px 0 0; font-size:12px; color:var(--ink3)}
-.mapcard .m{margin:5px 0 0; font-size:12px; color:var(--ink2); display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 10px}
+.mapcard .m{margin:5px 0 0; font-size:12px; color:var(--ink2); display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px}
 .mapcard .acts{display:flex; flex-wrap:wrap; gap:6px; margin-top:9px}
 .mapcard .acts a, .mapcard .acts button{
   border:1px solid var(--line); background:var(--bg); color:var(--ink2); text-decoration:none;
@@ -309,7 +310,9 @@ button{font:inherit; color:inherit; cursor:pointer}
 .frow{display:flex; align-items:flex-start; gap:9px; padding:4px 0}
 .fkey{flex:none; width:52px; padding-top:4px; font-size:11.5px; color:var(--ink3); letter-spacing:.06em}
 .chips{display:flex; flex-wrap:wrap; gap:5px; flex:1; min-width:0}
+
 .chip{
+  display:inline-flex; align-items:center;
   border:1px solid var(--line); background:var(--bg); border-radius:999px;
   padding:3px 10px; font-size:12.5px; color:var(--ink2); line-height:1.5;
   transition:border-color .15s, background .15s, color .15s;
@@ -320,43 +323,59 @@ button{font:inherit; color:inherit; cursor:pointer}
 .chip:disabled{opacity:.45; cursor:default; pointer-events:none}
 .cnt{margin-left:5px; color:var(--ink3); font-size:11px}
 .chip[aria-pressed=true] .cnt{color:var(--ink3)}
+
 .sec{
-  display:flex; align-items:center; gap:7px; width:100%; border:0; background:none;
+  display:flex; align-items:center; gap:7px; width:100%; min-height:36px;
+  border:0; background:none;
   padding:9px 0 0; margin-top:11px; border-top:1px solid var(--line);
   font-size:12.5px; color:var(--ink2); text-align:left;
 }
 .sec:hover{color:var(--accent)}
-.sec .n{color:var(--ink3); font-family:var(--mono)}
 
-.sec .n .ic{width:13px; height:13px; vertical-align:-2px; margin-left:3px}
+.sec .n{display:inline-flex; align-items:center; color:var(--ink3); font-family:var(--mono)}
+
+.sec .n .ic{width:13px; height:13px; margin:0 0 0 3px}
 
 .sec.toplevel{padding-left:14px; padding-right:14px; border-top:0; margin-top:0}
 
-.filters > .sec:first-child{border-top:0; margin-top:0; padding-top:2px}
+.filters > .sec:first-of-type{border-top:0; margin-top:0; padding-top:2px}
 .sec.toplevel[aria-expanded=false]{border-bottom:1px solid var(--line); padding-bottom:9px}
 .sec .chev{margin-left:auto}
 .sec[aria-expanded=true] .chev{transform:rotate(180deg)}
+
+.sec .ssub{
+  flex:1; min-width:0; color:var(--ink2);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.sec:hover .ssub{color:var(--ink)}
 .subrows{margin-top:5px}
 
 .rlist{margin-top:4px}
+
 .rrow{
-  display:flex; width:100%; align-items:center; gap:9px; padding:6px 8px; font-size:13px;
+  display:flex; width:100%; align-items:center; gap:9px; padding:6px 9px; min-height:32px;
+  font-size:13px;
   border:1px solid transparent; border-radius:8px; background:none; text-align:left; color:var(--ink2);
 }
 .rrow:hover{background:var(--sunk); color:var(--ink)}
 .rrow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
 .rrow .rbar{flex:none; width:3px; height:17px; border-radius:2px}
+
+.rrow .tmk{margin-left:-4px}
 .rrow .nm{flex:1; min-width:0}
 .rrow .n{flex:none; font-size:11.5px; color:var(--ink3)}
 
 .rrow .away{
-  flex:none; font-size:11px; color:var(--ink3); white-space:nowrap;
-  border:1px solid var(--line); border-radius:999px; padding:0 7px;
+  flex:none; display:inline-flex; align-items:center; gap:2px;
+  font-size:11px; color:var(--ink3); white-space:nowrap;
+  border:1px solid var(--line); border-radius:999px; padding:0 7px 0 5px;
 }
+.rrow .away .caric{width:13px; height:7px}
 .rrow[aria-pressed=true] .away{border-color:var(--line2); color:var(--ink2)}
 
 .rlist .tcath{margin:9px 0 3px}
+.rlist .tcath.tog{margin:6px 0 1px}
 .rlist .tcath:first-child{margin-top:2px}
 
 .tpickmini{display:none; padding:2px 0 4px}
@@ -412,10 +431,14 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 .row:hover{background:var(--sunk)}
 .row[aria-expanded=true]{background:var(--accent-soft); border-color:var(--accent)}
+
+.row.act{border-color:var(--accent)}
+.tmk{flex:none; width:7px; height:7px; border-radius:2px; background:var(--accent)}
+.row .t .tmk{align-self:center}
 .row .rbody{flex:1; min-width:0}
 .row .t{display:flex; gap:6px; align-items:center; font-size:14.5px; font-weight:600}
 
-.row .m{font-size:12px; color:var(--ink2); margin-top:1px; display:flex; align-items:baseline; flex-wrap:wrap}
+.row .m{font-size:12px; color:var(--ink2); margin-top:1px; display:flex; align-items:center; flex-wrap:wrap}
 .row .off{color:var(--ink3); font-size:11px; border:1px dashed var(--line2); border-radius:999px; padding:0 6px}
 
 .tag{font-size:11px; padding:0 7px; border-radius:999px; border:1px solid var(--line2); color:var(--ink2); white-space:nowrap}
@@ -472,9 +495,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 .legend span{display:inline-flex; align-items:center}
 .foot{font-size:11.5px; color:var(--ink3); line-height:1.75; padding:6px 15px 24px; margin:0}
 
-.mi{display:inline-flex; align-items:baseline; gap:3px}
-
-.mi .caric, .mi .hgic{align-self:center; position:relative; top:-0.05em}
+.mi{display:inline-flex; align-items:center; gap:3px}
+.mi .ic{margin-right:0}
 .caric{width:15px; height:8px; flex:none; stroke:currentColor; fill:none; stroke-width:5;
        stroke-linecap:round; stroke-linejoin:round}
 .hgic{width:10px; height:10px; flex:none; stroke:currentColor; fill:none; stroke-width:1.3;
@@ -484,12 +506,31 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .tpick{display:flex; flex-direction:column; gap:2px; padding:6px 0 2px}
 
+.tpicknow{
+  display:flex; align-items:center; gap:7px; padding:6px 9px; margin:2px 0 4px;
+  border:1px solid var(--accent); border-radius:8px; background:var(--accent-soft);
+  font-size:13px; color:var(--ink);
+}
+.tpicknow .tk{flex:none; font-size:11px; color:var(--ink3); letter-spacing:.04em}
+.tpicknow .tcode{margin-right:0; color:var(--ink2)}
+.tpicknow .tnm{flex:1; min-width:0; font-weight:600;
+               overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+
+.tpickmore{
+  flex:none; display:inline-flex; align-items:center;
+  border:1px solid var(--line2); background:var(--panel); color:var(--ink2);
+  border-radius:999px; padding:3px 9px; font-size:12px; line-height:1.5; white-space:nowrap;
+}
+.tpickmore:hover{border-color:var(--accent); color:var(--accent)}
+.tpickmore .chev{margin-left:3px}
+.tpickmini .tpicknow{padding:5px 8px; margin:2px 0 2px; font-size:12.5px}
+
 .tcath{display:flex; align-items:center; gap:6px; margin-bottom:5px;
-       font-size:11.5px; font-weight:600; color:var(--ink2); letter-spacing:.04em}
+       font-size:12.5px; font-weight:600; color:var(--ink2); letter-spacing:.04em}
 .tcath::before{content:""; flex:none; width:8px; height:8px; border-radius:2px;
                background:var(--cc,var(--ink3))}
 
-.tcath.tog{width:100%; border:0; background:none; text-align:left;
+.tcath.tog{width:100%; min-height:30px; border:0; background:none; text-align:left;
            padding:5px 2px; margin-bottom:1px; border-radius:6px}
 .tcath.tog:hover{background:var(--sunk); color:var(--ink)}
 .tcath .nm{flex:1; min-width:0}
@@ -498,10 +539,11 @@ button{font:inherit; color:inherit; cursor:pointer}
 .tcath.tog[aria-expanded=true] .chev{transform:rotate(180deg)}
 
 .rtlist{display:flex; flex-direction:column; gap:2px; margin:0 0 6px 4px}
+
 .rthead{
-  display:flex; width:100%; align-items:center; gap:8px; padding:6px 8px;
+  display:flex; width:100%; align-items:center; gap:8px; padding:6px 8px; min-height:30px;
   border:1px solid transparent; border-radius:8px; background:none; text-align:left;
-  font-size:13px; color:var(--ink2);
+  font-size:12.5px; color:var(--ink2);
 }
 .rthead:hover{background:var(--sunk); color:var(--ink)}
 .rthead[aria-expanded=true]{color:var(--ink)}
@@ -517,43 +559,40 @@ button{font:inherit; color:inherit; cursor:pointer}
   border:1px solid var(--line); border-radius:999px; padding:0 7px;
 }
 
-.rthead.susp{color:var(--ink2); cursor:default; align-items:flex-start}
-.rthead.susp:hover{background:none; color:var(--ink2)}
-.rthead.susp .rbar{opacity:.45; margin-top:2px}
+.rthead.susp{color:var(--ink2)}
+.rthead.susp .rbar{opacity:.45}
 .rthead.susp .tcode{color:var(--ink3)}
 
-.rthead.susp .sflag{
-  flex:none; align-self:center; font-size:11px; color:var(--ink3); white-space:nowrap;
+.rthead .sflag{
+  flex:none; font-size:11px; color:var(--ink3); white-space:nowrap;
   border:1px solid var(--line); border-radius:999px; padding:0 7px;
 }
-
-.rthead.susp .sn{display:block; font-size:11.5px; line-height:1.5; margin-top:2px}
-
-.rthead.warn{align-items:flex-start}
-.rthead.warn .rbar{margin-top:2px}
-.rthead.warn .away, .rthead.warn .n, .rthead.warn .chev{align-self:center}
+.rthead .nflag{
+  flex:none; font-size:11px; color:var(--ink2); white-space:nowrap;
+  border:1px solid var(--line2); border-radius:999px; padding:0 7px;
+}
 
 .rthead .wflag{
-  flex:none; align-self:center; font-size:11px; font-weight:700; white-space:nowrap;
+  flex:none; font-size:11px; font-weight:700; white-space:nowrap;
   color:var(--warn); border:1px solid var(--warn); border-radius:999px; padding:0 7px;
 }
 
-.rthead.warn .sn{display:block; font-size:11.5px; line-height:1.5; margin-top:2px;
-                 color:var(--warn); font-weight:400}
-
-.rthead.flat{cursor:default}
-.rthead.flat:hover{background:none; color:var(--ink2)}
-
-.rthead.note{align-items:flex-start}
-.rthead.note .rbar{margin-top:2px}
-.rthead.note .away, .rthead.note .n, .rthead.note .chev{align-self:center}
-.rthead.note .sn{display:block; font-size:11.5px; line-height:1.5; margin-top:2px;
-                 color:var(--ink2); font-weight:400}
+.alert{
+  display:flex; align-items:flex-start; gap:8px;
+  margin:3px 0 6px 13px; padding:8px 11px; border-radius:8px;
+  background:var(--sunk); font-size:12px; line-height:1.65; color:var(--ink2);
+}
+.alert .ah{flex:none; font-weight:700; letter-spacing:.02em; white-space:nowrap}
+.alert .at{flex:1; min-width:0}
+.alert.warn{color:var(--warn)}
+.tpickmini .alert{margin-left:10px; padding:7px 9px}
 
 .rtrips{display:flex; flex-direction:column; gap:3px;
         margin:2px 0 6px 13px; padding-left:11px; border-left:1px solid var(--line)}
+
 .trow{
-  display:flex; width:100%; align-items:center; gap:8px; padding:6px 9px; font-size:13px;
+  display:flex; width:100%; align-items:center; gap:8px; padding:6px 9px; min-height:32px;
+  font-size:13px;
   border:1px solid var(--line); border-radius:8px; background:var(--bg);
   text-align:left; color:var(--ink2);
   transition:border-color .12s, background .12s, color .12s;
@@ -630,7 +669,7 @@ button{font:inherit; color:inherit; cursor:pointer}
             border-bottom-left-radius:0; border-bottom-right-radius:0}
 .tstop .tb{flex:1; min-width:0}
 .tstop .t{display:flex; gap:6px; align-items:center; font-size:14px; font-weight:600}
-.tstop .m{font-size:12px; color:var(--ink2); margin-top:1px; display:flex; align-items:baseline; flex-wrap:wrap}
+.tstop .m{font-size:12px; color:var(--ink2); margin-top:1px; display:flex; align-items:center; flex-wrap:wrap}
 
 .tnight{
   display:flex; align-items:center; gap:7px; width:100%; text-align:left;
@@ -638,7 +677,8 @@ button{font:inherit; color:inherit; cursor:pointer}
   background:var(--sunk); font:inherit; font-size:12.5px; color:var(--ink2);
 }
 .tnight b{color:var(--ink); font-weight:600}
-.tnight .more{margin-left:auto; font-size:11.5px; color:var(--ink3); white-space:nowrap}
+
+.tnight .more{margin-left:auto; font-size:15px; line-height:1; color:var(--ink3); white-space:nowrap}
 button.tnight:hover{color:var(--ink)}
 button.tnight:hover .more{color:var(--accent)}
 
@@ -646,16 +686,31 @@ button.tnight:hover .more{color:var(--accent)}
   margin:10px 14px 4px; padding:11px 13px 13px; border:1px solid var(--accent);
   border-radius:var(--r); background:var(--accent-soft);
 }
-.baseview .bvh{display:flex; align-items:flex-start; gap:8px}
+
+.baseview .bvh{
+  display:flex; align-items:flex-start; gap:8px;
+  position:sticky; top:var(--fbarh, 46px); z-index:300;
+  margin:-11px -13px 0; padding:11px 13px 8px; background:var(--accent-soft);
+  border-radius:var(--r) var(--r) 0 0;
+}
 .baseview .bvh b{flex:1; min-width:0; font-size:15px}
 .baseview .bvh .x{flex:none; border:0; background:none; color:var(--ink3); font-size:16px; line-height:1; padding:0 2px}
 .baseview .bvh .x:hover{color:var(--accent)}
 .baseview .bvm{margin:3px 0 0; font-size:12.5px; color:var(--ink2)}
 .baseview h3{margin:12px 0 6px; font-size:12px; color:var(--ink3); font-weight:600; letter-spacing:.06em}
-.baseview .zrow{display:flex; flex-wrap:wrap; gap:5px; margin-top:8px}
 
 .baseview .zhead{margin:10px 0 2px; font-size:12.5px; color:var(--ink); font-weight:600}
-.baseview .znote{margin:1px 0 4px; font-size:11.5px; color:var(--ink2); line-height:1.6}
+.baseview button.zhead{
+  display:flex; align-items:center; gap:7px; width:100%; text-align:left;
+  border:1px solid transparent; border-radius:8px; background:none;
+  font:inherit; font-size:12.5px; font-weight:600; padding:4px 8px; margin:10px 0 2px;
+}
+.baseview button.zhead:hover{background:var(--panel)}
+.baseview button.zhead[aria-pressed=true]{border-color:var(--accent); background:var(--panel)}
+.baseview .zhead .zn{flex:1; min-width:0}
+.baseview .zhead .zck{flex:none; color:var(--accent); font-size:13px; line-height:1}
+
+.baseview .znote{margin:1px 0 5px 8px; font-size:11.5px; color:var(--ink2); line-height:1.6}
 .baseview .row{padding:5px 6px}
 .baseview .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
 
@@ -716,7 +771,7 @@ button.tnight:hover .more{color:var(--accent)}
 }
 .leaflet-tooltip.tt::before{display:none}
 .leaflet-tooltip.tt b{font-size:13.5px}
-.leaflet-tooltip.tt i{font-style:normal; color:var(--ink3); display:flex; align-items:baseline; flex-wrap:wrap; font-size:11.5px}
+.leaflet-tooltip.tt i{font-style:normal; color:var(--ink3); display:flex; align-items:center; flex-wrap:wrap; font-size:11.5px}
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]) .leaflet-tile{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85)}
 }
@@ -829,8 +884,9 @@ const ICON = {
 
 const S = { view:"map", base:new Set(), themes:new Set(), diffs:new Set(), budget:new Set(),
             inseason:false, q:"", qtags:[], sel:null, open:true, moreOpen:true,
-            basesOpen:false, listOpen:true, sort:"total", near:0,
-            trip:null, tripsOpen:true, catsOpen:new Set(), corrOpen:new Set() };
+            basesOpen:false, listOpen:true, sort:"total", near:0, footOpen:false,
+            trip:null, tripsOpen:true, catsOpen:new Set(), corrOpen:new Set(),
+            baseCatsOpen:new Set() };
 
 let EXTRA = new Set();
 
@@ -851,9 +907,16 @@ let SCROLL_BASE = false;                  // 下一次 renderPanel 要不要捲�
 let INLINE = null;
 const inlineOpen = key => !!(INLINE && INLINE.key===key);
 
+let PICK_OPEN = false;
+
+let TRIP_STOPS = new Set(), TRIP_BASES = new Set();
+
 function toggleInline(key, p){
   INLINE = inlineOpen(key) ? null : {key, id:p.id};
-  if (INLINE && p) panTo(p);
+  if (INLINE && p){
+    panTo(p);
+    if (S.listOpen && (pass(p) || EXTRA.has(p.id))) SCROLL_TO = p.id;
+  }
   render();
 }
 
@@ -939,8 +1002,22 @@ const dayColor = (i, cat) => {
 };
 
 const DAY_DRIVE_WARN_MIN = 180;
-const hm = m => m>=60 ? (m%60 ? `${Math.floor(m/60)} 小時 ${m%60} 分` : `${Math.floor(m/60)} 小時`)
-                      : `${m} 分`;
+
+const durParts = v => {
+  const m = Math.round(v);
+  return [Math.floor(m/60), m%60];
+};
+const durT = min => {
+  const [h, r] = durParts(min);
+  return h ? (r ? `${h}h${r}m` : `${h}h`) : `${r}m`;
+};
+const dur = min => {
+  const [h, r] = durParts(min);
+  const n = v => `<span class="num">${v}</span>`;
+  return h ? (r ? `${n(h)}h${n(r)}m` : `${n(h)}h`) : `${n(r)}m`;
+};
+const durH = hours => dur(hours * 60);
+const durHT = hours => durT(hours * 60);
 
 const BUDGETS = [{id:"短",label:"3 小時內"},{id:"半天",label:"半天"},{id:"整天",label:"一整天"}];
 const bud = p => p.total_h<=3 ? "短" : (p.total_h<=5 ? "半天" : "整天");
@@ -968,9 +1045,10 @@ function save(){
       base:[...S.base], themes:[...S.themes], diffs:[...S.diffs], budget:[...S.budget],
       inseason:S.inseason, view:S.view, sort:S.sort, theme:THEME,
       seen:true, basesOpen:S.basesOpen, listOpen:S.listOpen,
-      open:S.open, moreOpen:S.moreOpen,
+      open:S.open, moreOpen:S.moreOpen, footOpen:S.footOpen,
       trip:S.trip, tripsOpen:S.tripsOpen,
-      catsOpen:[...S.catsOpen], corrOpen:[...S.corrOpen]
+      catsOpen:[...S.catsOpen], corrOpen:[...S.corrOpen],
+      baseCatsOpen:[...S.baseCatsOpen]
     }));
   }catch(e){}
 }
@@ -994,6 +1072,9 @@ function restore(){
 
     if (Array.isArray(d.catsOpen)) S.catsOpen=new Set(d.catsOpen.filter(x=>CT[x]));
     if (Array.isArray(d.corrOpen)) S.corrOpen=new Set(d.corrOpen.filter(x=>CR[x]));
+    if (Array.isArray(d.baseCatsOpen))
+      S.baseCatsOpen=new Set(d.baseCatsOpen.filter(x=>CT[x] || x==="__none__"));
+    if (typeof d.footOpen==="boolean") S.footOpen=d.footOpen;
     if (S.trip) openTripPath(TRIP_BY_ID[S.trip]);
 
     S.open = typeof d.open==="boolean" ? d.open : (isMapOnly() ? false : !d.seen);
@@ -1175,19 +1256,19 @@ function markerHTML(p){
 const GAP_DRIVE = "管制便道";
 const GAP_DRIVE_TITLE = "這個點在管制便道的另一端，本站的算路引擎接不到那一段路——" +
   "與其填一個繞路算出來的假分鐘數，不如不填。實際車程與通行時段見這個點自己的說明。";
-function driveBit(p, prefix){
+
+function driveBit(p){
   return p.drive_min == null
     ? `<span class="mi nd" title="${GAP_DRIVE_TITLE}">${CAR_SVG}${GAP_DRIVE}</span>`
-    : `<span class="mi" title="從所屬基地開到這個點的車程">${CAR_SVG}` +
-      `${prefix||""}<span class="num">${p.drive_min}</span> 分</span>`;
+    : `<span class="mi" title="從所屬基地開到這個點的車程">${CAR_SVG}${dur(p.drive_min)}</span>`;
 }
 function tipHTML(p){
   return `<b>${esc(p.name)}</b>` +
     `<i>${esc(p.town)}　${EFFORT[p.diff]||p.diff}　` +
     (p.drive_min == null
       ? `<span class="mi" title="車程">${CAR_SVG}${GAP_DRIVE}</span>　`
-      : `<span class="mi" title="車程">${CAR_SVG}${p.drive_min} 分</span>　`) +
-    `<span class="mi" title="停留">${HOURGLASS_SVG}${p.stay_h} 小時</span></i>` +
+      : `<span class="mi" title="車程">${CAR_SVG}${dur(p.drive_min)}</span>　`) +
+    `<span class="mi" title="停留">${HOURGLASS_SVG}${durH(p.stay_h)}</span></i>` +
     (p.season?`<i>◈ ${esc(p.season)}</i>`:"");
 }
 
@@ -1253,7 +1334,7 @@ function drawLegs(){
                              lineJoin:"round", lineCap:"round"}, dash))
         .bindTooltip(`<b>Day ${i+1}</b><i>${esc(lg.from_name)} → ${esc(lg.to_name)}　` +
                      (m ? `${m.label}${lg.km!=null?`（直線 ${lg.km.toFixed(1)} km）`:""}`
-                        : `${Math.round(lg.min)} 分 · ${lg.km.toFixed(1)} km`) + `</i>`,
+                        : `${durT(lg.min)} · ${lg.km.toFixed(1)} km`) + `</i>`,
                      {sticky:true, className:"tt", opacity:1})
         .addTo(lines);
     });
@@ -1268,8 +1349,9 @@ function drawBasePins(){
         html:`<span class="bp" style="background:${baseColor(b)}">` +
              `<svg viewBox="0 0 16 16"><path d="M2.5 8.5 8 3l5.5 5.5M4 7v6h8V7"/></svg></span>`}),
       zIndexOffset:1500});
+
     m.bindTooltip(`<b>${esc(b.name)}</b><i>${esc(b.town||"")}` +
-                  (b.drive_min!=null?`　離新竹約 ${hm(b.drive_min)}`:"") + `</i>`,
+                  (b.drive_min!=null?`　離新竹約 ${durT(b.drive_min)}`:"") + `</i>`,
                   {direction:"top", offset:[0,-14], className:"tt", opacity:1});
     m.on("click", ()=>selectBase(b.id));
     m.addTo(pts);
@@ -1311,8 +1393,8 @@ function renderMapCard(){
           `<button class="x" data-act="closebase" aria-label="關閉">×</button></div>` +
         `<p class="sub">${esc(b.town||"")}　基地</p>` +
         `<p class="m">` +
-          (b.drive_min!=null ? `<span class="mi" title="從新竹市區開到這個基地">${CAR_SVG}` +
-            `離新竹 <span class="num">${hm(b.drive_min)}</span></span>` : "") +
+          (b.drive_min!=null ? `<span class="mi" title="從新竹市區開到這個基地">` +
+            `${CAR_SVG}${dur(b.drive_min)}</span>` : "") +
           `<span class="mi">住宿 <span class="num">${nl}</span> 家` +
             (nz?`／<span class="num">${nz}</span> 條住宿帶`:"") + `</span></p>` +
         `<div class="acts">` +
@@ -1331,13 +1413,13 @@ function renderMapCard(){
   const p = (isMapOnly() && S.sel) ? BY_ID[S.sel] : null;
   box.className = "mapcard" + (p ? " on" : "");
   if (!p){ box.innerHTML=""; return; }
-  const legHTML = driveBit(p, "離基地 ");
+  const legHTML = driveBit(p);
   box.innerHTML =
     `<div class="ttl"><b>${esc(p.name)}</b>` +
       `<button class="x" data-act="close" aria-label="關閉">×</button></div>` +
     `<p class="sub">${esc(p.town)}　${esc((TH[p.theme]||{}).name||"")}　${EFFORT[p.diff]||p.diff}</p>` +
     `<p class="m">${legHTML}` +
-      `<span class="mi" title="停留">${HOURGLASS_SVG}<span class="num">${p.stay_h}</span> 小時</span></p>` +
+      `<span class="mi" title="停留">${HOURGLASS_SVG}${durH(p.stay_h)}</span></p>` +
     tagsHTML(p) +
     `<div class="acts">` +
       `<button class="primary" data-act="detail">看詳細</button>` +
@@ -1360,7 +1442,7 @@ function renderMapBtns(){
   if (tripLegs()){
     const tb=document.createElement("button");
     tb.textContent="行程全覽";
-    tb.title="把地圖縮放到剛好涵蓋整條範例行程的腿線";
+    tb.title="把地圖縮放到剛好涵蓋整條推薦行程的腿線";
     tb.onclick=fitTrip;
     box.appendChild(tb);
   }
@@ -1482,10 +1564,15 @@ function frow(key,nodes,keyTitle){
   nodes.forEach(n=>c.appendChild(n));
   r.append(k,c); return r;
 }
-function section(label, count, open, fn, cls){
+
+function section(label, count, open, fn, cls, sub){
   const b=document.createElement("button");
   b.className="sec"+(cls?" "+cls:""); b.setAttribute("aria-expanded",open);
-  b.innerHTML=`${label}${count!=null?`<span class="n">${count}</span>`:""}` +
+
+  b.innerHTML=`${label}` +
+              `<span class="ssub"${(sub&&sub.title)?` title="${esc(sub.title)}"`:""}>` +
+              `${(sub&&sub.text)?"· "+esc(sub.text):""}</span>` +
+              `${count!=null?`<span class="n">${count}</span>`:""}` +
               `<svg class="chev" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>`;
   b.onclick=fn; return b;
 }
@@ -1641,7 +1728,7 @@ function renderSort(){
 
 function renderTripsMini(){
   const box=document.createElement("div"); box.className="tpickmini";
-  const k=document.createElement("div"); k.className="fkey"; k.textContent="範例行程";
+  const k=document.createElement("div"); k.className="fkey"; k.textContent="推薦行程";
   box.append(k, tripPicker(true));
   return box;
 }
@@ -1651,11 +1738,17 @@ function renderBaseFinder(){
   const list=document.createElement("div"); list.className="rlist";
   const baseRow=r=>{
     const b=document.createElement("button");
-    b.className="rrow"; b.setAttribute("aria-pressed", S.base.has(r.id));
+    b.className="rrow" + (TRIP_BASES.has(r.id) ? " intrip" : "");
+    b.setAttribute("aria-pressed", S.base.has(r.id));
+
     b.innerHTML=`<span class="rbar" style="background:${baseColor(r)}"></span>` +
+                (TRIP_BASES.has(r.id)
+                  ? `<span class="tmk" title="這條推薦行程會住的基地"></span>` : "") +
                 `<span class="nm">${esc(r.name)}</span>` +
+
                 (r.drive_min!=null
-                  ? `<span class="away" title="從新竹市區開到這個基地">離新竹 ${esc(hm(r.drive_min))}</span>`
+                  ? `<span class="away" title="從新竹市區開到這個基地">` +
+                    `${CAR_SVG}${durT(r.drive_min)}</span>`
                   : "") +
                 `<span class="n num">${rtBase.filter(p=>p.base===r.id).length} 處</span>`;
     b.onclick=()=>{
@@ -1664,38 +1757,56 @@ function renderBaseFinder(){
     };
     return b;
   };
-  const group=(label, color, rows)=>{
+
+  const group=(key, label, color, rows)=>{
     if (!rows.length) return;
-    const h=document.createElement("div"); h.className="tcath";
-    h.textContent=label; h.style.setProperty("--cc", color);
+    const open = S.baseCatsOpen.has(key) || rows.some(r=>S.base.has(r.id));
+
+    const inTrip = rows.some(r=>TRIP_BASES.has(r.id));
+    const h=document.createElement("button");
+    h.type="button"; h.className="tcath tog" + (inTrip ? " intrip" : "");
+    h.setAttribute("aria-expanded", open);
+    h.style.setProperty("--cc", color);
+    h.innerHTML=`<span class="nm">${esc(label)}</span>` +
+                (inTrip ? `<span class="tmk" title="這條推薦行程會住在這一類底下"></span>` : "") +
+                `<span class="n">${rows.length} 個</span>` + CHEV_SVG;
+    h.onclick=()=>{ toggleSet(S.baseCatsOpen, key); save(); render(); };
     list.appendChild(h);
-    rows.forEach(r=>list.appendChild(baseRow(r)));
+    if (open) rows.forEach(r=>list.appendChild(baseRow(r)));
   };
-  CATS.forEach(c=>group(c.name, catColor(c), BASES.filter(b=>b.cat===c.id)));
-  group("未分類", catColor(null), BASES.filter(b=>!CT[b.cat]));
+  CATS.forEach(c=>group(c.id, c.name, catColor(c), BASES.filter(b=>b.cat===c.id)));
+  group("__none__", "未分類", catColor(null), BASES.filter(b=>!CT[b.cat]));
   return list;
 }
 
 function legBit(p, rel){
   if (rel) return `<span class="mi" title="車程">${CAR_SVG}` +
-    (rel.min!=null ? `<span class="num">${rel.min}</span> 分 · ` : ``) +
+    (rel.min!=null ? `${dur(rel.min)} · ` : ``) +
     `${rel.real?"":"直線 "}<span class="num">${rel.km.toFixed(1)}</span> km</span>`;
-  return driveBit(p, "離基地 ");
+  return driveBit(p);
 }
 
 function rowFor(p, extra, rel, key){
   const b=document.createElement("button");
   b.className="row"; b.dataset.id=p.id;
   b.setAttribute("aria-expanded", key ? inlineOpen(key) : S.sel===p.id);
+
+  if (!key){
+    if (INLINE && INLINE.id===p.id) b.classList.add("act");
+    if (TRIP_STOPS.has(p.id)) b.classList.add("intrip");
+  }
   const off = !pass(p);
   const body=document.createElement("div"); body.className="rbody";
   body.innerHTML =
-    `<div class="t">${ico(p.theme,(TH[p.theme]||{}).color)}` +
+    `<div class="t">` +
+    ((!key && TRIP_STOPS.has(p.id))
+      ? `<span class="tmk" title="這條推薦行程會去的地方"></span>` : "") +
+    `${ico(p.theme,(TH[p.theme]||{}).color)}` +
     `<span>${esc(p.name)}${(!PUBLIC && p.in_user_list)?' <i class="star" title="你收藏過的">★</i>':''}</span>` +
     `<span class="tag ${HARD.has(p.diff)?"hard":""}">${EFFORT[p.diff]||p.diff}</span>` +
     (off?`<span class="off">不在篩選內</span>`:"") + `</div>` +
     `<div class="m">${rel?"":esc(p.town)+"　"}${legBit(p, rel)}　` +
-    `<span class="mi" title="停留">${HOURGLASS_SVG}<span class="num">${p.stay_h}</span> 小時</span>` +
+    `<span class="mi" title="停留">${HOURGLASS_SVG}${durH(p.stay_h)}</span>` +
     `${extra||""}</div>`;
   b.append(body);
   b.onclick = key ? (()=>toggleInline(key,p)) : (()=>select(p.id));
@@ -1747,11 +1858,12 @@ function renderDetail(p, inline){
       `${esc((BS[p.base]||{}).name||p.base||"")}　${esc((TH[p.theme]||{}).name||"")}　${esc(p.kind||"")}</p>` +
     `<dl class="facts">` +
       `<dt>位置</dt><dd>${esc(p.town)}${p.coord_conf==="low"?"（座標估計值）":""}</dd>` +
+
       `<dt>車程</dt><dd>` + (p.drive_min == null
         ? `<span title="${GAP_DRIVE_TITLE}">${GAP_DRIVE}（本站不給分鐘數）</span>`
-        : `離基地 <span class="num">${p.drive_min}</span> 分（單程）`) + `</dd>` +
+        : `離基地 ${dur(p.drive_min)}（單程）`) + `</dd>` +
       `<dt>停留</dt><dd>${esc(p.time||"—")}</dd>` +
-      `<dt>整趟</dt><dd><span class="num">${p.total_h}</span> 小時　${EFFORT[p.diff]||p.diff}` +
+      `<dt>整趟</dt><dd>${durH(p.total_h)}　${EFFORT[p.diff]||p.diff}` +
         `<span class="hint2">${p.drive_min == null ? "只算停留——這個點的車程不列" : "停留＋從基地往返"}</span></dd>` +
     `</dl>` +
     (p.desc?`<p class="desc">${esc(p.desc)}</p>`:"") +
@@ -1808,8 +1920,18 @@ function openTripPath(t){
   if (t.cat) S.catsOpen.add(t.cat);
   if (t.code) S.corrOpen.add(t.code);
 }
+
+function tripBaseIds(){
+  const t = S.trip && TRIP_BY_ID[S.trip];
+  return new Set(t ? (t.days||[]).map(d=>d.base).filter(Boolean) : []);
+}
+function tripStopIds(){
+  return new Set(tripStops().map(p=>p.id));
+}
 function selectTrip(id){
   S.trip = (S.trip===id) ? null : id;   // 再點一次同一條＝關掉（連帶收掉地圖上的腿線）
+
+  PICK_OPEN = false;
   if (S.trip){ S.tripsOpen=true; openTripPath(TRIP_BY_ID[id]); fitTrip(); }
   save(); render();
 }
@@ -1846,8 +1968,7 @@ function legRow(lg){
   }
   r.innerHTML = CAR_SVG +
     `<span class="via">${esc(lg.from_name)} → ${esc(lg.to_name)}</span>` +
-    `<span><span class="num">${Math.round(lg.min)}</span> 分 · ` +
-    `<span class="num">${lg.km.toFixed(1)}</span> km</span>`;
+    `<span>${dur(lg.min)} · <span class="num">${lg.km.toFixed(1)}</span> km</span>`;
   return r;
 }
 
@@ -1859,9 +1980,9 @@ function tripStopRow(p, key){
   body.innerHTML =
     `<div class="t">${ico(p.theme,(TH[p.theme]||{}).color)}<span>${esc(p.name)}</span>` +
     `<span class="tag ${HARD.has(p.diff)?"hard":""}">${EFFORT[p.diff]||p.diff}</span></div>` +
+
     `<div class="m">${esc(p.town)}　` +
-    `<span class="mi" title="停留">${HOURGLASS_SVG}<span class="num">${p.stay_h}</span> 小時</span>` +
-    (p.time?`　${esc(p.time)}`:"") + `</div>`;
+    `<span class="mi" title="停留">${HOURGLASS_SVG}${durH(p.stay_h)}</span></div>`;
   b.append(body);
   b.onclick=()=>toggleInline(key,p);
   b.addEventListener("mouseenter", ()=>emphasize(p.id,true));
@@ -1872,10 +1993,14 @@ function nightRow(d, i, total){
   const b = d.base ? BS[d.base] : null;
   if (b){
     const el=document.createElement("button");
+
     el.type="button"; el.className="tnight";
+    el.title = `看「${b.name}」的基地視圖（住宿與附近精選）`;
     el.innerHTML = ico("lodging",(TH.lodging||{}).color) + `當晚住 <b>${esc(b.name)}</b>` +
-      (b.drive_min!=null ? `　<span class="num">離新竹 ${hm(b.drive_min)}</span>` : "") +
-      `<span class="more">看基地 ›</span>`;
+      (b.drive_min!=null
+        ? `　<span class="mi" title="從新竹市區開到這個基地">${CAR_SVG}${dur(b.drive_min)}</span>`
+        : "") +
+      `<span class="more" aria-hidden="true">›</span>`;
     el.onclick=()=>selectBase(b.id);
     return el;
   }
@@ -1925,8 +2050,35 @@ function dayNavHTML(days, i){
 }
 
 const CHEV_SVG = `<svg class="chev" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>`;
+
+function alertBlock(susp, warn, text){
+  const a=document.createElement("div");
+  a.className = "alert" + (warn ? " warn" : "");
+  a.innerHTML = `<span class="ah">${susp ? "⛔ 暫不建議" : "⚠ 通行提醒"}</span>` +
+                `<span class="at">${esc(text)}</span>`;
+  return a;
+}
+
+function tripNowRow(t){
+  const row=document.createElement("div"); row.className="tpicknow";
+  row.innerHTML = `<span class="tk">目前</span>` +
+    `<span class="tcode">${esc(t.code||"")}</span>` +
+    `<span class="tnm" title="${esc(t.name)}">${esc(t.one_line || t.name)}</span>`;
+  const more=document.createElement("button");
+  more.type="button"; more.className="tpickmore";
+  more.innerHTML = `選其他行程` + CHEV_SVG;
+  more.title = "把類 → 走廊 → 行程那棵選擇樹叫回來";
+  more.onclick=()=>{ PICK_OPEN=true; render(); };
+  row.appendChild(more);
+  return row;
+}
 function tripPicker(mini){
   const pick=document.createElement("div"); pick.className="tpick";
+
+  if (S.trip && !PICK_OPEN && TRIP_BY_ID[S.trip]){
+    pick.appendChild(tripNowRow(TRIP_BY_ID[S.trip]));
+    return pick;
+  }
 
   const tripRow = t => {
     const b=document.createElement("button");
@@ -1948,45 +2100,38 @@ function tripPicker(mini){
   const corrCard = (r, color, rows) => {
     const card=document.createElement("div"); card.className="rtcard";
     const open=S.corrOpen.has(r.id);
+    const susp = r.status === "suspended";
     const warn = r.status === "warning";
-    const note = !warn && !!r.notice;      // 有話要說，但那不是一個狀態
+    const note = !susp && !warn && !!r.notice;   // 有話要說，但那不是一個狀態
     const h=document.createElement("button");
-    h.type="button"; h.className="rthead" + (warn ? " warn" : (note ? " note" : ""));
+    h.type="button";
+    h.className = "rthead" + (susp ? " susp" : warn ? " warn" : note ? " note" : "");
     h.setAttribute("aria-expanded", open);
     h.innerHTML = `<span class="rbar" style="background:${color}"></span>` +
       `<span class="tcode">${esc(r.id)}</span>` +
-      `<span class="nm">${esc(r.name)}` +
-      (r.notice ? `<span class="sn">${esc(r.notice)}</span>` : "") +
-      `</span>` +
-      (warn ? `<span class="wflag">注意</span>` : "") +
+      `<span class="nm">${esc(r.name)}</span>` +
+      (susp ? `<span class="sflag">⛔ 暫緩</span>`
+            : warn ? `<span class="wflag">⚠ 注意</span>`
+            : note ? `<span class="nflag">ⓘ 提醒</span>` : "") +
       (!mini && r.survey_drive
         ? `<span class="away" title="本人盤點的離新竹車程概估（不是 OSRM 實算值）">` +
           `${esc(r.survey_drive)}</span>` : "") +
-      `<span class="n num">${rows.length} 種玩法</span>` + CHEV_SVG;
+      `<span class="n num">${rows.length} 種安排</span>` + CHEV_SVG;
     h.onclick=()=>{ toggleSet(S.corrOpen, r.id); save(); render(); };
     card.appendChild(h);
     if (open){
-      const list=document.createElement("div"); list.className="rtrips";
-      rows.forEach(t=>list.appendChild(tripRow(t)));
-      card.appendChild(list);
+
+      if (r.notice) card.appendChild(alertBlock(susp, warn, r.notice));
+      if (rows.length){
+        const list=document.createElement("div"); list.className="rtrips";
+        rows.forEach(t=>list.appendChild(tripRow(t)));
+        card.appendChild(list);
+      }
     }
     return card;
   };
 
-  const flatRow = (r, color) => {
-    const warn = r.status === "warning";
-    const d=document.createElement("div");
-    d.className = "rthead flat " + (warn ? "warn" : "susp");
-    d.setAttribute("aria-disabled","true");
-    d.innerHTML = `<span class="rbar" style="background:${color}"></span>` +
-      `<span class="tcode">${esc(r.id)}</span>` +
-      `<span class="nm">${esc(r.name)}` +
-      (r.notice ? `<span class="sn">${esc(r.notice)}</span>` : "") +
-      `</span>` +
-      (warn ? `<span class="wflag">注意</span>` : `<span class="sflag">暫緩</span>`);
-    return d;
-  };
-
+  
   const group=(cid, label, color, rows)=>{
     const flat=CORRIDORS.filter(r=>r.cat===cid &&
                                 (r.status==="suspended" || r.status==="warning"));
@@ -2004,9 +2149,9 @@ function tripPicker(mini){
       const list=document.createElement("div"); list.className="rtlist";
       CORRIDORS.filter(r=>r.cat===cid).forEach(r=>{
         const sub=rows.filter(t=>t.code===r.id);
-        if (sub.length) list.appendChild(corrCard(r, color, sub));
-        else if (r.status === "suspended" || r.status === "warning")
-          list.appendChild(flatRow(r, color));
+
+        if (sub.length || r.status || r.notice)
+          list.appendChild(corrCard(r, color, sub));
       });
       const stray=rows.filter(t=>!CR[t.code]);
       if (stray.length)
@@ -2043,7 +2188,7 @@ function renderTrips(){
       `<span class="dsub">${(d.stops||[]).length} 個停點</span>` +
       `<span class="tdbudget${over?" over":""}" title="這一天開車腿段的車程加總，共 ${d.min} 分` +
         `（各段的分鐘各自四捨五入過，逐段相加可能差一兩分；船段與島上步行段不計入）">` +
-        CAR_SVG + `開車 <span class="num">${hm(d.min)}</span>` +
+        CAR_SVG + dur(d.min) +
         (d.km!=null ? ` · <span class="num">${d.km.toFixed(1)}</span> km` : "") +
       `</span>` +
       dayNavHTML(days, i);
@@ -2074,9 +2219,7 @@ function renderTrips(){
     wrap.appendChild(nightRow(d, i, days.length));
     box.appendChild(wrap);
   });
-  const f=document.createElement("p"); f.className="nonear";
-  f.textContent="車程是本地 OSRM 實算的，行程首尾自動接新竹；停留時間與當日總時數請自己斟酌。";
-  box.appendChild(f);
+
   return box;
 }
 
@@ -2111,23 +2254,29 @@ function renderBaseView(){
     `<div class="bvh"><b>${esc(b.name)}</b>` +
       `<button type="button" class="x" data-act="closebase" aria-label="關閉基地視圖">×</button></div>` +
     `<p class="bvm">${esc(b.town||"")}` +
-      (b.drive_min!=null ? `　<span class="mi" title="從新竹市區開到這個基地">${CAR_SVG}離新竹 ` +
-        `<span class="num">${hm(b.drive_min)}</span>` +
+      (b.drive_min!=null ? `　<span class="mi" title="從新竹市區開到這個基地">${CAR_SVG}` +
+        `${dur(b.drive_min)}` +
         (b.drive_km!=null?` · <span class="num">${b.drive_km.toFixed(1)}</span> km`:"") + `</span>` : "") +
       `　菜單 <span class="num">${menu.length}</span> 個點</p>`;
   d.querySelector("[data-act=closebase]").onclick=closeBase;
 
-  if (zones.length){
-    const zr=document.createElement("div"); zr.className="zrow";
-    zones.forEach(z=>{
-      const c=chip(esc(z.name), ZONE_SEL===z.name, ()=>selectZone(z.name));
-      if (z.note) c.title=z.note;    // 完整的 note 在下面住宿分組的帶名底下
-      zr.appendChild(c);
-    });
-    d.appendChild(zr);
-  }
-
   const putLodge=(host,p)=>inlineRow(p, `bl:${b.id}:${p.id}`).forEach(n=>host.appendChild(n));
+
+  const zoneHead=(name, sel)=>{
+    if (!sel){
+      const p=document.createElement("p"); p.className="zhead"; p.textContent=name;
+      return p;
+    }
+    const on = ZONE_SEL===name;
+    const btn=document.createElement("button");
+    btn.type="button"; btn.className="zhead tog"; btn.setAttribute("aria-pressed", on);
+    btn.title = on ? "取消這條住宿帶（附近精選改回從基地量）"
+                   : "選這條住宿帶（附近精選改從這一帶量，地圖也帶過去）";
+    btn.innerHTML = `<span class="zn">${esc(name)}</span>` +
+                    `<span class="zck" aria-hidden="true">${on ? "✓" : ""}</span>`;
+    btn.onclick=()=>selectZone(name);
+    return btn;
+  };
 
   const h1=document.createElement("h3");
   h1.textContent=`住宿（${lodges.length} 家）`;
@@ -2139,19 +2288,22 @@ function renderBaseView(){
   } else if (zones.length){
     zones.forEach(z=>{
       const rows=lodges.filter(p=>p.zone===z.name);
-      if (!rows.length) return;
-      const zh=document.createElement("p"); zh.className="zhead"; zh.textContent=z.name;
-      d.appendChild(zh);
+      d.appendChild(zoneHead(z.name, true));
       if (z.note){
         const zn=document.createElement("p"); zn.className="znote"; zn.textContent=z.note;
         d.appendChild(zn);
       }
-      rows.forEach(p=>putLodge(d,p));
+
+      if (rows.length) rows.forEach(p=>putLodge(d,p));
+      else {
+        const e=document.createElement("p"); e.className="nonear";
+        e.textContent="這一帶還沒有住宿資料。";
+        d.appendChild(e);
+      }
     });
     const rest=lodges.filter(p=>!zones.some(z=>z.name===p.zone));
     if (rest.length){
-      const zh=document.createElement("p"); zh.className="zhead"; zh.textContent="未分區";
-      d.appendChild(zh);
+      d.appendChild(zoneHead("未分區", false));
       rest.forEach(p=>putLodge(d,p));
     }
   } else {
@@ -2213,7 +2365,7 @@ function renderList(){
       const nLodge=lodgingOf(r.id).length;
       rd.innerHTML =
         `<p class="gdesc">${esc(r.town||"")}` +
-        (r.drive_min!=null ? `　離新竹約 <span class="num">${hm(r.drive_min)}</span>` : "") +
+        (r.drive_min!=null ? `　離新竹約 ${dur(r.drive_min)}` : "") +
         (nLodge ? `　住宿 <span class="num">${nLodge}</span> 家` : "") +
         (zonesOf(r).length ? `　住宿帶 <span class="num">${zonesOf(r).length}</span> 條` : "") +
         `</p>`;
@@ -2260,9 +2412,12 @@ function renderPanel(){
   expHost.appendChild(renderFilterBar());
 
   if (TRIPS.length){
-    tripHost.appendChild(section("範例行程",
+
+    const t = S.trip && TRIP_BY_ID[S.trip];
+    tripHost.appendChild(section("推薦行程",
       S.trip ? `1/${TRIPS.length} 條` : `${TRIPS.length} 條`, S.tripsOpen,
-      ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel"));
+      ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel",
+      t ? {text:`${t.code||""} ${t.one_line || t.name}`.trim(), title:t.name} : null));
     if (S.tripsOpen) tripHost.appendChild(renderTrips());
   }
   if (S.open) expHost.appendChild(renderFilters());
@@ -2277,14 +2432,23 @@ function renderPanel(){
     const lg=document.createElement("div"); lg.className="legend";
     lg.innerHTML=THEMES.map(t=>`<span>${ico(t.id,t.color)}${t.name}</span>`).join("");
     expHost.appendChild(lg);
+  }
+
+  expHost.appendChild(section("ⓘ 距離與時間說明", null, S.footOpen,
+    ()=>{ S.footOpen=!S.footOpen; save(); render(); }, "toplevel"));
+  if (S.footOpen){
     const f=document.createElement("p"); f.className="foot";
     f.innerHTML = (PUBLIC ? "" : "★ 是你自己收藏過的地方。") +
       "清單上的「離基地」車程是本地 OSRM 實算的門面值，停留時間是估的；" +
-      "範例行程的腿段車程同樣是實算，附近精選的距離取自點對車程表。" +
+      "推薦行程的腿段車程同樣是實算、首尾自動接新竹，附近精選的距離取自點對車程表。" +
       "山區路況、林道封閉、園區開放時間與店家公休都會變動，出發前請以官方公告與店家粉專為準；" +
       "本頁僅供行程參考，不保證資訊正確或即時。底圖與圖磚為 OpenStreetMap 貢獻者所有。";
     expHost.appendChild(f);
   }
+
+  
+  const fb=panel.querySelector(".fbar");
+  if (fb) panel.style.setProperty("--fbarh", fb.getBoundingClientRect().height + "px");
 
   const box=two?expHost:panel;
   if (SCROLL_RESET){
@@ -2388,6 +2552,8 @@ document.getElementById("totop").onclick=()=>{
   scrollBox().scrollTo({top:0, behavior: RM.matches ? "auto" : "smooth"});
 };
 function render(){
+  TRIP_STOPS = tripStopIds();
+  TRIP_BASES = tripBaseIds();
   document.getElementById("tally").innerHTML =
     `<span class="num">${shown().length}</span> / <span class="num">${PLACES.length}</span>`;
   draw(); renderPanel(); renderMapBtns(); renderMapCard(); updateTotop();
