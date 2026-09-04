@@ -248,6 +248,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 @media (max-width:899px), (max-height:559px){
   .main:not(.nomap) .results,
+  .main:not(.nomap) .lfilters,
+  .main:not(.nomap) .fbar,
   .main:not(.nomap) .legend,
   .main:not(.nomap) .foot,
 
@@ -402,6 +404,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .results > .detail{margin-left:17px}
 
 .ghead.tripgrp{cursor:default; background:none}
+.ghead.tripgrp::before{background:var(--accent)}
 
 .ghead{
   position:relative; display:flex; width:100%; align-items:center; gap:7px;
@@ -455,7 +458,6 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .rrow.intrip[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent)}
 
-.tcath.intrip .nm{color:var(--ink)}
 .row .t .tmk{align-self:center}
 .row .rbody{flex:1; min-width:0}
 .row .t{display:flex; gap:6px; align-items:center; font-size:14.5px; font-weight:600}
@@ -543,6 +545,8 @@ button{font:inherit; color:inherit; cursor:pointer}
            padding:5px 2px; margin:2px 0; border-radius:6px}
 .tcath.tog:hover{background:var(--sunk); color:var(--ink)}
 .tcath .nm{flex:1; min-width:0}
+
+.tcath .csel{flex:none; font-size:11px; font-weight:600; color:var(--accent); font-variant-numeric:tabular-nums}
 .tcath .n{flex:none; font-size:11px; font-weight:400; color:var(--ink3); font-variant-numeric:tabular-nums}
 .tcath.tog .chev{flex:none; margin-left:0; color:var(--ink3)}
 .tcath.tog[aria-expanded=true] .chev{transform:rotate(180deg)}
@@ -981,6 +985,14 @@ const BASE_OPEN = new Set();
 
 let BASE_SEL = null, ZONE_SEL = null, BASE_NEAR = 0;
 let SCROLL_BASE = false;                  // 下一次 renderPanel 要不要捲到基地視圖那張卡
+let SCROLL_LIST = false;                  // 下一次 renderPanel 要不要捲到「景點清單」那顆標題
+
+const ACCORDION_MQ = matchMedia("(max-width:899px)");
+function accordion(justOpened){
+  if (!ACCORDION_MQ.matches) return;
+  if (justOpened==="trips" && S.tripsOpen) S.basesOpen=false;
+  if (justOpened==="bases" && S.basesOpen) S.tripsOpen=false;
+}
 
 let INLINE = null;
 const inlineOpen = key => !!(INLINE && INLINE.key===key);
@@ -995,9 +1007,13 @@ let TRIP_STOPS = new Set(), TRIP_BASES = new Set();
 function toggleInline(key, p){
   INLINE = inlineOpen(key) ? null : {key, id:p.id};
   if (String(key).startsWith("t:")) openItin();
+
+  if (INLINE && String(key).startsWith("g:") && S.sel===p.id){ S.sel=null; S.near=0; }
   if (INLINE && p){
     panTo(p);
-    if (S.listOpen && (pass(p) || EXTRA.has(p.id))) SCROLL_TO = p.id;
+
+    if (!String(key).startsWith("g:") &&
+        S.listOpen && (pass(p) || EXTRA.has(p.id))) SCROLL_TO = p.id;
   }
   render();
 }
@@ -1890,7 +1906,7 @@ function renderTripsMini(){
   const t = S.trip && TRIP_BY_ID[S.trip];
   box.appendChild(section("推薦行程",
     S.trip ? null : `${TRIPS.length} 條`, S.tripsOpen,
-    ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "mini",
+    ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "mini",
     t ? {text:`${t.code||""} ${t.one_line || t.name}`.trim(), title:t.name} : null));
   if (S.tripsOpen) box.appendChild(tripPicker(true));
   return box;
@@ -1928,17 +1944,19 @@ function renderBaseFinder(){
   };
 
   
+
   const group=(key, label, color, rows)=>{
     if (!rows.length) return;
-    const inTrip = rows.some(r=>TRIP_BASES.has(r.id));
     const open = S.baseCatsOpen.has(key);
+    const nSel = rows.reduce((n,r)=>n+(S.base.has(r.id)?1:0), 0);
     const h=document.createElement("button");
-    h.type="button"; h.className="tcath tog" + (inTrip ? " intrip" : "");
+    h.type="button"; h.className="tcath tog";
     h.setAttribute("aria-expanded", open);
-    h.style.setProperty("--cc", color);
     h.innerHTML=`<span class="nm">${esc(label)}</span>` +
-                (inTrip ? `<span class="tmk" title="這條推薦行程會住在這一類底下"></span>` : "") +
+                ((!open && nSel)
+                  ? `<span class="csel" title="這一類底下有 ${nSel} 個基地被選中">· ${nSel}</span>` : "") +
                 `<span class="n">${rows.length} 個</span>` + CHEV_SVG;
+    h.style.setProperty("--cc", color);
     h.onclick=()=>{ toggleSet(S.baseCatsOpen, key); save(); render(); };
     list.appendChild(h);
     if (open) rows.forEach(r=>list.appendChild(baseRow(r)));
@@ -1960,7 +1978,8 @@ function rowFor(p, extra, rel, key){
   b.className="row"; b.dataset.id=p.id;
   b.setAttribute("aria-expanded", key ? inlineOpen(key) : S.sel===p.id);
 
-  if (!key){
+  const inResults = !key || String(key).startsWith("g:");
+  if (inResults){
     if (INLINE && INLINE.id===p.id) b.classList.add("act");
     if (TRIP_STOPS.has(p.id)) b.classList.add("intrip");
   }
@@ -1968,7 +1987,7 @@ function rowFor(p, extra, rel, key){
   const body=document.createElement("div"); body.className="rbody";
   body.innerHTML =
     `<div class="t">` +
-    ((!key && TRIP_STOPS.has(p.id))
+    ((inResults && TRIP_STOPS.has(p.id))
       ? `<span class="tmk" title="這條推薦行程會去的地方"></span>` : "") +
 
     `${ico(p.theme,(TH[p.theme]||{}).color)}` +
@@ -2118,11 +2137,15 @@ function selectTrip(id){
     });
 
     S.basesOpen=true; S.listOpen=true;
+
+    if (!HASH_APPLYING && !isMapOnly()) SCROLL_LIST=true;
     S.tripsOpen=false; openItin(); openTripPath(TRIP_BY_ID[id]); fitTrip();
+    accordion("bases");
   } else {
     S.tripAdded.forEach(bid=>S.base.delete(bid));
     S.tripAdded=new Set();
     S.tripsOpen=true;
+    accordion("trips");
   }
   save(); render();
 }
@@ -2568,12 +2591,14 @@ function renderList(){
 
   const tripRows = S.trip ? list.filter(p=>TRIP_STOPS.has(p.id)) : [];
   const tripIds = new Set(tripRows.map(p=>p.id));
-  const rest = tripRows.length ? list.filter(p=>!tripIds.has(p.id)) : list;
+  const rest = list;
+
+  const dupKey = p => tripIds.has(p.id) ? `g:${S.trip}:${p.id}` : null;
   if (tripRows.length){
     const t=TRIP_BY_ID[S.trip]||{};
     const h=document.createElement("div");
     h.className="ghead tripgrp";
-    h.style.setProperty("--dc", TRIP_COLOR);
+
     h.innerHTML=`<span class="gnm">這趟行程</span>` +
       `<span class="num">${tripRows.length}</span>`;
     h.title = `${t.code||""} ${t.name||""}`.trim();
@@ -2613,6 +2638,8 @@ function renderList(){
       wrap.appendChild(rd);
     }
     g[r.id].sort(cmpFor(r.id)).forEach(p=>{
+      const k=dupKey(p);
+      if (k){ inlineRow(p, k).forEach(n=>wrap.appendChild(n)); return; }
       wrap.appendChild(rowFor(p));
       if (S.sel===p.id) wrap.appendChild(renderDetail(p));
     });
@@ -2664,7 +2691,7 @@ function renderPanel(){
     const t = S.trip && TRIP_BY_ID[S.trip];
     tripHost.appendChild(section("推薦行程",
       S.trip ? null : `${TRIPS.length} 條`, S.tripsOpen,
-      ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel deskonly",
+      ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "toplevel deskonly",
       t ? {text:`${t.code||""} ${t.one_line || t.name}`.trim(), title:t.name} : null));
     if (S.tripsOpen) tripHost.appendChild(renderTrips());
 
@@ -2680,7 +2707,7 @@ function renderPanel(){
 
   expHost.appendChild(section("基地",
     S.base.size ? `${S.base.size}/${BASES.length} 個` : `${BASES.length} 個`, S.basesOpen,
-    ()=>{ S.basesOpen=!S.basesOpen; save(); render(); }, "toplevel"));
+    ()=>{ S.basesOpen=!S.basesOpen; accordion("bases"); save(); render(); }, "toplevel"));
   if (S.basesOpen) expHost.appendChild(renderBaseFinder());
   if (BASE_SEL){
     const bv=renderBaseView();
@@ -2690,9 +2717,10 @@ function renderPanel(){
   
   const nShown=shown().length, filtered=anyFilter();
   const listSub=summary(false);
+
   expHost.appendChild(section("景點清單",
     filtered ? `${nShown}/${PLACES.length} 個` : `${PLACES.length} 個`, S.listOpen,
-    ()=>{ S.listOpen=!S.listOpen; save(); render(); }, "toplevel deskonly",
+    ()=>{ S.listOpen=!S.listOpen; save(); render(); }, "toplevel deskonly seclist",
     listSub ? {text:listSub, title:listSub} : null));
   if (S.listOpen){
     expHost.appendChild(renderListFilters());
@@ -2735,6 +2763,12 @@ function renderPanel(){
     if (bv) box.scrollTop += (bv.getBoundingClientRect().top - stopAt(false));
     SCROLL_BASE=false;
   }
+
+  if (SCROLL_LIST){
+    const sec=box.querySelector(".sec.seclist");
+    if (sec) box.scrollTop += (sec.getBoundingClientRect().top - stopAt(false));
+    SCROLL_LIST=false;
+  }
   if (SCROLL_GROUP){
     const g=box.querySelector(".results .tcath, .results .ghead");
     if (g) box.scrollTop += (g.getBoundingClientRect().top - stopAt(true));
@@ -2762,6 +2796,7 @@ function renderPanel(){
 let SCROLL_TO=null;
 function select(id){
   if (S.sel===id){ S.sel=null; S.near=0; render(); return; }
+  if (INLINE && INLINE.id===id && String(INLINE.key).startsWith("g:")) INLINE=null;
   S.sel=id; S.near=0;
   const p=BY_ID[id];
   if (p){
