@@ -78,7 +78,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .sec:focus-visible, .tcath.tog:focus-visible, .rthead:focus-visible,
 .ghead:focus-visible, .rrow:focus-visible, .trow:focus-visible,
 .row:focus-visible, .tstop:focus-visible, .tnight:focus-visible,
-.baseview button.zhead:focus-visible{outline-offset:-2px}
+.lodgebox button.zhead:focus-visible{outline-offset:-2px}
 
 .num{font-size:.92em; letter-spacing:-.01em; font-variant-numeric:tabular-nums}
 .mv{font-size:.92em; letter-spacing:-.01em; white-space:nowrap; font-variant-numeric:tabular-nums}
@@ -693,9 +693,23 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 .tnight b{color:var(--ink); font-weight:600}
 
-.tnight .more{margin-left:auto; font-size:15px; line-height:1; color:var(--ink3); white-space:nowrap}
+.tnight .chev{margin-left:auto; color:var(--ink3)}
 button.tnight:hover{color:var(--ink); border-color:var(--line2)}
-button.tnight:hover .more{color:var(--accent)}
+button.tnight:hover .chev{color:var(--accent)}
+
+.tnight.open{
+  background:var(--accent-soft); border-color:var(--accent); color:var(--ink);
+  border-bottom-left-radius:0; border-bottom-right-radius:0;
+}
+.tnight.open .chev{color:var(--accent); transform:rotate(180deg)}
+
+.nlodge{
+  width:100%; margin:0 0 4px 5px; padding:2px 10px 9px;
+  border:1px solid var(--accent); border-top:0; border-radius:0 0 8px 8px;
+  background:var(--accent-soft);
+}
+
+.nlodge > h3:first-child{margin-top:6px}
 
 .baseview{
   margin:10px 14px 4px; padding:11px 13px 13px; border:1px solid var(--accent);
@@ -712,38 +726,39 @@ button.tnight:hover .more{color:var(--accent)}
 .baseview .bvh .x{flex:none; border:0; background:none; color:var(--ink3); font-size:16px; line-height:1; padding:0 2px}
 .baseview .bvh .x:hover{color:var(--accent)}
 .baseview .bvm{margin:3px 0 0; font-size:12.5px; color:var(--ink2)}
-.baseview h3{margin:12px 0 6px; font-size:12px; color:var(--ink3); font-weight:600; letter-spacing:.06em}
 
-.baseview .zhead{margin:10px 0 2px; font-size:12.5px; color:var(--ink); font-weight:600}
+.lodgebox h3{margin:12px 0 6px; font-size:12px; color:var(--ink3); font-weight:600; letter-spacing:.06em}
 
-.baseview p.zhead.plain{color:var(--ink3); font-weight:500}
-.baseview button.zhead{
+.lodgebox .zhead{margin:10px 0 2px; font-size:12.5px; color:var(--ink); font-weight:600}
+
+.lodgebox p.zhead.plain{color:var(--ink3); font-weight:500}
+.lodgebox button.zhead{
   display:flex; align-items:center; gap:7px; width:100%; text-align:left; cursor:pointer;
   border:1px solid var(--line); border-radius:8px; background:var(--sunk);
   font:inherit; font-size:12.5px; font-weight:600; padding:4px 8px; margin:10px 0 2px;
 }
-.baseview button.zhead:hover{background:var(--panel); border-color:var(--line2)}
-.baseview button.zhead[aria-pressed=true]{border-color:var(--accent); background:var(--panel)}
-.baseview .zhead .zn{flex:1; min-width:0}
-.baseview .zhead .zck{flex:none; color:var(--accent); font-size:13px; line-height:1}
+.lodgebox button.zhead:hover{background:var(--panel); border-color:var(--line2)}
+.lodgebox button.zhead[aria-pressed=true]{border-color:var(--accent); background:var(--panel)}
+.lodgebox .zhead .zn{flex:1; min-width:0}
+.lodgebox .zhead .zck{flex:none; color:var(--accent); font-size:13px; line-height:1}
 
-.baseview .zhead .zloc{
+.lodgebox .zhead .zloc{
   flex:none; width:13px; height:13px; color:var(--ink3);
   stroke:currentColor; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round;
 }
-.baseview button.zhead:hover .zloc{color:var(--accent)}
-.baseview button.zhead[aria-pressed=true] .zloc{color:var(--accent)}
+.lodgebox button.zhead:hover .zloc{color:var(--accent)}
+.lodgebox button.zhead[aria-pressed=true] .zloc{color:var(--accent)}
 
-.baseview .znote{margin:1px 0 5px 8px; font-size:11.5px; color:var(--ink2); line-height:1.6}
+.lodgebox .znote{margin:1px 0 5px 8px; font-size:11.5px; color:var(--ink2); line-height:1.6}
 
-.baseview .zgrouplbl{margin:8px 0 0; font-size:11px; color:var(--ink3); letter-spacing:.04em}
+.lodgebox .zgrouplbl{margin:8px 0 0; font-size:11px; color:var(--ink3); letter-spacing:.04em}
 
-.baseview .zbody{margin-left:16px; padding-left:8px; border-left:1px solid var(--line)}
-.baseview .row{padding:5px 6px}
-.baseview .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
+.lodgebox .zbody{margin-left:16px; padding-left:8px; border-left:1px solid var(--line)}
+.lodgebox .row{padding:5px 6px}
+.lodgebox .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
 
 .tday > .detail{margin-left:5px; margin-right:0; width:100%}
-.baseview .detail{margin-left:0; margin-right:0}      
+.lodgebox .detail{margin-left:0; margin-right:0}      
 
 .gw{font-family:inherit; max-width:230px; line-height:1.5}
 .gw b{font-size:14px}
@@ -859,7 +874,7 @@ button.tnight:hover .more{color:var(--accent)}
   .sec, .tpickmini .sec.mini,
   .tcath.tog, .rthead, .ghead,
   .rrow, .trow, .row, .tstop, .tnight,
-  .baseview button.zhead{min-height:40px}
+  .lodgebox button.zhead{min-height:40px}
 
   .seg button{min-height:36px}
   #theme{min-width:40px; min-height:40px}
@@ -970,6 +985,9 @@ let SCROLL_BASE = false;                  // 下一次 renderPanel 要不要捲�
 let INLINE = null;
 const inlineOpen = key => !!(INLINE && INLINE.key===key);
 
+let NIGHT = null;
+const nightOpen = key => !!(NIGHT && NIGHT.key===key);
+
 function openItin(){ S.itinOpen = true; }
 
 let TRIP_STOPS = new Set(), TRIP_BASES = new Set();
@@ -981,6 +999,13 @@ function toggleInline(key, p){
     panTo(p);
     if (S.listOpen && (pass(p) || EXTRA.has(p.id))) SCROLL_TO = p.id;
   }
+  render();
+}
+
+function toggleNight(key, b){
+  NIGHT = nightOpen(key) ? null : {key, base:b.id};
+  if (NIGHT && b.anchor && ready)
+    map.setView(b.anchor, Math.max(map.getZoom(),12), {animate:false});
   render();
 }
 
@@ -1510,7 +1535,8 @@ function drawBasePins(){
     m.addTo(pts);
 
     if (isFtrip){ const el=m.getElement(); if (el) el.style.setProperty("--tc", TRIP_COLOR); }
-    if (BASE_SEL===b.id) zonesOf(b).forEach(z=>{
+
+    if (BASE_SEL===b.id || (NIGHT && NIGHT.base===b.id)) zonesOf(b).forEach(z=>{
       const on=ZONE_SEL===z.name;
       const zm=L.marker([z.anchor.lat, z.anchor.lng], {
         icon:L.divIcon({className:"zonepin"+(on?" on":""), iconSize:[14,14], iconAnchor:[7,7],
@@ -1518,7 +1544,7 @@ function drawBasePins(){
         zIndexOffset:1400});
       zm.bindTooltip(`<b>${esc(z.name)}</b>` + (z.note?`<i>${esc(z.note)}</i>`:""),
                      {direction:"top", offset:[0,-8], className:"tt", opacity:1});
-      zm.on("click", ()=>selectZone(z.name));
+      zm.on("click", ()=>selectZone(z.name, b.id));
       zm.addTo(pts);
     });
   });
@@ -2079,6 +2105,8 @@ function tripStopIds(){
 function selectTrip(id){
   S.trip = (S.trip===id) ? null : id;   // 再點一次同一條＝關掉（連帶收掉地圖上的路線）
 
+  NIGHT = null;
+
   if (S.trip){
 
     S.tripAdded.forEach(bid=>S.base.delete(bid));
@@ -2152,26 +2180,35 @@ function tripStopRow(p, key){
   b.addEventListener("mouseleave", ()=>emphasize(p.id,false));
   return b;
 }
+
 function nightRow(d, i, total){
   const b = d.base ? BS[d.base] : null;
   if (b){
     const el=document.createElement("button");
 
-    el.type="button"; el.className="tnight";
-    el.title = `看「${b.name}」的基地視圖（住宿與附近精選）`;
+    const key = `nb:${S.trip}:${i}:${b.id}`;
+    const on = nightOpen(key);
+    el.type="button"; el.className="tnight"+(on?" open":"");
+    el.setAttribute("aria-expanded", on);
+    el.title = on ? `收起「${b.name}」的住宿清單`
+                  : `展開「${b.name}」的住宿清單（地圖同時帶到這個基地）`;
     el.innerHTML = ico("lodging",(TH.lodging||{}).color) + `當晚住 <b>${esc(b.name)}</b>` +
       (b.drive_min!=null
         ? `　<span class="mi" title="從新竹市區開到這個基地">${CAR_SVG}${dur(b.drive_min)}</span>`
         : "") +
-      `<span class="more" aria-hidden="true">›</span>`;
-    el.onclick=()=>selectBase(b.id);
-    return el;
+      CHEV_SVG;
+    el.onclick=()=>toggleNight(key, b);
+    if (!on) return [el];
+    const box=document.createElement("div"); box.className="nlodge lodgebox";
+
+    box.appendChild(lodgingBlock(b, p=>`tl:${key}:${p.id}`));
+    return [el, box];
   }
   const el=document.createElement("div"); el.className="tnight";
   el.innerHTML = (i===total-1)
     ? HOME_SVG + `開回新竹，行程結束`
     : `這一天沒有指定過夜基地`;
-  return el;
+  return [el];
 }
 
 const DAY_NAV_MAX_WAY = 9;   // Google 的 dir?api=1 途經點上限（官方文件寫 9 個）
@@ -2371,7 +2408,7 @@ function renderItinerary(){
     } else {
       (d.stops||[]).forEach(nm=>{ const p=BY_NAME[nm]; if (p) putStop(p); });
     }
-    wrap.appendChild(nightRow(d, i, days.length));
+    nightRow(d, i, days.length).forEach(n=>wrap.appendChild(n));
     box.appendChild(wrap);
   });
 
@@ -2387,12 +2424,81 @@ function selectBase(id){
   render();
 }
 function closeBase(){ BASE_SEL=null; ZONE_SEL=null; BASE_NEAR=0; render(); }
-function selectZone(name){
+
+function selectZone(name, bid){
   ZONE_SEL = (ZONE_SEL===name) ? null : name;
   BASE_NEAR=0;
-  const z=zonesOf(BS[BASE_SEL]).find(x=>x.name===ZONE_SEL);
+  const z=zonesOf(BS[bid||BASE_SEL]).find(x=>x.name===ZONE_SEL);
   if (z && ready) map.setView([z.anchor.lat, z.anchor.lng], Math.max(map.getZoom(),13), {animate:false});
   render();
+}
+
+function zoneHead(name, sel, bid){
+  if (!sel){
+    const p=document.createElement("p"); p.className="zhead plain"; p.textContent=name;
+    return p;
+  }
+  const on = ZONE_SEL===name;
+  const btn=document.createElement("button");
+  btn.type="button"; btn.className="zhead tog"; btn.setAttribute("aria-pressed", on);
+  btn.title = on ? "取消這條住宿帶（附近精選改回從基地量）"
+                 : "選這條住宿帶（附近精選改從這一帶量，地圖也帶過去）";
+  btn.innerHTML = `<span class="zn">${esc(name)}</span>` +
+                  `<span class="zck" aria-hidden="true">${on ? "✓" : ""}</span>` +
+                  `<svg class="zloc" viewBox="0 0 16 16" aria-hidden="true">` +
+                  `<circle cx="8" cy="8" r="2.2"/><circle cx="8" cy="8" r="5.2"/>` +
+                  `<path d="M8 .8v2M8 13.2v2M.8 8h2M13.2 8h2"/></svg>`;
+  btn.onclick=()=>selectZone(name, bid);
+  return btn;
+}
+
+function lodgingBlock(b, keyOf){
+  const frag=document.createDocumentFragment();
+  const zones=zonesOf(b);
+  const lodges=lodgingOf(b.id);
+
+  const put=(host,p)=>inlineRow(p, keyOf(p)).forEach(n=>host.appendChild(n));
+
+  const h1=document.createElement("h3");
+  h1.textContent=`住宿（${lodges.length} 家）`;
+  frag.appendChild(h1);
+  if (!lodges.length){
+    const e=document.createElement("p"); e.className="nonear";
+    e.textContent="這個基地還沒有住宿資料。";
+    frag.appendChild(e);
+    return frag;
+  }
+  if (!zones.length){
+    lodges.forEach(p=>put(frag,p));
+    return frag;
+  }
+  const gl=document.createElement("p"); gl.className="zgrouplbl"; gl.textContent="住宿區域";
+  frag.appendChild(gl);
+  zones.forEach(z=>{
+    const rows=lodges.filter(p=>p.zone===z.name);
+    frag.appendChild(zoneHead(z.name, true, b.id));
+    if (z.note){
+      const zn=document.createElement("p"); zn.className="znote"; zn.textContent=z.note;
+      frag.appendChild(zn);
+    }
+
+    const body=document.createElement("div"); body.className="zbody";
+    if (rows.length) rows.forEach(p=>put(body,p));
+    else {
+      const e=document.createElement("p"); e.className="nonear";
+      e.textContent="這一帶還沒有住宿資料。";
+      body.appendChild(e);
+    }
+    frag.appendChild(body);
+  });
+  const rest=lodges.filter(p=>!zones.some(z=>z.name===p.zone));
+  if (rest.length){
+    frag.appendChild(zoneHead("未分區", false, b.id));
+    const body=document.createElement("div"); body.className="zbody";
+    rest.forEach(p=>put(body,p));
+    frag.appendChild(body);
+  }
+  return frag;
 }
 function renderBaseView(){
   const b=BS[BASE_SEL];
@@ -2402,9 +2508,10 @@ function renderBaseView(){
   const oid = zone ? zoneOriginId(b.id, zone.name) : ("base:"+b.id);
   const step = NEAR_STEPS[Math.min(BASE_NEAR, NEAR_STEPS.length-1)];
   const menu = BASE_POINTS[b.id] || [];
-  const lodges = lodgingOf(b.id);
 
-  const d=document.createElement("div"); d.className="baseview";
+  const d=document.createElement("div");
+
+  d.className="baseview lodgebox";
   d.innerHTML =
     `<div class="bvh"><b>${esc(b.name)}</b>` +
       `<button type="button" class="x" data-act="closebase" aria-label="關閉基地視圖">×</button></div>` +
@@ -2415,65 +2522,7 @@ function renderBaseView(){
       `　收錄 <span class="num">${menu.length}</span> 個點</p>`;
   d.querySelector("[data-act=closebase]").onclick=closeBase;
 
-  const putLodge=(host,p)=>inlineRow(p, `bl:${b.id}:${p.id}`).forEach(n=>host.appendChild(n));
-
-  
-  const zoneHead=(name, sel)=>{
-    if (!sel){
-      const p=document.createElement("p"); p.className="zhead plain"; p.textContent=name;
-      return p;
-    }
-    const on = ZONE_SEL===name;
-    const btn=document.createElement("button");
-    btn.type="button"; btn.className="zhead tog"; btn.setAttribute("aria-pressed", on);
-    btn.title = on ? "取消這條住宿帶（附近精選改回從基地量）"
-                   : "選這條住宿帶（附近精選改從這一帶量，地圖也帶過去）";
-    btn.innerHTML = `<span class="zn">${esc(name)}</span>` +
-                    `<span class="zck" aria-hidden="true">${on ? "✓" : ""}</span>` +
-                    `<svg class="zloc" viewBox="0 0 16 16" aria-hidden="true">` +
-                    `<circle cx="8" cy="8" r="2.2"/><circle cx="8" cy="8" r="5.2"/>` +
-                    `<path d="M8 .8v2M8 13.2v2M.8 8h2M13.2 8h2"/></svg>`;
-    btn.onclick=()=>selectZone(name);
-    return btn;
-  };
-
-  const h1=document.createElement("h3");
-  h1.textContent=`住宿（${lodges.length} 家）`;
-  d.appendChild(h1);
-  if (!lodges.length){
-    const e=document.createElement("p"); e.className="nonear";
-    e.textContent="這個基地還沒有住宿資料。";
-    d.appendChild(e);
-  } else if (zones.length){
-    const gl=document.createElement("p"); gl.className="zgrouplbl"; gl.textContent="住宿區域";
-    d.appendChild(gl);
-    zones.forEach(z=>{
-      const rows=lodges.filter(p=>p.zone===z.name);
-      d.appendChild(zoneHead(z.name, true));
-      if (z.note){
-        const zn=document.createElement("p"); zn.className="znote"; zn.textContent=z.note;
-        d.appendChild(zn);
-      }
-
-      const body=document.createElement("div"); body.className="zbody";
-      if (rows.length) rows.forEach(p=>putLodge(body,p));
-      else {
-        const e=document.createElement("p"); e.className="nonear";
-        e.textContent="這一帶還沒有住宿資料。";
-        body.appendChild(e);
-      }
-      d.appendChild(body);
-    });
-    const rest=lodges.filter(p=>!zones.some(z=>z.name===p.zone));
-    if (rest.length){
-      d.appendChild(zoneHead("未分區", false));
-      const body=document.createElement("div"); body.className="zbody";
-      rest.forEach(p=>putLodge(body,p));
-      d.appendChild(body);
-    }
-  } else {
-    lodges.forEach(p=>putLodge(d,p));
-  }
+  d.appendChild(lodgingBlock(b, p=>`bl:${b.id}:${p.id}`));
 
   const pool=PLACES.filter(x=>x.theme!=="lodging").map(x=>{
     const r=originDist(oid, x);
@@ -2804,8 +2853,8 @@ document.getElementById("qwrap").addEventListener("click", ()=>{
 });
 addEventListener("keydown", e=>{
   if (e.key!=="Escape") return;
-  if (!S.sel && !INLINE) return;
-  S.sel=null; INLINE=null; render();
+  if (!S.sel && !INLINE && !NIGHT) return;
+  S.sel=null; INLINE=null; NIGHT=null; render();
 });
 
 restore();
