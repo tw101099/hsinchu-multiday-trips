@@ -93,7 +93,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .acts a, .acts button,
 .mapcard .acts a, .mapcard .acts button,
-.tdhead .tdnav{
+.tdhead .tdnav,
+.sechead .shbtn{
   font-size:12px; line-height:1.5; padding:3px 10px; border-radius:999px;
 }
 
@@ -282,6 +283,8 @@ button{font:inherit; color:inherit; cursor:pointer}
   .main:not(.nomap) .baseview,
 
   .main:not(.nomap) .sec.deskonly{display:none}
+
+  .main:not(.nomap) .sechead{display:none}
   .main:not(.nomap) .tpickmini{display:block}
   .main:not(.nomap) .stage{min-height:280px}
 }
@@ -378,6 +381,17 @@ button{font:inherit; color:inherit; cursor:pointer}
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .sec:hover .ssub{color:var(--ink)}
+
+.sechead{display:flex; align-items:center; box-shadow:0 1px 0 var(--line)}
+.sechead > .sec{flex:1; min-width:0; box-shadow:none}
+
+.sechead > .sec.toplevel{padding-right:8px}
+
+.sechead > .shbtn{
+  flex:none; margin-right:14px;
+  border:1px solid var(--line); background:var(--bg); color:var(--ink2);
+  font-family:inherit; white-space:nowrap;
+}
 .subrows{margin-top:5px}
 
 .rlist{margin-top:4px; padding:0 14px}
@@ -906,7 +920,9 @@ button.tnight:hover .chev{color:var(--accent)}
   #theme{min-width:40px; min-height:40px}
   #qwrap{min-height:40px}
 
-  .clear, .ghost, #sort, .wider, .acts button, .mapcard .acts button{min-height:40px}
+  
+  .clear, .ghost, #sort, .wider, .acts button, .mapcard .acts button,
+  .sechead .shbtn{min-height:40px}
   .acts a, .mapcard .acts a, .tdhead .tdnav, .mapbtns button{
     display:inline-flex; align-items:center; min-height:40px;
   }
@@ -937,12 +953,13 @@ button.tnight:hover .chev{color:var(--accent)}
       <button data-v="map" aria-pressed="true">地圖</button>
       <button data-v="list" aria-pressed="false">清單</button>
     </div>
-    <div id="qwrap"><input id="q" type="search" placeholder="搜尋景點或主題"></div>
+
+    <div id="qwrap"><input id="q" type="search" aria-label="搜尋景點或主題" placeholder="搜尋景點或主題"></div>
     <button id="theme" class="btn-act" title="切換明暗" aria-label="切換明暗"></button>
     <div class="tally" id="tally"></div>
   </header>
 
-  <div class="main" id="main">
+  <main class="main" id="main">
     <aside class="panel" id="panel"></aside>
 
     <div class="stage" id="stage">
@@ -954,7 +971,7 @@ button.tnight:hover .chev{color:var(--accent)}
         <div class="mapcard" id="mapcard"></div>
       </div>
     </div>
-  </div>
+  </main>
 </div>
 
 <button id="totop" class="totop btn-act" type="button" aria-label="回到清單頂端" title="回到清單頂端">
@@ -990,7 +1007,7 @@ const S = { view:"map", base:new Set(), themes:new Set(), diffs:new Set(), budge
             basesOpen:false, listOpen:true, sort:"total", sortPicked:false, near:0, footOpen:false,
             trip:null, tripsOpen:true, itinOpen:true,
             catsOpen:new Set(), corrOpen:new Set(),
-            baseCatsOpen:new Set(), tripAdded:new Set() };
+            baseCatsOpen:new Set(), autoCats:new Set(), tripAdded:new Set() };
 
 let EXTRA = new Set();
 
@@ -1185,7 +1202,7 @@ function save(){
       footOpen:S.footOpen,
       trip:S.trip, tripsOpen:S.tripsOpen, itinOpen:S.itinOpen,
       catsOpen:[...S.catsOpen], corrOpen:[...S.corrOpen],
-      baseCatsOpen:[...S.baseCatsOpen], tripAdded:[...S.tripAdded]
+      baseCatsOpen:[...S.baseCatsOpen], autoCats:[...S.autoCats], tripAdded:[...S.tripAdded]
     }));
   }catch(e){}
 }
@@ -1212,6 +1229,9 @@ function restore(){
     if (Array.isArray(d.corrOpen)) S.corrOpen=new Set(d.corrOpen.filter(x=>CR[x]));
     if (Array.isArray(d.baseCatsOpen))
       S.baseCatsOpen=new Set(d.baseCatsOpen.filter(x=>CT[x] || x==="__none__"));
+
+    if (Array.isArray(d.autoCats))
+      S.autoCats=new Set(d.autoCats.filter(x=>S.baseCatsOpen.has(x)));
     if (d.tripAdded) S.tripAdded=new Set([].concat(d.tripAdded).filter(b=>BS[b]));
     if (typeof d.footOpen==="boolean") S.footOpen=d.footOpen;
     if (S.trip) openTripPath(TRIP_BY_ID[S.trip]);
@@ -1812,6 +1832,30 @@ function section(label, count, open, fn, cls, sub){
   b.onclick=fn; return b;
 }
 
+function shareBtn(){
+  const b=document.createElement("button");
+  b.type="button"; b.className="shbtn btn-act";
+  const nativeShare = !!navigator.share && matchMedia("(pointer:coarse)").matches;
+  const label = nativeShare ? "分享行程" : "複製分享連結";
+  b.textContent=label;
+  b.title = nativeShare ? "把這一趟分享出去" : "複製這一趟的連結";
+  b.onclick=e=>{
+
+    e.stopPropagation();
+    const url = location.origin + location.pathname + hashString(hashNow());
+    const t = S.trip && TRIP_BY_ID[S.trip];
+    const done=()=>{ b.textContent="連結已複製"; setTimeout(()=>{ b.textContent=label; },1800); };
+    const copy=()=>{
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done,done);
+      else { b.textContent="請複製網址列"; setTimeout(()=>{ b.textContent=label; },1800); }
+    };
+    if (nativeShare) navigator.share({title:"新竹出發多日遊｜"+((t&&t.name)||""), url})
+      .catch(err=>{ if (!err || err.name!=="AbortError") copy(); });
+    else copy();
+  };
+  return b;
+}
+
 function filterChanged(){ S.sel=null; EXTRA=new Set(); save(); render(); }
 
 function tagsHTML(p){
@@ -1973,7 +2017,12 @@ function renderBaseFinder(){
       toggleSet(S.base, r.id);
 
       if (wasOn && !S.base.has(r.id)) S.tripAdded.delete(r.id);
-      if (!wasOn) S.baseCatsOpen.add(r.cat && CT[r.cat] ? r.cat : "__none__");
+      if (!wasOn){
+        const k = r.cat && CT[r.cat] ? r.cat : "__none__";
+        S.baseCatsOpen.add(k);
+
+        S.autoCats.delete(k);
+      }
       filterChanged();
       if (S.base.size) fit(PLACES.filter(p=>S.base.has(p.base)));
     };
@@ -1994,7 +2043,8 @@ function renderBaseFinder(){
                   ? `<span class="csel" title="這一類底下有 ${nSel} 個基地被選中">· ${nSel}</span>` : "") +
                 `<span class="n">${rows.length} 個</span>` + CHEV_SVG;
     h.style.setProperty("--cc", color);
-    h.onclick=()=>{ toggleSet(S.baseCatsOpen, key); save(); render(); };
+
+    h.onclick=()=>{ toggleSet(S.baseCatsOpen, key); S.autoCats.delete(key); save(); render(); };
     list.appendChild(h);
     if (open) rows.forEach(r=>list.appendChild(baseRow(r)));
   };
@@ -2169,14 +2219,28 @@ function selectTrip(id){
 
     S.tripAdded.forEach(bid=>S.base.delete(bid));
     S.tripAdded=new Set();
+
+    const want=new Set();
+    baseIdsOfTrip(S.trip).forEach(bid=>{
+      const b=BS[bid];
+      if (b) want.add(b.cat && CT[b.cat] ? b.cat : "__none__");
+    });
+    S.autoCats.forEach(k=>{
+      if (!want.has(k)){ S.baseCatsOpen.delete(k); S.autoCats.delete(k); }
+    });
     baseIdsOfTrip(S.trip).forEach(bid=>{
       if (!S.base.has(bid)){ S.base.add(bid); S.tripAdded.add(bid); }
       const b=BS[bid];
-      if (b) S.baseCatsOpen.add(b.cat && CT[b.cat] ? b.cat : "__none__");
+      if (b){
+        const key=b.cat && CT[b.cat] ? b.cat : "__none__";
+
+        if (!S.baseCatsOpen.has(key)) S.autoCats.add(key);
+        S.baseCatsOpen.add(key);
+      }
     });
 
     
-    if (!ACCORDION_MQ.matches) S.basesOpen=true;
+    if (isTwoLane()) S.basesOpen=true;
     S.listOpen=true;
 
     if (!HASH_APPLYING && !isMapOnly()) SCROLL_LIST=true;
@@ -2185,6 +2249,9 @@ function selectTrip(id){
   } else {
     S.tripAdded.forEach(bid=>S.base.delete(bid));
     S.tripAdded=new Set();
+
+    S.autoCats.forEach(k=>S.baseCatsOpen.delete(k));
+    S.autoCats=new Set();
     S.tripsOpen=true;
     accordion("trips");
   }
@@ -2744,9 +2811,12 @@ function renderPanel(){
 
     if (t){
 
-      tripHost.appendChild(section("詳細行程", null, S.itinOpen,
+      
+      const head=document.createElement("div"); head.className="sechead";
+      head.append(section("詳細行程", null, S.itinOpen,
         ()=>{ S.itinOpen=!S.itinOpen; save(); render(); }, "toplevel deskonly secitin",
-        itinSub(t)));
+        itinSub(t)), shareBtn());
+      tripHost.appendChild(head);
       if (S.itinOpen) tripHost.appendChild(renderItinerary());
     }
   }
@@ -2814,7 +2884,7 @@ function renderPanel(){
 
   
   if (SCROLL_LIST){
-    const sec=(ACCORDION_MQ.matches && box.querySelector(".sec.secitin"))
+    const sec=(!two && box.querySelector(".sec.secitin"))
               || box.querySelector(".sec.seclist");
     if (sec){
       const hdr=two?tripHost.querySelector(":scope > .sec.toplevel"):null;
