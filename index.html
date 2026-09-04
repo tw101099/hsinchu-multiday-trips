@@ -269,8 +269,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   .panel.twolane .lane-explore{flex:1 1 auto; min-width:0}
 
   .panel.twolane .lane-trip > .sec.toplevel:first-child{
-    position:sticky; top:0; z-index:400;
-    padding-bottom:8px; background:var(--panel); border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:400; background:var(--panel);
   }
 }
 
@@ -334,7 +333,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .sec.toplevel{padding-left:14px; padding-right:14px; border-top:0; margin-top:0}
 
-.sec.toplevel[aria-expanded=false]{box-shadow:0 1px 0 var(--line)}
+.sec.toplevel{box-shadow:0 1px 0 var(--line)}
 .sec .chev{margin-left:auto}
 .sec[aria-expanded=true] .chev{transform:rotate(180deg)}
 
@@ -345,7 +344,9 @@ button{font:inherit; color:inherit; cursor:pointer}
 .sec:hover .ssub{color:var(--ink)}
 .subrows{margin-top:5px}
 
-.rlist{margin-top:4px}
+.rlist{margin-top:4px; padding:0 14px}
+
+.rlist .rrow{margin-left:4px; width:calc(100% - 4px)}
 
 .rrow{
   display:flex; width:100%; align-items:center; gap:9px; padding:6px 9px; min-height:32px;
@@ -378,10 +379,15 @@ button{font:inherit; color:inherit; cursor:pointer}
 .tpickmini .rtrips{margin-left:10px; padding-left:9px}
 .tpickmini .trow{padding:5px 8px; font-size:12.5px}
 
-.results{padding:2px 12px 20px}
+.results{padding:2px 14px 20px}   
 
-.results .tcath{margin:16px -12px 2px; padding:5px 2px}
+.results .tcath{margin:16px 0 2px; padding:5px 2px}
 .results .tcath:first-child{margin-top:4px}
+
+.results > .ghead, .results > .gintro{margin-left:4px}
+.results > .ghead{width:calc(100% - 4px)}
+.results > .row{margin-left:8px; width:calc(100% - 8px)}
+.results > .detail{margin-left:17px}
 
 .ghead.tripgrp{cursor:default; background:none}
 
@@ -855,7 +861,7 @@ button.tnight:hover .more{color:var(--accent)}
       <button data-v="map" aria-pressed="true">地圖</button>
       <button data-v="list" aria-pressed="false">清單</button>
     </div>
-    <div id="qwrap"><input id="q" type="search" placeholder="搜尋：步道、瀑布、溫泉…"></div>
+    <div id="qwrap"><input id="q" type="search" placeholder="搜尋景點或主題"></div>
     <button id="theme" title="切換明暗" aria-label="切換明暗"></button>
     <div class="tally" id="tally"></div>
   </header>
@@ -1654,7 +1660,7 @@ function renderQTags(){
     };
     w.insertBefore(b, qi);
   });
-  qi.placeholder = S.qtags.length ? "" : "搜尋：步道、瀑布、溫泉…";
+  qi.placeholder = S.qtags.length ? "" : "搜尋景點或主題";
 }
 
 function resetQ(){
@@ -1682,21 +1688,27 @@ function clearAll(){
   SCROLL_RESET=true;
   save(); render();
 }
-function summary(){
+
+function summary(rich){
+  const e = s => rich ? esc(s) : s;
   const bits=[];
-  if (S.base.size) bits.push([...S.base].map(b=>`<b>${esc((BS[b]||{}).name||b)}</b>`).join("、"));
+  if (S.base.size) bits.push([...S.base].map(b=>{
+    const n=(BS[b]||{}).name||b;
+    return rich ? `<b>${esc(n)}</b>` : n;
+  }).join("、"));
   if (S.inseason) bits.push(`${MONTH} 月當季`);
-  if (S.budget.size) bits.push([...S.budget].map(b=>esc((BUDGETS.find(x=>x.id===b)||{}).label||"")).join("、"));
+  if (S.budget.size) bits.push([...S.budget].map(b=>e((BUDGETS.find(x=>x.id===b)||{}).label||"")).join("、"));
   if (S.diffs.size) bits.push([...S.diffs].map(d=>EFFORT[d]||d).join("、"));
   if (S.themes.size) bits.push([...S.themes].map(t=>TH[t].name).join("、"));
-  if (S.qtags.length) bits.push(S.qtags.map(t=>`「${esc(t)}」`).join("、"));
-  if (S.q) bits.push(`「${esc(S.q)}」`);
-  return bits.length ? bits.join("　·　") : `全部 ${PLACES.length} 個點`;
+  if (S.qtags.length) bits.push(S.qtags.map(t=>`「${e(t)}」`).join("、"));
+  if (S.q) bits.push(`「${e(S.q)}」`);
+  if (bits.length) return bits.join("　·　");
+  return rich ? `全部 ${PLACES.length} 個點` : "";
 }
 
 function renderFilterBar(){
   const bar=document.createElement("div"); bar.className="fbar";
-  const sum=document.createElement("div"); sum.className="fsum"; sum.innerHTML=summary();
+  const sum=document.createElement("div"); sum.className="fsum"; sum.innerHTML=summary(true);
   bar.append(sum);
 
   bar.appendChild(renderSort());
@@ -1970,6 +1982,8 @@ function selectTrip(id){
       const b=BS[bid];
       if (b) S.baseCatsOpen.add(b.cat && CT[b.cat] ? b.cat : "__none__");
     });
+
+    S.basesOpen=true; S.listOpen=true;
     S.tripsOpen=false; openItin(); openTripPath(TRIP_BY_ID[id]); fitTrip();
   } else {
     S.tripAdded.forEach(bid=>S.base.delete(bid));
@@ -2515,8 +2529,13 @@ function renderPanel(){
     if (bv) expHost.appendChild(bv);
   }
 
-  expHost.appendChild(section("景點清單", `${shown().length}/${PLACES.length}`, S.listOpen,
-    ()=>{ S.listOpen=!S.listOpen; save(); render(); }, "toplevel deskonly"));
+  
+  const nShown=shown().length, filtered=anyFilter();
+  const listSub=summary(false);
+  expHost.appendChild(section("景點清單",
+    filtered ? `${nShown}/${PLACES.length} 個` : `${PLACES.length} 個`, S.listOpen,
+    ()=>{ S.listOpen=!S.listOpen; save(); render(); }, "toplevel deskonly",
+    listSub ? {text:listSub, title:listSub} : null));
   if (S.listOpen){
     expHost.appendChild(renderListFilters());
     expHost.appendChild(renderFilterBar());
