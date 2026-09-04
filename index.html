@@ -21,6 +21,8 @@
 
 :root{
   --bg:#faf9f7; --panel:#ffffff; --sunk:#f2efe9;
+
+  --hover-bg:#f2efe9;
   --ink:#1c1a17; --ink2:#6b645b; --ink3:#9a938a;
   --line:#e3ddd3; --line2:#cfc7ba;
   --accent:#5c5449; --accent-soft:#eae4d9; --on-accent:#ffffff;
@@ -35,6 +37,7 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#131211; --panel:#1b1a18; --sunk:#232120;
+    --hover-bg:#232120;
     --ink:#efeae2; --ink2:#a29a8f; --ink3:#787066;
     --line:#332f2b; --line2:#454039;
     --accent:#bcb2a2; --accent-soft:#2c2822; --on-accent:#17150f;
@@ -45,6 +48,7 @@
 }
 :root[data-theme="dark"]{
     --bg:#131211; --panel:#1b1a18; --sunk:#232120;
+    --hover-bg:#232120;
     --ink:#efeae2; --ink2:#a29a8f; --ink3:#787066;
     --line:#332f2b; --line2:#454039;
     --accent:#bcb2a2; --accent-soft:#2c2822; --on-accent:#17150f;
@@ -80,6 +84,24 @@ button{font:inherit; color:inherit; cursor:pointer}
 .row:focus-visible, .tstop:focus-visible, .tnight:focus-visible,
 .lodgebox button.zhead:focus-visible{outline-offset:-2px}
 
+.row-select, .row-toggle{cursor:pointer}
+.row-select:hover, .row-toggle:hover{background:var(--hover-bg)}
+.row-select{position:relative}
+.row-select::before{
+  content:""; position:absolute; left:0; top:7px; bottom:7px; width:3px;
+  border-radius:0 2px 2px 0; background:transparent;
+}
+.row-select[aria-pressed=true]::before{background:var(--accent)}
+
+.row-toggle[aria-expanded=true] .chev{transform:rotate(180deg)}
+.btn-act{cursor:pointer}
+.btn-act:hover{border-color:var(--accent); color:var(--accent)}
+
+.btn-act.primary:hover{
+  color:var(--on-accent); border-color:var(--accent);
+  background:color-mix(in srgb, var(--accent) 88%, var(--ink));
+}
+
 .num{font-size:.92em; letter-spacing:-.01em; font-variant-numeric:tabular-nums}
 .mv{font-size:.92em; letter-spacing:-.01em; white-space:nowrap; font-variant-numeric:tabular-nums}
 
@@ -100,6 +122,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .logo small{display:block; font-weight:400; font-size:11px; color:var(--ink3); letter-spacing:.06em}
 .seg{display:flex; background:var(--sunk); border-radius:999px; padding:2px}
 .seg button{border:0; background:none; padding:4px 13px; border-radius:999px; font-size:13px; color:var(--ink2)}
+
 .seg button[aria-pressed=true]{background:var(--accent); color:var(--on-accent)}
 
 #qwrap{
@@ -121,8 +144,9 @@ button{font:inherit; color:inherit; cursor:pointer}
   flex:none;   
   display:inline-flex; align-items:center; gap:4px; font-size:12px; line-height:1.7;
   padding:0 7px 0 9px; border-radius:999px; border:1px solid var(--accent);
-  color:var(--accent); background:none; cursor:pointer; white-space:nowrap; font-family:inherit;
+  color:var(--accent); background:none; white-space:nowrap; font-family:inherit;
 }
+
 .qtok:hover{opacity:.7}
 .qtok .x{font-size:14px; line-height:1; opacity:.8}
 
@@ -131,7 +155,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   border:1px solid var(--line2); background:var(--bg); border-radius:999px;
   padding:5px 9px; line-height:1; color:var(--ink2);
 }
-#theme:hover{border-color:var(--accent); color:var(--accent)}
+
 #theme svg{display:block; width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.6;
            stroke-linecap:round; stroke-linejoin:round}
 .tally{margin-left:auto; font-size:12px; color:var(--ink3); white-space:nowrap}
@@ -173,7 +197,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   border-radius:999px; padding:5px 12px; font-size:12.5px; white-space:nowrap;
   box-shadow:0 1px 6px rgba(0,0,0,.18);
 }
-.mapbtns button:hover{border-color:var(--accent); color:var(--accent)}
+
 .mapbtns button[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
 .leaflet-bar a.locbtn{display:flex; align-items:center; justify-content:center; cursor:pointer}
@@ -212,7 +236,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 .totop[hidden]{display:none}
 .totop svg{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
-.totop:hover{border-color:var(--accent); color:var(--accent)}
+
 .totop.show{opacity:1; pointer-events:auto}
 .totop.docked{right:calc(100vw - 394px + env(safe-area-inset-right))}
 
@@ -283,7 +307,7 @@ button{font:inherit; color:inherit; cursor:pointer}
     position:sticky; top:0; z-index:400; background:var(--panel);
   }
 
-  .panel.twolane .lane-trip > .sec.toplevel:first-child:hover{background:var(--sunk)}
+  .panel.twolane .lane-trip > .sec.toplevel:first-child:hover{background:var(--hover-bg)}
 }
 
 .fbar{
@@ -307,8 +331,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   border-radius:999px; padding:3px 10px; font-size:12.5px; white-space:nowrap;
   text-decoration:none; font-family:inherit; line-height:1.5;
 }
-.clear:hover, .ghost:hover{border-color:var(--line2); color:var(--ink)}
-.clear:hover{color:var(--accent)}
+
 #sort{
   flex:none; border:1px solid var(--line); border-radius:999px; background:var(--bg); color:var(--ink2);
   font:inherit; font-size:12.5px; padding:3px 10px; max-width:120px;
@@ -325,7 +348,6 @@ button{font:inherit; color:inherit; cursor:pointer}
   padding:3px 10px; font-size:12.5px; color:var(--ink2); line-height:1.5;
   transition:border-color .15s, background .15s, color .15s;
 }
-.chip:hover{border-color:var(--line2); color:var(--ink)}
 
 .chip[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 .chip:disabled{opacity:.45; cursor:default; pointer-events:none}
@@ -339,7 +361,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   font-size:12.5px; color:var(--ink2); text-align:left;
 }
 
-.sec:hover{background:var(--sunk); color:var(--accent)}
+.sec:hover{color:var(--accent)}
 
 .sec .n{display:inline-flex; align-items:center; color:var(--ink3); font-variant-numeric:tabular-nums}
 
@@ -349,7 +371,6 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .sec.toplevel{box-shadow:0 1px 0 var(--line)}
 .sec .chev{margin-left:auto}
-.sec[aria-expanded=true] .chev{transform:rotate(180deg)}
 
 .sec .ssub{
   flex:1; min-width:0; color:var(--ink2);
@@ -367,7 +388,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   font-size:13px;
   border:1px solid transparent; border-radius:8px; background:none; text-align:left; color:var(--ink2);
 }
-.rrow:hover{background:var(--sunk); color:var(--ink)}
+.rrow:hover{color:var(--ink)}   
 .rrow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
 .rrow .rbar{flex:none; width:3px; height:17px; border-radius:2px}
@@ -409,10 +430,10 @@ button{font:inherit; color:inherit; cursor:pointer}
 .ghead{
   position:relative; display:flex; width:100%; align-items:center; gap:7px;
   margin:14px 0 6px; padding:6px 10px 6px 15px; border:0; border-radius:8px;
-  border-bottom:1px solid var(--line); background:none; text-align:left; cursor:pointer;
+  border-bottom:1px solid var(--line); background:none; text-align:left;
   font:inherit; font-size:12px; color:var(--ink3); transition:background .12s;
 }
-.ghead:hover{background:var(--sunk)}
+
 .ghead::before{
   content:""; position:absolute; left:0; top:8px; bottom:8px; width:3px;
   border-radius:2px; background:var(--dc,var(--ink3));
@@ -423,7 +444,6 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 .ghead .num{flex:none}
 .ghead .chev{flex:none; width:12px; height:12px; color:var(--ink3); transition:transform .15s}
-.ghead[aria-expanded=true] .chev{transform:rotate(180deg)}
 
 .gintro{
   margin:0 0 8px; padding:10px 13px 11px; border-radius:8px; background:var(--sunk);
@@ -445,7 +465,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   border:1px solid transparent; border-radius:var(--r); background:none; padding:7px 9px;
   transition:background .12s, border-color .12s;
 }
-.row:hover{background:var(--sunk)}
+
 .row[aria-expanded=true]{background:var(--accent-soft); border-color:var(--accent)}
 
 .row.act{border-color:var(--accent)}
@@ -497,9 +517,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 .tags{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 9px}
 .tags .tag{
   font-size:11px; padding:2px 8px; border-radius:999px; background:none;
-  border:1px solid var(--line2); color:var(--ink3); white-space:nowrap; cursor:pointer;
+  border:1px solid var(--line2); color:var(--ink3); white-space:nowrap;
 }
-.tags .tag:hover{color:var(--accent); border-color:var(--accent)}
 
 .mapcard .tags{margin:8px 0 0}
 .acts{display:flex; gap:7px; flex-wrap:wrap; margin:10px 0 4px}
@@ -507,7 +526,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   font-size:12.5px; text-decoration:none; color:var(--ink2); border:1px solid var(--line2);
   border-radius:999px; padding:4px 12px; background:var(--panel);
 }
-.acts a:hover, .acts button:hover{color:var(--accent); border-color:var(--accent)}
+
 .acts .primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
 .nearby{margin-top:11px; border-top:1px solid var(--line); padding-top:8px}
 .nearby .row{padding:5px 6px}
@@ -543,13 +562,12 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .tcath.tog{width:100%; min-height:30px; border:0; background:none; text-align:left;
            padding:5px 2px; margin:2px 0; border-radius:6px}
-.tcath.tog:hover{background:var(--sunk); color:var(--ink)}
+.tcath.tog:hover{color:var(--ink)}   
 .tcath .nm{flex:1; min-width:0}
 
 .tcath .csel{flex:none; font-size:11px; font-weight:600; color:var(--accent); font-variant-numeric:tabular-nums}
 .tcath .n{flex:none; font-size:11px; font-weight:400; color:var(--ink3); font-variant-numeric:tabular-nums}
 .tcath.tog .chev{flex:none; margin-left:0; color:var(--ink3)}
-.tcath.tog[aria-expanded=true] .chev{transform:rotate(180deg)}
 
 .rtlist{display:flex; flex-direction:column; gap:2px; margin:0 0 6px 4px}
 
@@ -559,7 +577,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   border:1px solid transparent; border-radius:8px; background:none; text-align:left;
   font-size:12.5px; color:var(--ink2);
 }
-.rthead:hover{background:var(--sunk); color:var(--ink)}
+.rthead:hover{color:var(--ink)}   
 .rthead[aria-expanded=true]{color:var(--ink)}
 
 .rthead .rbar{flex:none; width:3px; height:17px; border-radius:2px}
@@ -567,7 +585,6 @@ button{font:inherit; color:inherit; cursor:pointer}
 .rthead .nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 
 .rthead .chev{flex:none; margin-left:0; color:var(--ink3)}
-.rthead[aria-expanded=true] .chev{transform:rotate(180deg)}
 
 .rthead .away{
   flex:none; font-size:11px; color:var(--ink3); white-space:nowrap;
@@ -612,7 +629,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   text-align:left; color:var(--ink2);
   transition:border-color .12s, background .12s, color .12s;
 }
-.trow:hover{border-color:var(--line2); background:var(--sunk); color:var(--ink)}
+.trow:hover{border-color:var(--line2); color:var(--ink)}   
 .trow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent);
                          color:var(--ink); font-weight:600}
 
@@ -653,7 +670,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   flex:none; font-size:12px; line-height:1.5; color:var(--accent); text-decoration:none;
   border:1px solid var(--line2); border-radius:999px; padding:3px 10px; white-space:nowrap;
 }
-.tdhead .tdnav:hover{border-color:var(--accent); background:var(--accent-soft)}
+.tdhead .tdnav:hover{background:var(--accent-soft)}   
 
 .tdhead .tdnav.off{
   color:var(--ink3); border-style:dashed; cursor:default; white-space:normal;
@@ -682,7 +699,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   margin-left:5px; padding:7px 9px; border:1px solid var(--line); border-radius:var(--r);
   background:var(--panel); transition:border-color .12s, background .12s;
 }
-.tstop:hover{background:var(--sunk); border-color:var(--line2)}
+.tstop:hover{border-color:var(--line2)}   
 
 .tstop.open{background:var(--accent-soft); border-color:var(--accent);
             border-bottom-left-radius:0; border-bottom-right-radius:0}
@@ -705,7 +722,8 @@ button.tnight:hover .chev{color:var(--accent)}
   background:var(--accent-soft); border-color:var(--accent); color:var(--ink);
   border-bottom-left-radius:0; border-bottom-right-radius:0;
 }
-.tnight.open .chev{color:var(--accent); transform:rotate(180deg)}
+
+.tnight.open .chev{color:var(--accent)}
 
 .nlodge{
   width:100%; margin:0 0 4px 5px; padding:2px 10px 9px;
@@ -737,10 +755,11 @@ button.tnight:hover .chev{color:var(--accent)}
 
 .lodgebox p.zhead.plain{color:var(--ink3); font-weight:500}
 .lodgebox button.zhead{
-  display:flex; align-items:center; gap:7px; width:100%; text-align:left; cursor:pointer;
+  display:flex; align-items:center; gap:7px; width:100%; text-align:left;
   border:1px solid var(--line); border-radius:8px; background:var(--sunk);
   font:inherit; font-size:12.5px; font-weight:600; padding:4px 8px; margin:10px 0 2px;
 }
+
 .lodgebox button.zhead:hover{background:var(--panel); border-color:var(--line2)}
 .lodgebox button.zhead[aria-pressed=true]{border-color:var(--accent); background:var(--panel)}
 .lodgebox .zhead .zn{flex:1; min-width:0}
@@ -916,7 +935,7 @@ button.tnight:hover .chev{color:var(--accent)}
       <button data-v="list" aria-pressed="false">清單</button>
     </div>
     <div id="qwrap"><input id="q" type="search" placeholder="搜尋景點或主題"></div>
-    <button id="theme" title="切換明暗" aria-label="切換明暗"></button>
+    <button id="theme" class="btn-act" title="切換明暗" aria-label="切換明暗"></button>
     <div class="tally" id="tally"></div>
   </header>
 
@@ -935,7 +954,7 @@ button.tnight:hover .chev{color:var(--accent)}
   </div>
 </div>
 
-<button id="totop" class="totop" type="button" aria-label="回到清單頂端" title="回到清單頂端">
+<button id="totop" class="totop btn-act" type="button" aria-label="回到清單頂端" title="回到清單頂端">
   <svg viewBox="0 0 16 16"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5"/></svg>
 </button>
 
@@ -1595,7 +1614,7 @@ function renderMapCard(){
           `<span class="mi">住宿 <span class="num">${nl}</span> 家` +
             (nz?`／<span class="num">${nz}</span> 條住宿帶`:"") + `</span></p>` +
         `<div class="acts">` +
-          `<button class="primary" data-act="basedetail">看基地（住宿與附近精選）</button>` +
+          `<button class="primary btn-act" data-act="basedetail">看基地（住宿與附近精選）</button>` +
         `</div>`;
       box.onclick=e=>{
         const t=e.target.closest("[data-act]"); if (!t) return;
@@ -1619,9 +1638,9 @@ function renderMapCard(){
       `<span class="mi" title="停留">${HOURGLASS_SVG}${durH(p.stay_h)}</span></p>` +
     tagsHTML(p) +
     `<div class="acts">` +
-      `<button class="primary" data-act="detail">看詳細</button>` +
-      `<a href="https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HOME.name)}&destination=${encodeURIComponent(gnav(p))}" target="_blank" rel="noopener">導航</a>` +
-      `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gview(p))}" target="_blank" rel="noopener">看 Google 地圖</a>` +
+      `<button class="primary btn-act" data-act="detail">看詳細</button>` +
+      `<a class="btn-act" href="https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HOME.name)}&destination=${encodeURIComponent(gnav(p))}" target="_blank" rel="noopener">導航</a>` +
+      `<a class="btn-act" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gview(p))}" target="_blank" rel="noopener">看 Google 地圖</a>` +
     `</div>`;
   box.onclick=e=>{
     const b=e.target.closest("[data-act]"); if (!b) return;
@@ -1638,6 +1657,7 @@ function renderMapBtns(){
   box.innerHTML="";
   if (tripLegs()){
     const tb=document.createElement("button");
+    tb.className="btn-act";
     tb.textContent="行程全覽";
     tb.title="把地圖縮放到剛好涵蓋整條推薦行程的路線";
     tb.onclick=fitTrip;
@@ -1749,7 +1769,7 @@ function highlightRow(id,on){
 
 function chip(label,on,fn,color,theme){
   const b=document.createElement("button");
-  b.className="chip"; b.setAttribute("aria-pressed",on);
+  b.className="chip btn-act"; b.setAttribute("aria-pressed",on);
   b.innerHTML=(theme?ico(theme,color):"")+label;
   b.onclick=fn; return b;
 }
@@ -1765,7 +1785,7 @@ function frow(key,nodes,keyTitle){
 
 function section(label, count, open, fn, cls, sub){
   const b=document.createElement("button");
-  b.className="sec"+(cls?" "+cls:""); b.setAttribute("aria-expanded",open);
+  b.className="sec row-toggle"+(cls?" "+cls:""); b.setAttribute("aria-expanded",open);
 
   b.innerHTML=`${label}` +
               `<span class="ssub"${(sub&&sub.title)?` title="${esc(sub.title)}"`:""}>` +
@@ -1781,7 +1801,7 @@ function tagsHTML(p){
   const tags = p && p.tags;
   if (!tags || !tags.length) return "";   // 沒掛 tag 的點整排不渲染，不留空容器
   return `<div class="tags">` +
-    tags.map(t=>`<button type="button" class="tag" data-act="tag" data-tag="${esc(t)}" data-pid="${esc(p.id)}">${esc(t)}</button>`).join("") +
+    tags.map(t=>`<button type="button" class="tag btn-act" data-act="tag" data-tag="${esc(t)}" data-pid="${esc(p.id)}">${esc(t)}</button>`).join("") +
     `</div>`;
 }
 function searchFor(term){
@@ -1799,7 +1819,7 @@ function renderQTags(){
   w.querySelectorAll(".qtok").forEach(n=>n.remove());
   S.qtags.forEach(t=>{
     const b=document.createElement("button");
-    b.type="button"; b.className="qtok"; b.title="移除這個條件";
+    b.type="button"; b.className="qtok btn-act"; b.title="移除這個條件";
     b.append(t);
     const x=document.createElement("span"); x.className="x"; x.textContent="×"; b.append(x);
     b.onclick=e=>{
@@ -1863,7 +1883,7 @@ function renderFilterBar(){
 
   bar.appendChild(renderSort());
   if (anyFilter()){
-    const c=document.createElement("button"); c.className="clear"; c.textContent="清除";
+    const c=document.createElement("button"); c.className="clear btn-act"; c.textContent="清除";
     c.onclick=e=>{ e.stopPropagation(); clearAll(); }; bar.appendChild(c);
   }
   return bar;
@@ -1892,7 +1912,7 @@ function renderListFilters(){
 
 function renderSort(){
   const sel=document.createElement("select");
-  sel.id="sort";
+  sel.id="sort"; sel.className="btn-act";
   sel.onclick=e=>e.stopPropagation();
   sel.title="依車程＝離所屬基地的車程（多日遊的車程是雙層的：基地離新竹、景點離基地）";
   sel.innerHTML=SORTS.map(s=>`<option value="${s.id}"${S.sort===s.id?" selected":""}>${s.label}</option>`).join("");
@@ -1918,7 +1938,7 @@ function renderBaseFinder(){
   const baseRow=r=>{
     const b=document.createElement("button");
     const inTrip = TRIP_BASES.has(r.id);
-    b.className="rrow" + (inTrip ? " intrip" : "");
+    b.className="rrow row-select" + (inTrip ? " intrip" : "");
     b.setAttribute("aria-pressed", S.base.has(r.id));
 
     b.innerHTML=`<span class="rbar" style="background:${baseColor(r)}"></span>` +
@@ -1950,7 +1970,7 @@ function renderBaseFinder(){
     const open = S.baseCatsOpen.has(key);
     const nSel = rows.reduce((n,r)=>n+(S.base.has(r.id)?1:0), 0);
     const h=document.createElement("button");
-    h.type="button"; h.className="tcath tog";
+    h.type="button"; h.className="tcath tog row-toggle";
     h.setAttribute("aria-expanded", open);
     h.innerHTML=`<span class="nm">${esc(label)}</span>` +
                 ((!open && nSel)
@@ -1975,7 +1995,8 @@ function legBit(p, rel){
 
 function rowFor(p, extra, rel, key){
   const b=document.createElement("button");
-  b.className="row"; b.dataset.id=p.id;
+
+  b.className="row row-toggle"; b.dataset.id=p.id;
   b.setAttribute("aria-expanded", key ? inlineOpen(key) : S.sel===p.id);
 
   const inResults = !key || String(key).startsWith("g:");
@@ -2062,9 +2083,10 @@ function renderDetail(p, inline){
   wireTags(d, inline);
   const acts=document.createElement("div"); acts.className="acts";
   acts.insertAdjacentHTML("beforeend",
-    `<a class="primary" href="https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HOME.name)}&destination=${encodeURIComponent(gnav(p))}" target="_blank" rel="noopener">導航</a>` +
-    `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gview(p))}" target="_blank" rel="noopener">看 Google 地圖</a>` +
-    (p.source?`<a href="${esc(p.source)}" target="_blank" rel="noopener">參考</a>`:""));
+
+    `<a class="primary btn-act" href="https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HOME.name)}&destination=${encodeURIComponent(gnav(p))}" target="_blank" rel="noopener">導航</a>` +
+    `<a class="btn-act" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gview(p))}" target="_blank" rel="noopener">看 Google 地圖</a>` +
+    (p.source?`<a class="btn-act" href="${esc(p.source)}" target="_blank" rel="noopener">參考</a>`:""));
   d.appendChild(acts);
   const canWiden = S.near < NEAR_STEPS.length-1;
   if (near.length || canWiden){
@@ -2188,7 +2210,7 @@ function legRow(lg){
 
 function tripStopRow(p, key){
   const b=document.createElement("button");
-  b.type="button"; b.className="tstop"+(inlineOpen(key)?" open":""); b.dataset.tid=p.id;
+  b.type="button"; b.className="tstop row-toggle"+(inlineOpen(key)?" open":""); b.dataset.tid=p.id;
   b.setAttribute("aria-expanded", inlineOpen(key));
   const body=document.createElement("div"); body.className="tb";
   body.innerHTML =
@@ -2211,7 +2233,7 @@ function nightRow(d, i, total){
 
     const key = `nb:${S.trip}:${i}:${b.id}`;
     const on = nightOpen(key);
-    el.type="button"; el.className="tnight"+(on?" open":"");
+    el.type="button"; el.className="tnight row-toggle"+(on?" open":"");
     el.setAttribute("aria-expanded", on);
     el.title = on ? `收起「${b.name}」的住宿清單`
                   : `展開「${b.name}」的住宿清單（地圖同時帶到這個基地）`;
@@ -2267,7 +2289,7 @@ function dayNavHTML(nv){
   const tail = nv.skipped
     ? `；島上／海上那 ${nv.skipped} 個停點要搭船，不放進車行路線`
     : "";
-  return `<a class="tdnav" href="${esc(nv.url)}" target="_blank" rel="noopener" ` +
+  return `<a class="tdnav btn-act" href="${esc(nv.url)}" target="_blank" rel="noopener" ` +
     `title="用 Google 地圖導這一整天：從出發點經過 ${nv.way.length} 個停點到當晚落腳處${tail}">` +
     `${label}</a>`;
 }
@@ -2288,7 +2310,7 @@ function tripPicker(mini){
   
   const tripRow = t => {
     const b=document.createElement("button");
-    b.type="button"; b.className="trow"; b.setAttribute("aria-pressed", S.trip===t.id);
+    b.type="button"; b.className="trow row-select"; b.setAttribute("aria-pressed", S.trip===t.id);
 
     const bns = [...new Set((t.days||[]).map(d=>d.base)
                    .filter(id=>id && BS[id]).map(id=>BS[id].name))];
@@ -2312,7 +2334,7 @@ function tripPicker(mini){
     const note = !susp && !warn && !!r.notice;   // 有話要說，但那不是一個狀態
     const h=document.createElement("button");
     h.type="button";
-    h.className = "rthead" + (susp ? " susp" : warn ? " warn" : note ? " note" : "");
+    h.className = "rthead row-toggle" + (susp ? " susp" : warn ? " warn" : note ? " note" : "");
     h.setAttribute("aria-expanded", open);
     h.title = r.name;   // 全名進 title：.nm 單行省略號截斷時滑過去查得到全名。
     h.innerHTML = `<span class="rbar" style="background:${color}"></span>` +
@@ -2349,7 +2371,7 @@ function tripPicker(mini){
     const g=document.createElement("div"); g.className="tcat";
     const open=S.catsOpen.has(cid);
     const h=document.createElement("button");
-    h.type="button"; h.className="tcath tog"; h.setAttribute("aria-expanded", open);
+    h.type="button"; h.className="tcath tog row-toggle"; h.setAttribute("aria-expanded", open);
     h.style.setProperty("--cc", color);
     h.innerHTML=`<span class="nm">${esc(label)}</span>` +
       `<span class="n">${rows.length} 條</span>` + CHEV_SVG;
@@ -2463,7 +2485,7 @@ function zoneHead(name, sel, bid){
   }
   const on = ZONE_SEL===name;
   const btn=document.createElement("button");
-  btn.type="button"; btn.className="zhead tog"; btn.setAttribute("aria-pressed", on);
+  btn.type="button"; btn.className="zhead tog row-select"; btn.setAttribute("aria-pressed", on);
   btn.title = on ? "取消這條住宿帶（附近精選改回從基地量）"
                  : "選這條住宿帶（附近精選改從這一帶量，地圖也帶過去）";
   btn.innerHTML = `<span class="zn">${esc(name)}</span>` +
@@ -2613,7 +2635,7 @@ function renderList(){
   const baseGroup = r => {
     const open=BASE_OPEN.has(r.id);
     const h=document.createElement("button");
-    h.className="ghead"; h.setAttribute("aria-expanded", open);
+    h.className="ghead row-toggle"; h.setAttribute("aria-expanded", open);
     h.style.setProperty("--dc", baseColor(r));
     h.innerHTML=`<span class="gnm">${esc(r.name)}</span>` +
       `<span class="num">${g[r.id].length}</span>` +
@@ -2631,7 +2653,7 @@ function renderList(){
         (zonesOf(r).length ? `　住宿帶 <span class="num">${zonesOf(r).length}</span> 條` : "") +
         `</p>`;
       const bvb=document.createElement("button");
-      bvb.type="button"; bvb.className="ghost";
+      bvb.type="button"; bvb.className="ghost btn-act";
       bvb.textContent = BASE_SEL===r.id ? "收起基地視圖" : "基地視圖（住宿與附近）";
       bvb.onclick=e=>{ e.stopPropagation(); selectBase(r.id); };
       rd.appendChild(bvb);
