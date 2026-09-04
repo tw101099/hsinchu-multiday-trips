@@ -73,8 +73,15 @@ body{
 }
 button{font:inherit; color:inherit; cursor:pointer}
 
-.num{font-family:var(--mono); font-size:.92em; letter-spacing:-.01em}
-.mv{font-family:var(--mono); font-size:.92em; letter-spacing:-.01em; white-space:nowrap}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+.sec:focus-visible, .tcath.tog:focus-visible, .rthead:focus-visible,
+.ghead:focus-visible, .rrow:focus-visible, .trow:focus-visible,
+.row:focus-visible, .tstop:focus-visible, .tnight:focus-visible,
+.baseview button.zhead:focus-visible{outline-offset:-2px}
+
+.num{font-size:.92em; letter-spacing:-.01em; font-variant-numeric:tabular-nums}
+.mv{font-size:.92em; letter-spacing:-.01em; white-space:nowrap; font-variant-numeric:tabular-nums}
 
 .ic{width:14px; height:14px; flex:none; stroke:currentColor; fill:none; stroke-width:1.5;
     stroke-linecap:round; stroke-linejoin:round; margin-right:4px}
@@ -118,13 +125,15 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 .qtok:hover{opacity:.7}
 .qtok .x{font-size:14px; line-height:1; opacity:.8}
+
 #theme{
-  flex:none; border:1px solid var(--line2); background:var(--bg); border-radius:999px;
+  flex:none; display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--line2); background:var(--bg); border-radius:999px;
   padding:5px 9px; line-height:1; color:var(--ink2);
 }
 #theme:hover{border-color:var(--accent); color:var(--accent)}
-#theme svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.6;
-           stroke-linecap:round; stroke-linejoin:round; vertical-align:-2px}
+#theme svg{display:block; width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.6;
+           stroke-linecap:round; stroke-linejoin:round}
 .tally{margin-left:auto; font-size:12px; color:var(--ink3); white-space:nowrap}
 
 @media (max-width:520px){
@@ -271,6 +280,8 @@ button{font:inherit; color:inherit; cursor:pointer}
   .panel.twolane .lane-trip > .sec.toplevel:first-child{
     position:sticky; top:0; z-index:400; background:var(--panel);
   }
+
+  .panel.twolane .lane-trip > .sec.toplevel:first-child:hover{background:var(--sunk)}
 }
 
 .fbar{
@@ -279,7 +290,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 
 .chev{width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round;
-      stroke-linejoin:round; margin-left:4px; vertical-align:-1px; transition:transform .15s}
+      stroke-linejoin:round; margin-left:4px; transition:transform .15s}
 .fsum{
 
   flex:1; min-width:0; font:inherit; font-size:13.5px; color:var(--ink2);
@@ -325,9 +336,10 @@ button{font:inherit; color:inherit; cursor:pointer}
   padding:9px 0; margin-top:11px; border-top:1px solid var(--line);
   font-size:12.5px; color:var(--ink2); text-align:left;
 }
-.sec:hover{color:var(--accent)}
 
-.sec .n{display:inline-flex; align-items:center; color:var(--ink3); font-family:var(--mono)}
+.sec:hover{background:var(--sunk); color:var(--accent)}
+
+.sec .n{display:inline-flex; align-items:center; color:var(--ink3); font-variant-numeric:tabular-nums}
 
 .sec .n .ic{width:13px; height:13px; margin:0 0 0 3px}
 
@@ -434,11 +446,11 @@ button{font:inherit; color:inherit; cursor:pointer}
 .row[aria-expanded=true]{background:var(--accent-soft); border-color:var(--accent)}
 
 .row.act{border-color:var(--accent)}
-.tmk{flex:none; width:7px; height:7px; border-radius:2px; background:var(--tc,var(--accent))}
+.tmk{flex:none; width:7px; height:7px; border-radius:2px; background:var(--accent)}
 
 .rrow.intrip{
-  border-color:var(--tc,var(--accent)); color:var(--ink);
-  background:color-mix(in srgb, var(--tc,var(--accent)) 12%, transparent);
+  border-color:var(--accent); color:var(--ink);
+  background:color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .rrow.intrip[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent)}
@@ -531,7 +543,7 @@ button{font:inherit; color:inherit; cursor:pointer}
            padding:5px 2px; margin:2px 0; border-radius:6px}
 .tcath.tog:hover{background:var(--sunk); color:var(--ink)}
 .tcath .nm{flex:1; min-width:0}
-.tcath .n{flex:none; font-size:11px; font-weight:400; color:var(--ink3); font-family:var(--mono)}
+.tcath .n{flex:none; font-size:11px; font-weight:400; color:var(--ink3); font-variant-numeric:tabular-nums}
 .tcath.tog .chev{flex:none; margin-left:0; color:var(--ink3)}
 .tcath.tog[aria-expanded=true] .chev{transform:rotate(180deg)}
 
@@ -617,13 +629,13 @@ button{font:inherit; color:inherit; cursor:pointer}
         padding:5px 0 6px; border-bottom:1px solid var(--line2)}
 
 .tdhead.navoff{flex-wrap:wrap}
-.tdhead .dno{flex:none; display:inline-flex; align-items:center; gap:6px;
+
+.tdhead .dno{flex:0 1 auto; min-width:0; display:inline-flex; align-items:center; gap:6px;
+             overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
              font-size:13.5px; font-weight:700; color:var(--ink)}
 
 .tdhead .dno::before{content:""; width:9px; height:9px; border-radius:2px; background:var(--dc,var(--ink3))}
 
-.tdhead .dsub{flex:0 1 auto; min-width:0; font-size:11.5px; color:var(--ink3);
-              overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .tdbudget{
   flex:none;   
   margin-left:auto; display:inline-flex; align-items:center; gap:4px;
@@ -676,13 +688,13 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .tnight{
   display:flex; align-items:center; gap:7px; width:100%; text-align:left;
-  margin:9px 0 0 5px; padding:7px 11px; border:0; border-radius:8px;
+  margin:9px 0 0 5px; padding:6px 10px; border:1px solid transparent; border-radius:8px;
   background:var(--sunk); font:inherit; font-size:12.5px; color:var(--ink2);
 }
 .tnight b{color:var(--ink); font-weight:600}
 
 .tnight .more{margin-left:auto; font-size:15px; line-height:1; color:var(--ink3); white-space:nowrap}
-button.tnight:hover{color:var(--ink)}
+button.tnight:hover{color:var(--ink); border-color:var(--line2)}
 button.tnight:hover .more{color:var(--accent)}
 
 .baseview{
@@ -842,6 +854,29 @@ button.tnight:hover .more{color:var(--accent)}
   margin:0; letter-spacing:.02em;
 }
 
+@media (max-width:899px){
+
+  .sec, .tpickmini .sec.mini,
+  .tcath.tog, .rthead, .ghead,
+  .rrow, .trow, .row, .tstop, .tnight,
+  .baseview button.zhead{min-height:40px}
+
+  .seg button{min-height:36px}
+  #theme{min-width:40px; min-height:40px}
+  #qwrap{min-height:40px}
+
+  .clear, .ghost, #sort, .wider, .acts button, .mapcard .acts button{min-height:40px}
+  .acts a, .mapcard .acts a, .tdhead .tdnav, .mapbtns button{
+    display:inline-flex; align-items:center; min-height:40px;
+  }
+
+  .tdhead .tdnav.off{display:inline; min-height:0}
+
+  .mapcard .ttl .x, .baseview .bvh .x{
+    display:flex; align-items:center; justify-content:center;
+    min-width:40px; min-height:40px; margin:-9px -9px -9px 0;
+  }
+}
 @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
 </style>
 
@@ -911,7 +946,7 @@ const ICON = {
 
 const S = { view:"map", base:new Set(), themes:new Set(), diffs:new Set(), budget:new Set(),
             inseason:false, q:"", qtags:[], sel:null,
-            basesOpen:false, listOpen:true, sort:"total", near:0, footOpen:false,
+            basesOpen:false, listOpen:true, sort:"total", sortPicked:false, near:0, footOpen:false,
             trip:null, tripsOpen:true, itinOpen:true,
             catsOpen:new Set(), corrOpen:new Set(),
             baseCatsOpen:new Set(), tripAdded:new Set() };
@@ -1079,7 +1114,7 @@ function save(){
   try{
     localStorage.setItem(LSKEY, JSON.stringify({
       base:[...S.base], themes:[...S.themes], diffs:[...S.diffs], budget:[...S.budget],
-      inseason:S.inseason, view:S.view, sort:S.sort, theme:THEME,
+      inseason:S.inseason, view:S.view, sort:S.sort, sortPicked:S.sortPicked, theme:THEME,
       seen:true, basesOpen:S.basesOpen, listOpen:S.listOpen,
       footOpen:S.footOpen,
       trip:S.trip, tripsOpen:S.tripsOpen, itinOpen:S.itinOpen,
@@ -1099,6 +1134,7 @@ function restore(){
     if (d.inseason) S.inseason=true;
     if (d.view==="list") S.view="list";
     if (d.sort && SORTS.some(s=>s.id===d.sort)) S.sort=d.sort;
+    if (d.sortPicked) S.sortPicked=true;   // 只往 true 走，沒有回頭（見 S 的說明）
     if (["auto","light","dark"].includes(d.theme)) THEME=d.theme;
     if (d.basesOpen) S.basesOpen=true;
     if (d.listOpen===false) S.listOpen=false;   // 預設是展開，只有明確存過收合才收
@@ -1116,6 +1152,73 @@ function restore(){
 
   }catch(e){}
 }
+
+const HASH_KEYS = ["trip","base","place"];
+let HASH_APPLYING = true;
+let HASH_LAST = {trip:null, base:null, place:null};
+const hashNow = () => ({trip:S.trip||null, base:BASE_SEL||null, place:S.sel||null});
+const hashLevels = st => (st.trip?1:0)+(st.base?1:0)+(st.place?1:0);
+function hashString(st){
+  const parts=[];
+  HASH_KEYS.forEach(k=>{ if (st[k]) parts.push(k+"="+encodeURIComponent(st[k])); });
+  return parts.length ? "#"+parts.join("&") : "";
+}
+
+function parseHash(){
+  const h=(location.hash||"").replace(/^#/,"");
+  if (!h) return null;
+  const out={trip:null, base:null, place:null};
+  let any=false;
+  h.split("&").forEach(kv=>{
+    const i=kv.indexOf("=");
+    if (i<0) return;
+    const k=kv.slice(0,i);
+    if (!HASH_KEYS.includes(k)) return;
+    any=true;
+    let v; try{ v=decodeURIComponent(kv.slice(i+1)); }catch(e){ return; }
+    if (k==="trip" && TRIP_BY_ID[v]) out.trip=v;
+    else if (k==="base" && BS[v]) out.base=v;
+    else if (k==="place" && BY_ID[v]) out.place=v;
+  });
+  return any ? out : null;
+}
+
+function syncHash(){
+  if (HASH_APPLYING) return;
+  const st=hashNow(), s=hashString(st);
+  if (s === (location.hash||"")){ HASH_LAST=st; return; }
+  const deeper = hashLevels(st) > hashLevels(HASH_LAST);
+  const url = s || (location.pathname + location.search);
+  history[deeper ? "pushState" : "replaceState"](null, "", url);
+  HASH_LAST=st;
+}
+
+function applyHash(initial){
+  const h=parseHash();
+  if (initial && !h){ HASH_APPLYING=false; HASH_LAST=hashNow(); syncHash(); return; }
+  const want = h || {trip:null, base:null, place:null};
+  HASH_APPLYING=true;
+  try{
+    if (want.trip !== S.trip){
+      if (want.trip) selectTrip(want.trip);
+      else if (S.trip) selectTrip(S.trip);          // 同一條再點一次＝關掉
+    }
+    if (want.base !== BASE_SEL){
+      if (want.base) selectBase(want.base);
+      else if (BASE_SEL) closeBase();
+    }
+    if (want.place !== S.sel){
+      if (want.place) select(want.place);
+      else if (S.sel){ S.sel=null; S.near=0; }
+    }
+  } finally {
+    HASH_APPLYING=false;
+  }
+  HASH_LAST=hashNow();
+  render();          // 上面三支各自 render 過，但「關掉景點」那一路沒有，補一次
+  syncHash();        // 把網址正規化（例如指向已退場 id 的舊連結）；同層＝replace
+}
+addEventListener("popstate", ()=>applyHash(false));
 
 const months = p => Array.isArray(p.season_months) ? p.season_months : [];
 
@@ -1246,7 +1349,12 @@ function fitBases(){
 
 let INIT_FIT = false;
 function applyInitialView(){
-  if (S.trip && LEGS[S.trip]) fitTrip(); else fitBases();
+
+  const hb = BASE_SEL && BS[BASE_SEL], hp = S.sel && BY_ID[S.sel];
+  if (hp) map.setView([hp.lat, hp.lng], Math.max(map.getZoom(),13), {animate:false});
+  else if (hb && hb.anchor) map.setView(hb.anchor, Math.max(map.getZoom(),12), {animate:false});
+  else if (S.trip && LEGS[S.trip]) fitTrip();
+  else fitBases();
   const el=document.getElementById("map");
   INIT_FIT = !!(el && el.clientWidth>0 && el.clientHeight>0);
   zoom=map.getZoom();
@@ -1746,7 +1854,7 @@ function renderSort(){
   sel.onclick=e=>e.stopPropagation();
   sel.title="依車程＝離所屬基地的車程（多日遊的車程是雙層的：基地離新竹、景點離基地）";
   sel.innerHTML=SORTS.map(s=>`<option value="${s.id}"${S.sort===s.id?" selected":""}>${s.label}</option>`).join("");
-  sel.onchange=()=>{ S.sort=sel.value; save(); render(); };
+  sel.onchange=()=>{ S.sort=sel.value; S.sortPicked=true; save(); render(); };
   return sel;
 }
 
@@ -1755,7 +1863,7 @@ function renderTripsMini(){
 
   const t = S.trip && TRIP_BY_ID[S.trip];
   box.appendChild(section("推薦行程",
-    S.trip ? `1/${TRIPS.length} 條` : `${TRIPS.length} 條`, S.tripsOpen,
+    S.trip ? null : `${TRIPS.length} 條`, S.tripsOpen,
     ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "mini",
     t ? {text:`${t.code||""} ${t.one_line || t.name}`.trim(), title:t.name} : null));
   if (S.tripsOpen) box.appendChild(tripPicker(true));
@@ -1771,7 +1879,6 @@ function renderBaseFinder(){
     b.className="rrow" + (inTrip ? " intrip" : "");
     b.setAttribute("aria-pressed", S.base.has(r.id));
 
-    if (inTrip) b.style.setProperty("--tc", TRIP_COLOR);
     b.innerHTML=`<span class="rbar" style="background:${baseColor(r)}"></span>` +
                 (inTrip
                   ? `<span class="tmk" title="這條推薦行程會住的基地"></span>` : "") +
@@ -1803,7 +1910,6 @@ function renderBaseFinder(){
     h.type="button"; h.className="tcath tog" + (inTrip ? " intrip" : "");
     h.setAttribute("aria-expanded", open);
     h.style.setProperty("--cc", color);
-    if (inTrip) h.style.setProperty("--tc", TRIP_COLOR);
     h.innerHTML=`<span class="nm">${esc(label)}</span>` +
                 (inTrip ? `<span class="tmk" title="這條推薦行程會住在這一類底下"></span>` : "") +
                 `<span class="n">${rows.length} 個</span>` + CHEV_SVG;
@@ -1830,7 +1936,7 @@ function rowFor(p, extra, rel, key){
 
   if (!key){
     if (INLINE && INLINE.id===p.id) b.classList.add("act");
-    if (TRIP_STOPS.has(p.id)){ b.classList.add("intrip"); b.style.setProperty("--tc", TRIP_COLOR); }
+    if (TRIP_STOPS.has(p.id)) b.classList.add("intrip");
   }
   const off = !pass(p);
   const body=document.createElement("div"); body.className="rbody";
@@ -2234,8 +2340,7 @@ function renderItinerary(){
     const head=document.createElement("div");
     head.className = "tdhead" + (nv.over ? " navoff" : "");
     head.innerHTML =
-      `<span class="dno">Day ${i+1}</span>` +
-      `<span class="dsub">${(d.stops||[]).length} 個停點</span>` +
+      `<span class="dno" title="這一天有 ${(d.stops||[]).length} 個停點">Day ${i+1}</span>` +
       `<span class="tdbudget${over?" over":""}" title="這一天各段車程的加總，共 ${d.min} 分` +
         `（各段的分鐘各自四捨五入過，逐段相加可能差一兩分；船段與島上步行段不計入）">` +
         CAR_SVG + dur(d.min) +
@@ -2409,6 +2514,9 @@ function renderList(){
   }
   const cmp=(SORTS.find(s=>s.id===S.sort)||SORTS[0]).fn;
 
+  const DRIVE_CMP=(SORTS.find(s=>s.id==="drive")||SORTS[0]).fn;
+  const cmpFor = bid => (!S.sortPicked && S.base.has(bid)) ? DRIVE_CMP : cmp;
+
   const tripRows = S.trip ? list.filter(p=>TRIP_STOPS.has(p.id)) : [];
   const tripIds = new Set(tripRows.map(p=>p.id));
   const rest = tripRows.length ? list.filter(p=>!tripIds.has(p.id)) : list;
@@ -2455,7 +2563,7 @@ function renderList(){
       rd.appendChild(bvb);
       wrap.appendChild(rd);
     }
-    g[r.id].sort(cmp).forEach(p=>{
+    g[r.id].sort(cmpFor(r.id)).forEach(p=>{
       wrap.appendChild(rowFor(p));
       if (S.sel===p.id) wrap.appendChild(renderDetail(p));
     });
@@ -2503,9 +2611,10 @@ function renderPanel(){
 
   if (TRIPS.length){
 
+    
     const t = S.trip && TRIP_BY_ID[S.trip];
     tripHost.appendChild(section("推薦行程",
-      S.trip ? `1/${TRIPS.length} 條` : `${TRIPS.length} 條`, S.tripsOpen,
+      S.trip ? null : `${TRIPS.length} 條`, S.tripsOpen,
       ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel deskonly",
       t ? {text:`${t.code||""} ${t.one_line || t.name}`.trim(), title:t.name} : null));
     if (S.tripsOpen) tripHost.appendChild(renderTrips());
@@ -2660,6 +2769,7 @@ function render(){
   document.getElementById("tally").innerHTML =
     `<span class="num">${shown().length}</span> / <span class="num">${PLACES.length}</span>`;
   draw(); renderPanel(); renderMapBtns(); renderMapCard(); updateTotop();
+  syncHash();
 }
 
 document.querySelectorAll("#views button").forEach(b=>{
@@ -2707,6 +2817,8 @@ document.getElementById("theme").onclick=()=>{
 syncViews();
 loadOSM("");
 render();
+
+applyHash(true);
 save();
 </script>
 <script>
