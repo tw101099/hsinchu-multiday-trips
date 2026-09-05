@@ -410,11 +410,12 @@ button{font:inherit; color:inherit; cursor:pointer}
 .rrow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
 .blodge{
-  margin:0 0 10px; padding:3px 12px 10px;
-  border:1px solid var(--accent); border-radius:8px;
+  margin:0 0 10px; padding:0 12px 10px;
+  border:1px solid var(--accent); border-top:0; border-radius:0 0 8px 8px;
   background:var(--accent-soft);
 }
-.blodge > h3:first-child{margin-top:8px}
+
+.blodge > .row:first-child, .blodge > .nonear:first-child{margin-top:8px}
 
 .rrow .rbar{flex:none; width:3px; height:17px; border-radius:2px}
 
@@ -447,7 +448,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 .results .tcath:first-child{margin-top:4px}
 
 .results > .ghead, .results > .gintro, .results > .blodge{margin-left:4px}
-.results > .ghead{width:calc(100% - 4px)}
+
+.results > .ghead, .results > .gintro{width:calc(100% - 4px)}
 .results > .row{margin-left:8px; width:calc(100% - 8px)}
 .results > .detail{margin-left:17px}
 
@@ -473,8 +475,16 @@ button{font:inherit; color:inherit; cursor:pointer}
 .ghead .chev{flex:none; width:12px; height:12px; color:var(--ink3); transition:transform .15s}
 
 .gintro{
-  margin:0 0 8px; padding:10px 13px 11px; border-radius:8px; background:var(--sunk);
+  display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
+  margin:0 0 8px; padding:10px 13px 11px;
+  border:1px solid transparent; border-radius:8px; background:var(--sunk);
 }
+.gintro[aria-expanded=true]{
+  margin-bottom:0; border-color:var(--accent); border-radius:8px 8px 0 0;
+  background:var(--accent-soft);
+}
+
+.gintro .chev{flex:none; margin-top:3px; color:var(--ink3); transition:transform .15s}
 .gintro .gstyle{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 8px}
 .gintro .gchip{
   font-size:11px; padding:2px 8px; border-radius:999px; background:var(--panel);
@@ -482,8 +492,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 
 .gintro .gdesc{
-  font-size:13px; color:var(--ink2); line-height:1.65; margin:0 0 7px;
-  -webkit-user-select:text; user-select:text;
+  flex:1; min-width:0;
+  font-size:13px; color:var(--ink2); line-height:1.65; margin:0;
 }
 
 .gintro .groads{font-size:11.5px; color:var(--ink3); line-height:1.5; margin:0}
@@ -2134,7 +2144,7 @@ function rowFor(p, extra, rel, key, selMode){
   b.append(body);
 
   b.onclick = selMode ? (()=>select(p.id, true))
-                      : (key ? (()=>toggleInline(key,p)) : (()=>select(p.id)));
+                      : (key ? (()=>toggleInline(key,p)) : (()=>select(p.id, false, !rel)));
   b.addEventListener("mouseenter", ()=>emphasize(p.id,true));
   b.addEventListener("mouseleave", ()=>emphasize(p.id,false));
   return b;
@@ -2390,7 +2400,8 @@ function nightRow(d, i, total){
         : "") +
       (two ? "" : CHEV_SVG);
 
-    el.onclick=()=>{ if (isTwoLane()) selectBase(b.id, key); else toggleNight(key, b); };
+    
+    el.onclick=()=>{ if (isTwoLane()) selectBase(b.id); else toggleNight(key, b); };
     if (two || !on) return [el];
     const box=document.createElement("div"); box.className="nlodge lodgebox";
 
@@ -2613,7 +2624,8 @@ function openBaseRow(id){
   S.listOpen=true;
   BASE_OPEN.add(id);
 }
-function selectBase(id){
+
+function selectBase(id, inPlace){
   if (BASE_SEL===id){ closeBase(); return; }
   closeBaseDetail(); closePlace();
   BASE_SEL=id; ZONE_SEL=null;
@@ -2622,7 +2634,8 @@ function selectBase(id){
 
   if (!isMapOnly()){
     openBaseRow(id);
-    SCROLL_BASE=id;
+    if (inPlace) SCROLL_NEAR=`.gintro[data-bid="${id}"]`;
+    else SCROLL_BASE=id;
   }
   save(); render();
 }
@@ -2663,9 +2676,12 @@ function lodgingBlock(b, keyOf, mode){
     inlineRow(p, keyOf(p), null, null, true).forEach(n=>host.appendChild(n));
   };
 
-  const h1=document.createElement("h3");
-  h1.textContent=`住宿（${lodges.length} 家）`;
-  frag.appendChild(h1);
+  const headed = mode==="inline";
+  if (headed){
+    const h1=document.createElement("h3");
+    h1.textContent=`住宿（${lodges.length} 家）`;
+    frag.appendChild(h1);
+  }
   if (!lodges.length){
     const e=document.createElement("p"); e.className="nonear";
     e.textContent="這個基地還沒有住宿資料。";
@@ -2676,8 +2692,10 @@ function lodgingBlock(b, keyOf, mode){
     lodges.forEach(p=>put(frag,p));
     return frag;
   }
-  const gl=document.createElement("p"); gl.className="zgrouplbl"; gl.textContent="住宿區域";
-  frag.appendChild(gl);
+  if (headed){
+    const gl=document.createElement("p"); gl.className="zgrouplbl"; gl.textContent="住宿區域";
+    frag.appendChild(gl);
+  }
   zones.forEach(z=>{
     const rows=lodges.filter(p=>p.zone===z.name);
     frag.appendChild(zoneHead(z.name, true, b.id));
@@ -2767,22 +2785,23 @@ function renderList(){
     wrap.appendChild(h);
 
     if (open || BASE_SEL===r.id){
-      const rd=document.createElement("div"); rd.className="gintro";
+      const bsel = BASE_SEL===r.id;
+      const rd=document.createElement("button");
+      rd.type="button"; rd.className="gintro row-toggle";
+      rd.setAttribute("aria-expanded", bsel);
+
+      rd.dataset.bid=r.id;
       const nLodge=lodgingOf(r.id).length;
+      rd.title = bsel ? `收起「${r.name}」的住宿清單`
+                      : `展開「${r.name}」的住宿區域與各家住宿`;
       rd.innerHTML =
-        `<p class="gdesc">${esc(r.town||"")}` +
+        `<span class="gdesc">${esc(r.town||"")}` +
         (r.drive_min!=null ? `　離新竹約 ${dur(r.drive_min)}` : "") +
         (nLodge ? `　住宿 <span class="num">${nLodge}</span> 家` : "") +
         (zonesOf(r).length ? `　住宿帶 <span class="num">${zonesOf(r).length}</span> 條` : "") +
-        `</p>`;
-      const bvb=document.createElement("button");
-      bvb.type="button"; bvb.className="ghost btn-act";
-      bvb.textContent = BASE_SEL===r.id ? "收起住宿"
-                                        : (nLodge ? `看住宿（${nLodge} 家）` : "看住宿");
-      bvb.title = BASE_SEL===r.id ? "收起這個基地的住宿清單"
-                                  : "在這裡展開這個基地的住宿區域與各家住宿";
-      bvb.onclick=e=>{ e.stopPropagation(); selectBase(r.id); };
-      rd.appendChild(bvb);
+        `</span>` + CHEV_SVG;
+
+      rd.onclick=()=>selectBase(r.id, true);
       wrap.appendChild(rd);
     }
 
@@ -2968,25 +2987,44 @@ function renderPanel(){
     SCROLL_TO=null;
   }
 
-  if (PIN && !ANCHORED && !two){
-    const list=box.querySelectorAll(PIN.sel);
+  if (PIN && !ANCHORED){
+    const list=panel.querySelectorAll(PIN.sel);
     const el=list[PIN.idx] || list[0];
-    if (el) box.scrollTop += (el.getBoundingClientRect().top - PIN.top);
+    if (el && box.contains(el)) box.scrollTop += (el.getBoundingClientRect().top - PIN.top);
   }
   PIN=null;
+
+  if (SCROLL_NEAR){
+    const el=box.querySelector(SCROLL_NEAR);
+    if (el){
+      const floorY=stopAt(true), ceilY=box.getBoundingClientRect().bottom;
+      const r=el.getBoundingClientRect();
+      const nx=el.nextElementSibling;
+      const bodyTop=(nx && (nx.classList.contains("detail") || nx.classList.contains("blodge")))
+        ? nx.getBoundingClientRect().top : r.bottom;
+      let d=0;
+      if (r.top < floorY) d = r.top - floorY;
+      else if (bodyTop > ceilY) d = Math.min(bodyTop - ceilY + r.height, r.top - floorY);
+      if (d) box.scrollTop += d;
+    }
+    SCROLL_NEAR=null;
+  }
 }
 
 let SCROLL_TO=null;
 
+let SCROLL_NEAR=null;
+
 let PIN=null;
-const PIN_CLASSES=["row","tstop","tnight","rrow","zhead","ghead","tcath"];
+
+const PIN_CLASSES=["row","tstop","tnight","rrow","zhead","ghead","gintro","tcath"];
 function pinSelector(el){
   const cls=PIN_CLASSES.find(c=>el.classList.contains(c));
   if (!cls) return null;
   const d=el.dataset;
   if (cls==="row" && d.id) return `.row[data-id="${d.id}"]`;
   if (cls==="tstop" && d.tid) return `.tstop[data-tid="${d.tid}"]`;
-  if ((cls==="rrow" || cls==="ghead") && d.bid) return `.${cls}[data-bid="${d.bid}"]`;
+  if ((cls==="rrow" || cls==="ghead" || cls==="gintro") && d.bid) return `.${cls}[data-bid="${d.bid}"]`;
   return "."+cls;
 }
 document.getElementById("panel").addEventListener("click", e=>{
@@ -2997,7 +3035,7 @@ document.getElementById("panel").addEventListener("click", e=>{
   PIN={sel, idx:Math.max(0, all.indexOf(el)), top:el.getBoundingClientRect().top};
 }, true);
 
-function select(id, keepBase){
+function select(id, keepBase, inPlace){
   if (S.sel===id){ S.sel=null; S.near=0; render(); return; }
 
   INLINE=null;
@@ -3014,7 +3052,8 @@ function select(id, keepBase){
   }
   if (!isMapOnly()){
     S.listOpen=true;
-    SCROLL_TO=id;     // 落點統一走頂端錨，見 renderPanel 的 `anchorTo()` 那一段
+    if (inPlace) SCROLL_NEAR=`.results > .row[data-id="${id}"]`;
+    else SCROLL_TO=id;
   }
   render();
 }
