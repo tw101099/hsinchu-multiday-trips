@@ -26,6 +26,7 @@
 
   --hover-bg:#f2efe9;
   --ink:#1c1a17; --ink2:#6b645b; --ink3:#9a938a;
+
   --line:#e3ddd3; --line2:#cfc7ba;
   --accent:#5c5449; --accent-soft:#eae4d9; --on-accent:#ffffff;
   --warn:#9a5b17;
@@ -43,7 +44,7 @@
     --chip-bg:#34302c;
     --hover-bg:#232120;
     --ink:#efeae2; --ink2:#a29a8f; --ink3:#787066;
-    --line:#332f2b; --line2:#454039;
+    --line:#443f38; --line2:#524d46;   
     --accent:#bcb2a2; --accent-soft:#2c2822; --on-accent:#17150f;
     --warn:#e0a45c;
     --danger:#c17167;
@@ -55,7 +56,7 @@
     --chip-bg:#34302c;   
     --hover-bg:#232120;
     --ink:#efeae2; --ink2:#a29a8f; --ink3:#787066;
-    --line:#332f2b; --line2:#454039;
+    --line:#443f38; --line2:#524d46;   
     --accent:#bcb2a2; --accent-soft:#2c2822; --on-accent:#17150f;
     --warn:#e0a45c;
         --danger:#c17167;
@@ -94,7 +95,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .row-toggle[aria-expanded=true] .chev{transform:rotate(180deg)}
 .btn-act{cursor:pointer}
-.btn-act:hover{border-color:var(--accent); color:var(--accent)}
+
+.btn-act:hover{border-color:var(--accent)!important; color:var(--accent)!important}
 
 .acts a, .acts button,
 .mapcard .acts a, .mapcard .acts button,
@@ -108,7 +110,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 
 .btn-act.primary:hover{
-  color:var(--on-accent); border-color:var(--accent);
+  color:var(--on-accent)!important; border-color:var(--accent);
   background:color-mix(in srgb, var(--accent) 88%, var(--ink));
 }
 
