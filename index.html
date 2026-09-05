@@ -282,7 +282,9 @@ button{font:inherit; color:inherit; cursor:pointer}
   .main:not(.nomap) .foot,
 
   .main:not(.nomap) .tripbox,
-  .main:not(.nomap) .baseview,
+
+  .main:not(.nomap) .sec.basesec,
+  .main:not(.nomap) .rlist,
 
   .main:not(.nomap) .sec.deskonly{display:none}
 
@@ -403,6 +405,18 @@ button{font:inherit; color:inherit; cursor:pointer}
 .rrow:hover{color:var(--ink)}   
 .rrow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
+.rrow.open{
+  background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600;
+  border-bottom-left-radius:0; border-bottom-right-radius:0;
+}
+
+.blodge{
+  margin:0 0 4px 4px; width:calc(100% - 4px); padding:2px 10px 9px;
+  border:1px solid var(--accent); border-top:0; border-radius:0 0 8px 8px;
+  background:var(--accent-soft);
+}
+.blodge > h3:first-child{margin-top:6px}
+
 .rrow .rbar{flex:none; width:3px; height:17px; border-radius:2px}
 
 .rrow .tmk{margin-left:-4px}
@@ -479,6 +493,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 
 .row[aria-expanded=true]{background:var(--accent-soft); border-color:var(--accent)}
+
+.row[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent)}
 
 .row.act{border-color:var(--accent)}
 .tmk{flex:none; width:7px; height:7px; border-radius:2px; background:var(--accent)}
@@ -739,6 +755,8 @@ button.tnight:hover .chev{color:var(--accent)}
 
 .tnight.open .chev{color:var(--accent)}
 
+.tnight[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink)}
+
 .nlodge{
   width:100%; margin:0 0 4px 5px; padding:2px 10px 9px;
   border:1px solid var(--accent); border-top:0; border-radius:0 0 8px 8px;
@@ -746,22 +764,6 @@ button.tnight:hover .chev{color:var(--accent)}
 }
 
 .nlodge > h3:first-child{margin-top:6px}
-
-.baseview{
-  margin:10px 14px 4px; padding:11px 13px 13px; border:1px solid var(--accent);
-  border-radius:var(--r); background:var(--accent-soft);
-}
-
-.baseview .bvh{
-  display:flex; align-items:flex-start; gap:8px;
-  position:sticky; top:0; z-index:300;
-  margin:-11px -13px 0; padding:11px 13px 8px; background:var(--accent-soft);
-  border-radius:var(--r) var(--r) 0 0;
-}
-.baseview .bvh b{flex:1; min-width:0; font-size:15px}
-.baseview .bvh .x{flex:none; border:0; background:none; color:var(--ink3); font-size:16px; line-height:1; padding:0 2px}
-.baseview .bvh .x:hover{color:var(--accent)}
-.baseview .bvm{margin:3px 0 0; font-size:12.5px; color:var(--ink2)}
 
 .lodgebox h3{margin:12px 0 6px; font-size:12px; color:var(--ink3); font-weight:600; letter-spacing:.06em}
 
@@ -838,6 +840,8 @@ button.tnight:hover .chev{color:var(--accent)}
 
 .basepin.sel .bp{outline:3px solid var(--accent); outline-offset:1px}
 .basepin.on .bp{outline:3px solid var(--accent); outline-offset:2px}
+
+.basepin.dim{opacity:.4}
 
 .basepin.ftrip::after{
   content:""; position:absolute; inset:-6px; border-radius:999px;
@@ -936,7 +940,7 @@ button.tnight:hover .chev{color:var(--accent)}
 
   .acts{row-gap:15px}
 
-  .mapcard .ttl .x, .baseview .bvh .x{
+  .mapcard .ttl .x{
     display:flex; align-items:center; justify-content:center;
     min-width:40px; min-height:40px; margin:-9px -9px -9px 0;
   }
@@ -1029,8 +1033,10 @@ let SCROLL_RESET = false;                 // 下一次 renderPanel 要不要把�
 let SCROLL_GROUP = false;                 // 下一次 renderPanel 要不要捲到第一個基地標題
 const BASE_OPEN = new Set();
 
-let BASE_SEL = null, ZONE_SEL = null, BASE_NEAR = 0;
-let SCROLL_BASE = false;                  // 下一次 renderPanel 要不要捲到基地視圖那張卡
+let BASE_SEL = null, ZONE_SEL = null;
+
+let SCROLL_BASE = null;
+let SCROLL_ITIN = false;                  // 下一次 renderPanel 要不要捲到「詳細行程」那顆標題
 let SCROLL_LIST = false;                  // 下一次 renderPanel 要不要捲到「景點清單」那顆標題
 
 const ACCORDION_MQ = matchMedia("(max-width:899px)");
@@ -1046,7 +1052,11 @@ const inlineOpen = key => !!(INLINE && INLINE.key===key);
 let NIGHT = null;
 const nightOpen = key => !!(NIGHT && NIGHT.key===key);
 
-const stopToLane2 = () => S.view==="list" && isTwoLane();
+const stopToLane2 = () => isTwoLane();
+
+const NESTED_KEY = k => { const s=String(k||""); return s.startsWith("tl:") || s.startsWith("bd:"); };
+function closePlace(){ S.sel=null; S.near=0; INLINE=null; }
+function closeBaseDetail(){ BASE_SEL=null; ZONE_SEL=null; NIGHT=null; SCROLL_BASE=null; }
 
 function openItin(){ S.itinOpen = true; }
 
@@ -1056,7 +1066,10 @@ function toggleInline(key, p){
   INLINE = inlineOpen(key) ? null : {key, id:p.id};
   if (String(key).startsWith("t:")) openItin();
 
-  if (INLINE && String(key).startsWith("g:") && S.sel===p.id){ S.sel=null; S.near=0; }
+  if (INLINE){
+    S.sel=null; S.near=0;
+    if (!NESTED_KEY(key)) closeBaseDetail();
+  }
   if (INLINE && p){
     panTo(p);
 
@@ -1067,7 +1080,9 @@ function toggleInline(key, p){
 }
 
 function toggleNight(key, b){
-  NIGHT = nightOpen(key) ? null : {key, base:b.id};
+  const open = !nightOpen(key);
+  if (open){ closeBaseDetail(); closePlace(); }
+  NIGHT = open ? {key, base:b.id} : null;
   if (NIGHT && b.anchor && ready)
     map.setView(b.anchor, Math.max(map.getZoom(),12), {animate:false});
   render();
@@ -1144,7 +1159,6 @@ PLACES.forEach(p=>{ (BASE_POINTS[p.base] = BASE_POINTS[p.base] || []).push(p); }
 const BY_NAME = Object.fromEntries(PLACES.map(p=>[p.name,p]));
 const lodgingOf = bid => (BASE_POINTS[bid]||[]).filter(p=>p.theme==="lodging");
 const zonesOf = b => (b && b.zones) || [];
-const zoneOriginId = (bid, zname) => "zone:" + bid + ":" + zname;
 
 const DAY_MIX_STEPS = [0, .32, .44, .50];
 const hexMix = (hex, target, ratio) => {
@@ -1301,7 +1315,8 @@ function applyHash(initial){
     }
     if (want.place !== S.sel){
 
-      if (want.place) select(want.place, true);
+      
+      if (want.place) select(want.place, true, !!want.base);
       else if (S.sel){ S.sel=null; S.near=0; }
     }
   } finally {
@@ -1588,13 +1603,17 @@ function drawBasePins(){
     if (!b.anchor) return;
     const sel = S.base.has(b.id);
     const isFtrip = ftripActive && TRIP_BASES.has(b.id);
-    const cls = "basepin" + (BASE_SEL===b.id?" on":"") + (sel?" sel":"") + (isFtrip?" ftrip":"");
+
+    const dim = !!(trip && !TRIP_BASES.has(b.id));
+    const cls = "basepin" + (BASE_SEL===b.id?" on":"") + (sel?" sel":"") + (isFtrip?" ftrip":"") +
+                (dim?" dim":"");
     const m=L.marker(b.anchor, {
       icon:L.divIcon({className:cls, iconSize:[26,26], iconAnchor:[13,13],
         html:`<span class="bp" style="background:${baseColor(b)}">` +
              `<svg viewBox="0 0 16 16"><path d="M2.5 8.5 8 3l5.5 5.5M4 7v6h8V7"/></svg></span>` +
              (showLabel ? `<span class="pinlbl">${esc(b.name)}</span>` : "")}),
-      zIndexOffset:1500});
+
+      zIndexOffset: dim ? 1450 : (trip && TRIP_BASES.has(b.id) ? 1600 : 1500)});
 
     m.bindTooltip(`<b>${esc(b.name)}</b><i>${esc(b.town||"")}` +
                   (b.drive_min!=null?`　離新竹約 ${durT(b.drive_min)}`:"") + `</i>`,
@@ -1646,14 +1665,19 @@ function renderMapCard(){
             `${CAR_SVG}${dur(b.drive_min)}</span>` : "") +
           `<span class="mi">住宿 <span class="num">${nl}</span> 家` +
             (nz?`／<span class="num">${nz}</span> 條住宿帶`:"") + `</span></p>` +
+
         `<div class="acts">` +
-          `<button class="primary btn-act" data-act="basedetail">看基地（住宿與附近精選）</button>` +
+          `<button class="primary btn-act" data-act="basedetail">看基地</button>` +
         `</div>`;
       box.onclick=e=>{
         const t=e.target.closest("[data-act]"); if (!t) return;
         if (t.dataset.act==="closebase") closeBase();
         else if (t.dataset.act==="basedetail"){
-          S.view="list"; syncViews(); S.listOpen=true; SCROLL_BASE=true; save(); render();
+
+          S.view="list"; syncViews(); S.listOpen=true;
+          openBaseRow(BASE_SEL);
+          SCROLL_BASE={id:BASE_SEL, nkey:null};
+          save(); render();
         }
       };
       return;
@@ -1695,6 +1719,17 @@ function renderMapBtns(){
     tb.title="把地圖縮放到剛好涵蓋整條推薦行程的路線";
     tb.onclick=fitTrip;
     box.appendChild(tb);
+  }
+
+  if (S.trip && isMapOnly()){
+    const ib=document.createElement("button");
+    ib.className="btn-act";
+    ib.textContent="看詳細行程";
+    ib.title="切到清單模式，看這一趟的逐日行程";
+    ib.onclick=()=>{
+      S.view="list"; syncViews(); openItin(); SCROLL_ITIN=true; save(); render();
+    };
+    box.appendChild(ib);
   }
 }
 function resizeMap(){
@@ -2005,8 +2040,10 @@ function renderBaseFinder(){
   const baseRow=r=>{
     const b=document.createElement("button");
     const inTrip = TRIP_BASES.has(r.id);
-    b.className="rrow row-select" + (inTrip ? " intrip" : "");
+    b.className="rrow row-select" + (inTrip ? " intrip" : "") + (BASE_SEL===r.id ? " open" : "");
     b.setAttribute("aria-pressed", S.base.has(r.id));
+
+    b.dataset.bid=r.id;
 
     b.innerHTML=`<span class="rbar" style="background:${baseColor(r)}"></span>` +
                 (inTrip
@@ -2018,6 +2055,7 @@ function renderBaseFinder(){
                     `${CAR_SVG}${dur(r.drive_min)}</span>`
                   : "") +
                 `<span class="n num">${rtBase.filter(p=>p.base===r.id).length} 處</span>`;
+
     b.onclick=()=>{
       const wasOn = S.base.has(r.id);
       toggleSet(S.base, r.id);
@@ -2028,7 +2066,9 @@ function renderBaseFinder(){
         S.baseCatsOpen.add(k);
 
         S.autoCats.delete(k);
-      }
+        closeBaseDetail(); closePlace();
+        BASE_SEL=r.id; ZONE_SEL=null;
+      } else if (BASE_SEL===r.id){ BASE_SEL=null; ZONE_SEL=null; }
       filterChanged();
       if (S.base.size) fit(PLACES.filter(p=>S.base.has(p.base)));
     };
@@ -2052,7 +2092,14 @@ function renderBaseFinder(){
 
     h.onclick=()=>{ toggleSet(S.baseCatsOpen, key); S.autoCats.delete(key); save(); render(); };
     list.appendChild(h);
-    if (open) rows.forEach(r=>list.appendChild(baseRow(r)));
+
+    if (open) rows.forEach(r=>{
+      list.appendChild(baseRow(r));
+      if (BASE_SEL===r.id){
+        const box=baseLodgeBox(r);
+        if (box) list.appendChild(box);
+      }
+    });
   };
   CATS.forEach(c=>group(c.id, c.name, catColor(c), BASES.filter(b=>b.cat===c.id)));
   group("__none__", "未分類", catColor(null), BASES.filter(b=>!CT[b.cat]));
@@ -2066,11 +2113,12 @@ function legBit(p, rel){
   return driveBit(p);
 }
 
-function rowFor(p, extra, rel, key){
+function rowFor(p, extra, rel, key, selMode){
   const b=document.createElement("button");
 
-  b.className="row row-toggle"; b.dataset.id=p.id;
-  b.setAttribute("aria-expanded", key ? inlineOpen(key) : S.sel===p.id);
+  b.className="row " + (selMode?"row-select":"row-toggle"); b.dataset.id=p.id;
+  b.setAttribute(selMode?"aria-pressed":"aria-expanded",
+                 selMode ? S.sel===p.id : (key ? inlineOpen(key) : S.sel===p.id));
 
   const inResults = !key || String(key).startsWith("g:");
   if (inResults){
@@ -2092,7 +2140,9 @@ function rowFor(p, extra, rel, key){
     `<span class="mi" title="停留">${HOURGLASS_SVG}${durH(p.stay_h)}</span>` +
     `${extra||""}</div>`;
   b.append(body);
-  b.onclick = key ? (()=>toggleInline(key,p)) : (()=>select(p.id));
+
+  b.onclick = selMode ? (()=>select(p.id, null, true))
+                      : (key ? (()=>toggleInline(key,p)) : (()=>select(p.id)));
   b.addEventListener("mouseenter", ()=>emphasize(p.id,true));
   b.addEventListener("mouseleave", ()=>emphasize(p.id,false));
   return b;
@@ -2329,19 +2379,26 @@ function nightRow(d, i, total){
   if (b){
     const el=document.createElement("button");
 
+    
     const key = `nb:${S.trip}:${i}:${b.id}`;
-    const on = nightOpen(key);
-    el.type="button"; el.className="tnight row-toggle"+(on?" open":"");
-    el.setAttribute("aria-expanded", on);
-    el.title = on ? `收起「${b.name}」的住宿清單`
-                  : `展開「${b.name}」的住宿清單（地圖同時帶到這個基地）`;
+    const two = isTwoLane();
+    const on = two ? (BASE_SEL===b.id) : nightOpen(key);
+    el.type="button"; el.className="tnight " + (two?"row-select":"row-toggle") + (!two && on ? " open" : "");
+    el.setAttribute(two?"aria-pressed":"aria-expanded", on);
+    el.dataset.nkey=key;
+    el.title = two
+      ? (on ? `收起「${b.name}」的住宿清單`
+            : `在右邊的「基地」那一區展開「${b.name}」的住宿清單（地圖同時帶到這個基地）`)
+      : (on ? `收起「${b.name}」的住宿清單`
+            : `展開「${b.name}」的住宿清單（地圖同時帶到這個基地）`);
     el.innerHTML = ico("lodging",(TH.lodging||{}).color) + `當晚住 <b>${esc(b.name)}</b>` +
       (b.drive_min!=null
         ? `　<span class="mi" title="從新竹市區開到這個基地">${CAR_SVG}${dur(b.drive_min)}</span>`
         : "") +
-      CHEV_SVG;
-    el.onclick=()=>toggleNight(key, b);
-    if (!on) return [el];
+      (two ? "" : CHEV_SVG);
+
+    el.onclick=()=>{ if (isTwoLane()) selectBase(b.id, key); else toggleNight(key, b); };
+    if (two || !on) return [el];
     const box=document.createElement("div"); box.className="nlodge lodgebox";
 
     box.appendChild(lodgingBlock(b, p=>`tl:${key}:${p.id}`));
@@ -2558,19 +2615,31 @@ function renderItinerary(){
   return box;
 }
 
-function selectBase(id){
+function openBaseRow(id){
+  const b=BS[id]; if (!b) return;
+  S.basesOpen=true;
+  const k = b.cat && CT[b.cat] ? b.cat : "__none__";
+  S.baseCatsOpen.add(k);
+  S.autoCats.delete(k);
+}
+
+function selectBase(id, nkey){
   if (BASE_SEL===id){ closeBase(); return; }
-  BASE_SEL=id; ZONE_SEL=null; BASE_NEAR=0;
+  closeBaseDetail(); closePlace();
+  BASE_SEL=id; ZONE_SEL=null;
   const b=BS[id];
   if (b && b.anchor && ready) map.setView(b.anchor, Math.max(map.getZoom(),12), {animate:false});
-  if (!isMapOnly()) SCROLL_BASE=true;
-  render();
+
+  if (!isMapOnly()){
+    openBaseRow(id);
+    SCROLL_BASE={id, nkey:nkey||null};
+  }
+  save(); render();
 }
-function closeBase(){ BASE_SEL=null; ZONE_SEL=null; BASE_NEAR=0; render(); }
+function closeBase(){ BASE_SEL=null; ZONE_SEL=null; render(); }
 
 function selectZone(name, bid){
   ZONE_SEL = (ZONE_SEL===name) ? null : name;
-  BASE_NEAR=0;
   const z=zonesOf(BS[bid||BASE_SEL]).find(x=>x.name===ZONE_SEL);
   if (z && ready) map.setView([z.anchor.lat, z.anchor.lng], Math.max(map.getZoom(),13), {animate:false});
   render();
@@ -2584,8 +2653,7 @@ function zoneHead(name, sel, bid){
   const on = ZONE_SEL===name;
   const btn=document.createElement("button");
   btn.type="button"; btn.className="zhead tog row-select"; btn.setAttribute("aria-pressed", on);
-  btn.title = on ? "取消這條住宿帶（附近精選改回從基地量）"
-                 : "選這條住宿帶（附近精選改從這一帶量，地圖也帶過去）";
+  btn.title = on ? "取消這條住宿帶" : "選這條住宿帶（地圖帶到這一帶）";
   btn.innerHTML = `<span class="zn">${esc(name)}</span>` +
                   `<span class="zck" aria-hidden="true">${on ? "✓" : ""}</span>` +
                   `<svg class="zloc" viewBox="0 0 16 16" aria-hidden="true">` +
@@ -2600,7 +2668,10 @@ function lodgingBlock(b, keyOf){
   const zones=zonesOf(b);
   const lodges=lodgingOf(b.id);
 
-  const put=(host,p)=>inlineRow(p, keyOf(p)).forEach(n=>host.appendChild(n));
+  const put=(host,p)=>{
+    if (stopToLane2()){ host.appendChild(rowFor(p, null, null, null, true)); return; }
+    inlineRow(p, keyOf(p)).forEach(n=>host.appendChild(n));
+  };
 
   const h1=document.createElement("h3");
   h1.textContent=`住宿（${lodges.length} 家）`;
@@ -2643,55 +2714,14 @@ function lodgingBlock(b, keyOf){
   }
   return frag;
 }
-function renderBaseView(){
-  const b=BS[BASE_SEL];
-  if (!b) return null;
-  const zones=zonesOf(b);
-  const zone=zones.find(z=>z.name===ZONE_SEL)||null;
-  const oid = zone ? zoneOriginId(b.id, zone.name) : ("base:"+b.id);
-  const step = NEAR_STEPS[Math.min(BASE_NEAR, NEAR_STEPS.length-1)];
-  const menu = BASE_POINTS[b.id] || [];
 
+function baseLodgeBox(b){
+  if (!b) return null;
   const d=document.createElement("div");
 
-  d.className="baseview lodgebox";
-  d.innerHTML =
-    `<div class="bvh"><b>${esc(b.name)}</b>` +
-      `<button type="button" class="x" data-act="closebase" aria-label="關閉基地視圖">×</button></div>` +
-    `<p class="bvm">${esc(b.town||"")}` +
-      (b.drive_min!=null ? `　<span class="mi" title="從新竹市區開到這個基地">${CAR_SVG}` +
-        `${dur(b.drive_min)}` +
-        (b.drive_km!=null?` · ${kmv(b.drive_km)}`:"") + `</span>` : "") +
-      `　收錄 <span class="num">${menu.length}</span> 個點</p>`;
-  d.querySelector("[data-act=closebase]").onclick=closeBase;
+  d.className="blodge lodgebox";
 
-  d.appendChild(lodgingBlock(b, p=>`bl:${b.id}:${p.id}`));
-
-  const pool=PLACES.filter(x=>x.theme!=="lodging").map(x=>{
-    const r=originDist(oid, x);
-    if (!r || r.km>step.km) return null;
-    const fac = zone && zone.drive && zone.drive[x.id];
-    return {x, d:r.km, min: fac ? fac.min : r.min, real:true};
-  }).filter(Boolean);
-  const near=pickNearby(pool, step.n);
-  const h2=document.createElement("h3");
-  h2.textContent=`附近精選地點（車程 ${step.km} 公里內，從${zone?`「${zone.name}」`:"基地"}量）`;
-  d.appendChild(h2);
-  const nb=document.createElement("div");
-  if (near.length) near.forEach(({x,d:dd,min,real})=>
-    inlineRow(x, `bn:${b.id}:${x.id}`, null, {km:dd, min, real}).forEach(n=>nb.appendChild(n)));
-  else {
-    const e=document.createElement("p"); e.className="nonear";
-    e.textContent="這個車程範圍內沒有別的點。山上繞路遠，可以放寬距離再看。";
-    nb.appendChild(e);
-  }
-  if (BASE_NEAR < NEAR_STEPS.length-1){
-    const more=document.createElement("button"); more.className="wider";
-    more.textContent=`再遠一點（${NEAR_STEPS[BASE_NEAR+1].km} 公里內）`;
-    more.onclick=()=>{ BASE_NEAR++; render(); };
-    nb.appendChild(more);
-  }
-  d.appendChild(nb);
+  d.appendChild(lodgingBlock(b, p=>`bd:${b.id}:${p.id}`));
   return d;
 }
 
@@ -2750,9 +2780,12 @@ function renderList(){
         (nLodge ? `　住宿 <span class="num">${nLodge}</span> 家` : "") +
         (zonesOf(r).length ? `　住宿帶 <span class="num">${zonesOf(r).length}</span> 條` : "") +
         `</p>`;
+
       const bvb=document.createElement("button");
       bvb.type="button"; bvb.className="ghost btn-act";
-      bvb.textContent = BASE_SEL===r.id ? "收起基地視圖" : "基地視圖（住宿與附近）";
+      bvb.textContent = BASE_SEL===r.id ? "收起基地" : "看基地";
+      bvb.title = BASE_SEL===r.id ? "收起這個基地的住宿清單"
+                                  : "到「基地」那一區展開這個基地的住宿清單";
       bvb.onclick=e=>{ e.stopPropagation(); selectBase(r.id); };
       rd.appendChild(bvb);
       wrap.appendChild(rd);
@@ -2832,14 +2865,11 @@ function renderPanel(){
 
   expHost.appendChild(section("基地",
     S.base.size ? `${S.base.size}/${BASES.length} 個` : `${BASES.length} 個`, S.basesOpen,
-    ()=>{ S.basesOpen=!S.basesOpen; accordion("bases"); save(); render(); }, "toplevel"));
+    ()=>{ S.basesOpen=!S.basesOpen; accordion("bases"); save(); render(); }, "toplevel basesec"));
   if (S.basesOpen) expHost.appendChild(renderBaseFinder());
-  if (BASE_SEL){
-    const bv=renderBaseView();
-    if (bv) expHost.appendChild(bv);
-  }
 
   
+
   const nShown=shown().length, filtered=anyFilter();
   const listSub=summary(false);
 
@@ -2883,10 +2913,25 @@ function renderPanel(){
     box.scrollTop = keep;
   }
   if (two) tripHost.scrollTop = keepTrip;
+
   if (SCROLL_BASE){
-    const bv=box.querySelector(".baseview");
-    if (bv) box.scrollTop += (bv.getBoundingClientRect().top - stopAt(false));
-    SCROLL_BASE=false;
+    const row=box.querySelector(`.rrow[data-bid="${SCROLL_BASE.id}"]`);
+    if (row){
+      const nt = two && tripHost && SCROLL_BASE.nkey
+        ? tripHost.querySelector(`.tnight[data-nkey="${SCROLL_BASE.nkey}"]`) : null;
+      const r=row.getBoundingClientRect();
+      const want=Math.max(nt ? (nt.getBoundingClientRect().bottom - r.height) : stopAt(false),
+                          boxTop);
+      const max=box.scrollHeight-box.clientHeight;
+      box.scrollTop=Math.min(Math.max(0, box.scrollTop + (r.top - want)), Math.max(0, max));
+    }
+    SCROLL_BASE=null;
+  }
+
+  if (SCROLL_ITIN){
+    const sec=box.querySelector(".sec.secitin") || box.querySelector(".sec.sectrips");
+    if (sec) box.scrollTop += (sec.getBoundingClientRect().top - stopAt(false));
+    SCROLL_ITIN=false;
   }
 
   
@@ -2949,9 +2994,11 @@ let SCROLL_TO=null;
 
 let SCROLL_STOP=null;
 
-function select(id, fromStop){
+function select(id, fromStop, keepBase){
   if (S.sel===id){ S.sel=null; S.near=0; render(); return; }
-  if (INLINE && INLINE.id===id && String(INLINE.key).startsWith("g:")) INLINE=null;
+
+  INLINE=null;
+  if (!keepBase) closeBaseDetail();
   S.sel=id; S.near=0;
   const p=BY_ID[id];
   if (p){
@@ -3047,8 +3094,8 @@ document.getElementById("qwrap").addEventListener("click", ()=>{
 });
 addEventListener("keydown", e=>{
   if (e.key!=="Escape") return;
-  if (!S.sel && !INLINE && !NIGHT) return;
-  S.sel=null; INLINE=null; NIGHT=null; render();
+  if (!S.sel && !INLINE && !NIGHT && !BASE_SEL) return;
+  closePlace(); closeBaseDetail(); render();
 });
 
 restore();
