@@ -94,8 +94,12 @@ button{font:inherit; color:inherit; cursor:pointer}
 .acts a, .acts button,
 .mapcard .acts a, .mapcard .acts button,
 .tdhead .tdnav,
-.sechead .shbtn{
-  font-size:12px; line-height:1.5; padding:3px 10px; border-radius:999px;
+.sechead .shbtn,
+.clear, .ghost, #sort,
+.mapbtns button,
+.tags .tag{
+  font-size:12.5px; line-height:1.5; padding:3px 10px; border-radius:999px;
+  background:var(--bg); border:1px solid var(--line); color:var(--ink2);
 }
 
 .btn-act.primary:hover{
@@ -193,10 +197,9 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 .mapoverlay > *{pointer-events:auto}
 .mapbtns{display:flex; flex-direction:column; align-items:flex-start; gap:6px; max-width:100%}
+
 .mapbtns button{
-  border:1px solid var(--line); background:var(--panel); color:var(--ink2);
-  border-radius:999px; padding:5px 12px; font-size:12.5px; white-space:nowrap;
-  box-shadow:0 1px 6px rgba(0,0,0,.18);
+  white-space:nowrap; box-shadow:0 1px 6px rgba(0,0,0,.18);
 }
 
 .mapbtns button[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
@@ -257,8 +260,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .mapcard .acts{display:flex; flex-wrap:wrap; gap:6px; margin-top:9px}
 
 .mapcard .acts a, .mapcard .acts button{
-  border:1px solid var(--line); background:var(--bg); color:var(--ink2); text-decoration:none;
-  white-space:nowrap;
+  text-decoration:none; white-space:nowrap;
 }
 .mapcard .acts .primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
 
@@ -331,14 +333,11 @@ button{font:inherit; color:inherit; cursor:pointer}
 .fsum b{color:var(--ink); font-weight:600}
 
 .clear, .ghost{
-  border:1px solid var(--line); background:var(--bg); color:var(--ink2);
-  border-radius:999px; padding:3px 10px; font-size:12.5px; white-space:nowrap;
-  text-decoration:none; font-family:inherit; line-height:1.5;
+  white-space:nowrap; text-decoration:none; font-family:inherit;
 }
 
 #sort{
-  flex:none; border:1px solid var(--line); border-radius:999px; background:var(--bg); color:var(--ink2);
-  font:inherit; font-size:12.5px; padding:3px 10px; max-width:120px;
+  flex:none; font-family:inherit; max-width:120px;
 }
 
 .lfilters{padding:8px 14px 10px}
@@ -388,9 +387,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .sechead > .sec.toplevel{padding-right:8px}
 
 .sechead > .shbtn{
-  flex:none; margin-right:14px;
-  border:1px solid var(--line); background:var(--bg); color:var(--ink2);
-  font-family:inherit; white-space:nowrap;
+  flex:none; margin-right:14px; font-family:inherit; white-space:nowrap;
 }
 .subrows{margin-top:5px}
 
@@ -530,17 +527,16 @@ button{font:inherit; color:inherit; cursor:pointer}
 .flag.season{color:var(--warn); background:none; padding:0 0 0 1px}
 
 .tags{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 9px}
+
 .tags .tag{
-  font-size:11px; padding:2px 8px; border-radius:999px; background:none;
-  border:1px solid var(--line2); color:var(--ink3); white-space:nowrap;
+  white-space:nowrap;
 }
 
 .mapcard .tags{margin:8px 0 0}
 .acts{display:flex; gap:7px; flex-wrap:wrap; margin:10px 0 4px}
 
 .acts a, .acts button{
-  text-decoration:none; color:var(--ink2); border:1px solid var(--line2);
-  background:var(--panel);
+  text-decoration:none;
 }
 
 .acts .primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
@@ -568,7 +564,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .tpickmini .sec.mini{
   min-height:30px; margin-top:0; padding:2px 0 4px; border-top:0;
-  font-size:12px; letter-spacing:.06em; color:var(--ink3);
+  font-size:12px; letter-spacing:.06em; color:var(--ink2);
 }
 
 .tcath{display:flex; align-items:center; gap:6px; margin-bottom:5px;
@@ -683,13 +679,13 @@ button{font:inherit; color:inherit; cursor:pointer}
 .tdbudget.over{color:var(--warn); background:none; border-color:var(--warn)}
 
 .tdhead .tdnav{
-  flex:none; color:var(--accent); text-decoration:none;
-  border:1px solid var(--line2); white-space:nowrap;
+  flex:none; color:var(--accent); text-decoration:none; white-space:nowrap;
 }
 .tdhead .tdnav:hover{background:var(--accent-soft)}   
 
 .tdhead .tdnav.off{
-  color:var(--ink3); border-style:dashed; cursor:default; white-space:normal;
+  color:var(--ink3); background:none;
+  border-style:dashed; cursor:default; white-space:normal;
 }
 
 .tdnote{
@@ -710,10 +706,11 @@ button{font:inherit; color:inherit; cursor:pointer}
 .tleg .nd{color:var(--ink2)}
 
 .mi.nd{color:var(--ink2)}
+
 .tstop{
   display:flex; width:100%; align-items:flex-start; gap:8px; text-align:left;
   margin-left:5px; padding:7px 9px; border:1px solid var(--line); border-radius:var(--r);
-  background:var(--panel); transition:border-color .12s, background .12s;
+  background:var(--bg); transition:border-color .12s, background .12s;
 }
 .tstop:hover{border-color:var(--line2)}   
 
@@ -921,13 +918,23 @@ button.tnight:hover .chev{color:var(--accent)}
   #qwrap{min-height:40px}
 
   
-  .clear, .ghost, #sort, .wider, .acts button, .mapcard .acts button,
-  .sechead .shbtn{min-height:40px}
-  .acts a, .mapcard .acts a, .tdhead .tdnav, .mapbtns button{
-    display:inline-flex; align-items:center; min-height:40px;
+
+  .clear, .ghost, #sort, .wider, .mapbtns button{min-height:40px}
+  .mapbtns button{display:inline-flex; align-items:center}
+  .acts a, .acts button, .mapcard .acts a, .mapcard .acts button,
+  .tdhead .tdnav, .sechead .shbtn{position:relative}
+  .acts a, .mapcard .acts a, .tdhead .tdnav{display:inline-flex; align-items:center}
+  .acts a::after, .acts button::after,
+  .mapcard .acts a::after, .mapcard .acts button::after,
+  .tdhead .tdnav::after, .sechead .shbtn::after{
+    content:""; position:absolute; left:0; right:0; top:50%;
+    transform:translateY(-50%); height:40px;
   }
 
   .tdhead .tdnav.off{display:inline; min-height:0}
+  .tdhead .tdnav.off::after{content:none}
+
+  .acts{row-gap:15px}
 
   .mapcard .ttl .x, .baseview .bvh .x{
     display:flex; align-items:center; justify-content:center;
@@ -1054,7 +1061,7 @@ function toggleInline(key, p){
   if (INLINE && p){
     panTo(p);
 
-    if (!String(key).startsWith("g:") &&
+    if (!String(key).startsWith("g:") && isTwoLane() &&
         S.listOpen && (pass(p) || EXTRA.has(p.id))) SCROLL_TO = p.id;
   }
   render();
@@ -2803,9 +2810,10 @@ function renderPanel(){
 
     
     const t = S.trip && TRIP_BY_ID[S.trip];
+
     tripHost.appendChild(section("推薦行程",
       S.trip ? null : `${TRIPS.length} 條`, S.tripsOpen,
-      ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "toplevel deskonly",
+      ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "toplevel deskonly sectrips",
       tripSub(t)));
     if (S.tripsOpen) tripHost.appendChild(renderTrips());
 
@@ -2883,8 +2891,9 @@ function renderPanel(){
   }
 
   
+
   if (SCROLL_LIST){
-    const sec=(!two && box.querySelector(".sec.secitin"))
+    const sec=(!two && (box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin")))
               || box.querySelector(".sec.seclist");
     if (sec){
       const hdr=two?tripHost.querySelector(":scope > .sec.toplevel"):null;
