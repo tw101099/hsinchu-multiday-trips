@@ -378,6 +378,11 @@ button{font:inherit; color:inherit; cursor:pointer}
   }
 
   .panel.twolane .lane-trip > .sec.toplevel:first-child:hover{background:var(--hover-bg)}
+
+  .panel.twolane .fbar{
+    padding:4px 14px; min-height:38px;
+    border-bottom:0; box-shadow:0 1px 0 var(--line);
+  }
 }
 
 .fbar{
@@ -2868,7 +2873,7 @@ function baseTripsBlock(b){
     el.dataset.tripid=t.id;
     el.title = t.name;
     el.innerHTML=`<span class="tcode">${esc(t.code||"")}</span>` +
-      `<span class="tl">${esc(t.name)}</span>` +
+      `<span class="tl">${esc(t.one_line||t.name)}</span>` +
       `<span class="tdays num">${(t.days||[]).length} 天</span>`;
     el.onclick=()=>selectTrip(t.id, true);
     box.appendChild(el);
