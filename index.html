@@ -162,6 +162,16 @@ button{font:inherit; color:inherit; cursor:pointer}
 .qtok:hover{opacity:.7}
 .qtok .x{font-size:14px; line-height:1; opacity:.8}
 
+#qx{
+  flex:none; display:flex; align-items:center; justify-content:center;
+  border:0; background:none; color:var(--ink3); font-size:16px; line-height:1;
+  padding:0 2px; font-family:inherit;
+}
+#qx[hidden]{display:none}
+#qx:hover{color:var(--accent)}
+
+#q::-webkit-search-cancel-button{-webkit-appearance:none; appearance:none; display:none}
+
 #theme{
   flex:none; display:flex; align-items:center; justify-content:center;
   border:1px solid var(--line2); background:var(--chip-bg); border-radius:999px;
@@ -422,9 +432,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   background:var(--accent-soft);
 }
 
-.blodge > .zhead:first-child,
-.blodge > .row:first-child,
-.blodge > .nonear:first-child{margin-top:0}
+.btrips{display:flex; flex-direction:column; gap:3px; margin:0 0 10px}
 
 .rrow .rbar{flex:none; width:3px; height:17px; border-radius:2px}
 
@@ -461,6 +469,19 @@ button{font:inherit; color:inherit; cursor:pointer}
 .results > .ghead, .results > .gintro{width:calc(100% - 4px)}
 .results > .row{margin-left:8px; width:calc(100% - 8px)}
 
+.qbh{display:flex; align-items:center; gap:6px; margin:4px 0 5px; padding:5px 2px;
+     font-size:12.5px; font-weight:600; color:var(--ink2); letter-spacing:.04em}
+.qbh::before{content:""; flex:none; width:8px; height:8px; border-radius:2px;
+             background:var(--accent)}
+.qbh .nm{flex:1; min-width:0}
+.qbh .n{flex:none; font-size:11px; font-weight:400; color:var(--ink3);
+        font-variant-numeric:tabular-nums}
+
+.results > .rrow{margin-left:4px; width:calc(100% - 4px)}
+
+.rrow .qbi{flex:none; width:13px; text-align:center; font-size:13px; line-height:1; color:var(--ink3)}
+.rrow[aria-pressed=true] .qbi{color:var(--accent)}
+
 .results > .row{content-visibility:auto; contain-intrinsic-size:auto 43.4px}
 .results > .detail{margin-left:17px}
 
@@ -487,15 +508,9 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
-  margin:0 0 8px; padding:10px 13px 11px;
-  border:1px solid transparent; border-radius:8px; background:var(--sunk);
+  margin:0; padding:10px 13px 11px;
+  border:1px solid var(--accent); border-radius:8px 8px 0 0; background:var(--accent-soft);
 }
-.gintro[aria-expanded=true]{
-  margin-bottom:0; border-color:var(--accent); border-radius:8px 8px 0 0;
-  background:var(--accent-soft);
-}
-
-.gintro .chev{flex:none; margin-top:3px; color:var(--ink3); transition:transform .15s}
 .gintro .gstyle{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 8px}
 .gintro .gchip{
   font-size:11px; padding:2px 8px; border-radius:999px; background:var(--panel);
@@ -545,6 +560,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .main.nomap .results{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:0 14px; align-items:start}
 .main.nomap .ghead, .main.nomap .gintro, .main.nomap .detail,
 .main.nomap .results > .blodge,
+.main.nomap .results > .qbh, .main.nomap .results > .rrow,
 .main.nomap .results .tcath{grid-column:1/-1}
 
 @media (min-width:700px){
@@ -813,7 +829,9 @@ button.tnight:hover .chev{color:var(--accent)}
 
 .lodgebox .znote{margin:1px 0 5px 8px; font-size:11.5px; color:var(--ink2); line-height:1.6}
 
-.lodgebox .zgrouplbl{margin:8px 0 0; font-size:11px; color:var(--ink3); letter-spacing:.04em}
+.lodgebox .zgrouplbl, .btrips .btlbl{font-size:11px; color:var(--ink3); letter-spacing:.04em}
+.lodgebox .zgrouplbl{margin:8px 0 0}
+.btrips .btlbl{margin:0 0 6px}
 
 .lodgebox .zbody{margin-left:16px; padding-left:8px; border-left:1px solid var(--line)}
 .lodgebox .row{padding:5px 6px}
@@ -967,6 +985,8 @@ button.tnight:hover .chev{color:var(--accent)}
     display:flex; align-items:center; justify-content:center;
     min-width:40px; min-height:40px; margin:-9px -9px -9px 0;
   }
+
+  #qx{min-width:40px; min-height:40px; margin:-4px -9px -4px 0}
 }
 @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
 </style>
@@ -988,7 +1008,7 @@ button.tnight:hover .chev{color:var(--accent)}
       <button data-v="list" aria-pressed="false">清單</button>
     </div>
 
-    <div id="qwrap"><input id="q" type="search" aria-label="搜尋景點或主題" placeholder="搜尋景點或主題"></div>
+    <div id="qwrap"><input id="q" type="search" aria-label="搜尋景點或主題" placeholder="搜尋景點或主題"><button id="qx" type="button" hidden aria-label="清除搜尋文字" title="清除搜尋文字">×</button></div>
     <button id="theme" class="btn-act" title="切換明暗" aria-label="切換明暗"></button>
     <div class="tally" id="tally"></div>
   </header>
@@ -1054,7 +1074,6 @@ function nearPool(st){
 const RM = matchMedia("(prefers-reduced-motion: reduce)");
 let SCROLL_RESET = false;                 // 下一次 renderPanel 要不要把卷軸拉回頂端
 let SCROLL_GROUP = false;                 // 下一次 renderPanel 要不要捲到第一個基地標題
-const BASE_OPEN = new Set();
 
 let BASE_SEL = null, ZONE_SEL = null;
 
@@ -1383,6 +1402,22 @@ const shown = () => {
   return list;
 };
 const anyFilter = () => !!(S.base.size||S.themes.size||S.diffs.size||S.budget.size||S.inseason||S.q||S.qtags.length);
+
+const BASE_HAY = Object.fromEntries(
+  BASES.map(b=>[b.id, ((b.name||"")+(b.town||"")).toLowerCase()]));
+function qTerms(){
+  return (S.q ? [S.q] : []).concat(S.qtags);
+}
+
+function qBaseHits(){
+  const terms=qTerms();
+  if (!terms.length) return [];
+  const hit = b => { const hay=BASE_HAY[b.id]||""; return terms.every(t=>hay.includes(t)); };
+  const out=[];
+  CATS.forEach(c=>BASES.forEach(b=>{ if (b.cat===c.id && hit(b)) out.push(b); }));
+  BASES.forEach(b=>{ if (!CT[b.cat] && hit(b)) out.push(b); });
+  return out;
+}
 
 const RAD = Math.PI/180;
 function km(a,b){
@@ -1956,10 +1991,16 @@ function renderQTags(){
   qi.placeholder = S.qtags.length ? "" : "搜尋景點或主題";
 }
 
+function syncQX(){
+  const qx=document.getElementById("qx"), qi=document.getElementById("q");
+  if (qx && qi) qx.hidden = !qi.value;
+}
+
 function resetQ(){
   S.q=""; S.qtags=[];
   const qi=document.getElementById("q"); if (qi) qi.value="";
   renderQTags();
+  syncQX();
 }
 
 function wireTags(root, inline){
@@ -2273,6 +2314,11 @@ function baseIdsOfTrip(id){
   const t = id && TRIP_BY_ID[id];
   return new Set(t ? (t.days||[]).map(d=>d.base).filter(Boolean) : []);
 }
+
+const TRIPS_BY_BASE = {};
+TRIPS.forEach(t=>baseIdsOfTrip(t.id).forEach(bid=>{
+  (TRIPS_BY_BASE[bid] = TRIPS_BY_BASE[bid] || []).push(t);
+}));
 function tripBaseIds(){
   return baseIdsOfTrip(S.trip);
 }
@@ -2632,9 +2678,8 @@ function renderItinerary(){
 }
 
 function openBaseRow(id){
-  const b=BS[id]; if (!b) return;
+  if (!BS[id]) return;
   S.listOpen=true;
-  BASE_OPEN.add(id);
 }
 
 function selectBase(id, inPlace){
@@ -2646,7 +2691,7 @@ function selectBase(id, inPlace){
 
   if (!isMapOnly()){
     openBaseRow(id);
-    if (inPlace) SCROLL_NEAR=`.gintro[data-bid="${id}"]`;
+    if (inPlace) SCROLL_NEAR=`.ghead[data-bid="${id}"]`;
     else SCROLL_BASE=id;
   }
   save(); render();
@@ -2735,6 +2780,31 @@ function lodgingBlock(b, keyOf, mode){
   return frag;
 }
 
+function baseTripsBlock(b){
+  const box=document.createElement("div"); box.className="btrips";
+  const lbl=document.createElement("p"); lbl.className="btlbl"; lbl.textContent="推薦行程";
+  box.appendChild(lbl);
+  const rows=TRIPS_BY_BASE[b.id]||[];
+  if (!rows.length){
+    const e=document.createElement("p"); e.className="nonear";
+    e.textContent="尚無推薦行程使用這個基地。";
+    box.appendChild(e);
+    return box;
+  }
+  rows.forEach(t=>{
+    const el=document.createElement("button");
+    el.type="button"; el.className="trow row-select";
+    el.setAttribute("aria-pressed", S.trip===t.id);
+    el.dataset.tripid=t.id;
+    el.title = t.name;
+    el.innerHTML=`<span class="tcode">${esc(t.code||"")}</span>` +
+      `<span class="tl">${esc(t.name)}</span>` +
+      `<span class="tdays num">${(t.days||[]).length} 天</span>`;
+    el.onclick=()=>selectTrip(t.id);
+    box.appendChild(el);
+  });
+  return box;
+}
 function baseLodgeBox(b){
   if (!b) return null;
   const d=document.createElement("div");
@@ -2742,14 +2812,51 @@ function baseLodgeBox(b){
   d.className="blodge lodgebox";
   d.dataset.bid=b.id;
 
+  d.appendChild(baseTripsBlock(b));
+
   d.appendChild(lodgingBlock(b));
   return d;
+}
+
+function qBaseSection(){
+  const hits=qBaseHits();
+  if (!hits.length) return null;
+  const frag=document.createDocumentFragment();
+  const h=document.createElement("div");
+  h.className="qbh";
+  h.innerHTML=`<span class="nm">基地</span><span class="n">${hits.length} 個</span>`;
+  frag.appendChild(h);
+  hits.slice(0,3).forEach(b=>{
+    const pts=BASE_POINTS[b.id]||[];
+    const nl=pts.filter(p=>p.theme==="lodging").length;
+    const np=pts.length-nl;
+    const el=document.createElement("button");
+    el.type="button"; el.className="rrow row-select";
+    el.setAttribute("aria-pressed", BASE_SEL===b.id);
+    el.dataset.bid=b.id;
+    el.title = BASE_SEL===b.id
+      ? `收起「${b.name}」的住宿清單`
+      : `到景點清單裡展開「${b.name}」那一組（地圖同時帶到這個基地）`;
+    el.innerHTML=`<span class="qbi" aria-hidden="true">⌂</span>` +
+      `<span class="nm">${esc(b.name)}</span>` +
+      (b.drive_min!=null
+        ? `<span class="away" title="從新竹市區開到這個基地">${CAR_SVG}${dur(b.drive_min)}</span>`
+        : "") +
+      `<span class="n num">景點 ${np} 處／住宿 ${nl} 家</span>`;
+    el.onclick=()=>selectBase(b.id);
+    frag.appendChild(el);
+  });
+  return frag;
 }
 
 function renderList(){
   const wrap=document.createElement("div"); wrap.className="results";
   const list=shown();
-  if (!list.length){
+
+  const qb=qBaseSection();
+  if (qb) wrap.appendChild(qb);
+
+  if (!list.length && !(BASE_SEL && BS[BASE_SEL])){
     const d=document.createElement("div"); d.className="empty";
     d.innerHTML="這組條件沒有東西。";
     const b=document.createElement("button"); b.textContent="清掉條件"; b.onclick=clearAll;
@@ -2784,36 +2891,32 @@ function renderList(){
   if (BASE_SEL && BS[BASE_SEL] && !g[BASE_SEL]) g[BASE_SEL]=[];
 
   const baseGroup = r => {
-    const open=BASE_OPEN.has(r.id);
+    const open=BASE_SEL===r.id;
     const h=document.createElement("button");
     h.className="ghead row-toggle"; h.setAttribute("aria-expanded", open);
 
     h.dataset.bid=r.id;
     h.style.setProperty("--dc", baseColor(r));
+    h.title = open ? `收起「${r.name}」的住宿清單`
+                   : `展開「${r.name}」的推薦行程、住宿區域與各家住宿`;
     h.innerHTML=`<span class="gnm">${esc(r.name)}</span>` +
       `<span class="num">${g[r.id].length}</span>` +
       `<svg class="chev" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>`;
-    h.onclick=()=>{ toggleSet(BASE_OPEN, r.id); render(); };
+    h.onclick=()=>selectBase(r.id, true);
     wrap.appendChild(h);
 
-    if (open || BASE_SEL===r.id){
-      const bsel = BASE_SEL===r.id;
-      const rd=document.createElement("button");
-      rd.type="button"; rd.className="gintro row-toggle";
-      rd.setAttribute("aria-expanded", bsel);
+    if (open){
+      const rd=document.createElement("div");
+      rd.className="gintro";
 
       rd.dataset.bid=r.id;
       const nLodge=lodgingOf(r.id).length;
-      rd.title = bsel ? `收起「${r.name}」的住宿清單`
-                      : `展開「${r.name}」的住宿區域與各家住宿`;
       rd.innerHTML =
         `<span class="gdesc">${esc(r.town||"")}` +
         (r.drive_min!=null ? `　離新竹約 ${dur(r.drive_min)}` : "") +
         (nLodge ? `　住宿 <span class="num">${nLodge}</span> 家` : "") +
         (zonesOf(r).length ? `　住宿帶 <span class="num">${zonesOf(r).length}</span> 條` : "") +
-        `</span>` + CHEV_SVG;
-
-      rd.onclick=()=>selectBase(r.id, true);
+        `</span>`;
       wrap.appendChild(rd);
     }
 
@@ -2986,7 +3089,7 @@ function renderPanel(){
     SCROLL_LIST=false;
   }
   if (SCROLL_GROUP){
-    const g=box.querySelector(".results .tcath, .results .ghead");
+    const g=box.querySelector(".results .qbh, .results .tcath, .results .ghead");
     if (g) box.scrollTop += (g.getBoundingClientRect().top - stopAt(true));
     SCROLL_GROUP=false;
   }
@@ -3011,8 +3114,10 @@ function renderPanel(){
     if (el){
       const floorY=stopAt(true), ceilY=box.getBoundingClientRect().bottom;
       const r=el.getBoundingClientRect();
+
       const nx=el.nextElementSibling;
-      const bodyTop=(nx && (nx.classList.contains("detail") || nx.classList.contains("blodge")))
+      const bodyTop=(nx && (nx.classList.contains("detail") || nx.classList.contains("gintro")
+                            || nx.classList.contains("blodge")))
         ? nx.getBoundingClientRect().top : r.bottom;
       let d=0;
       if (r.top < floorY) d = r.top - floorY;
@@ -3029,14 +3134,14 @@ let SCROLL_NEAR=null;
 
 let PIN=null;
 
-const PIN_CLASSES=["row","tstop","tnight","rrow","zhead","ghead","gintro","tcath"];
+const PIN_CLASSES=["row","tstop","tnight","rrow","zhead","ghead","tcath"];
 function pinSelector(el){
   const cls=PIN_CLASSES.find(c=>el.classList.contains(c));
   if (!cls) return null;
   const d=el.dataset;
   if (cls==="row" && d.id) return `.row[data-id="${d.id}"]`;
   if (cls==="tstop" && d.tid) return `.tstop[data-tid="${d.tid}"]`;
-  if ((cls==="rrow" || cls==="ghead" || cls==="gintro") && d.bid) return `.${cls}[data-bid="${d.bid}"]`;
+  if ((cls==="rrow" || cls==="ghead") && d.bid) return `.${cls}[data-bid="${d.bid}"]`;
   return "."+cls;
 }
 document.getElementById("panel").addEventListener("click", e=>{
@@ -3134,8 +3239,18 @@ document.querySelectorAll("#views button").forEach(b=>{
   };
 });
 document.getElementById("q").addEventListener("input", e=>{
-  S.q=e.target.value.trim().toLowerCase(); filterChanged();
+  S.q=e.target.value.trim().toLowerCase(); syncQX(); filterChanged();
 });
+
+document.getElementById("qx").onclick=e=>{
+  e.stopPropagation();
+  const qi=document.getElementById("q");
+  qi.value=""; S.q="";
+  syncQX();
+  SCROLL_GROUP=true;
+  filterChanged();
+  qi.focus();
+};
 document.getElementById("q").addEventListener("keydown", e=>{
   if (e.key==="Backspace" && !e.target.value && S.qtags.length){
     S.qtags.pop(); SCROLL_GROUP=true;   // 同 × 移除：放寬條件捲回清單開頭
