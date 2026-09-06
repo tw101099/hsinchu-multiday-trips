@@ -1045,14 +1045,14 @@ button.tnight:hover .chev{color:var(--accent)}
 <meta name="theme-color" content="#4a4038">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="新竹多日">
+<meta name="apple-mobile-web-app-title" content="新竹出發多日遊">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 </head>
 <body>
 <div class="app" id="app">
   <header class="bar">
 
-    <div class="logo" id="logo">新竹多日</div>
+    <div class="logo" id="logo">新竹出發多日遊</div>
     <div class="seg" id="views">
       <button data-v="map" aria-pressed="true">地圖</button>
       <button data-v="list" aria-pressed="false">清單</button>
@@ -3140,8 +3140,7 @@ function renderPanel(){
   }
 
   if (SCROLL_ITIN){
-    const sec=box.querySelector(".sec.secitin") || box.querySelector(".sec.sectrips");
-    if (sec) box.scrollTop += (sec.getBoundingClientRect().top - stopAt(false));
+    box.scrollTop = 0;
     SCROLL_ITIN=false;
   }
 

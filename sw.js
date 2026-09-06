@@ -39,7 +39,9 @@
 // v1→v2：2026-09-06 水墨改版換了 og 與五顆 icon（棒 INK2），照上面那條規則推號，
 // 逼 activate 清掉舊快取——不推的話 icons 走 cache-first 且命中不 revalidate，
 // 回訪者會永遠拿到舊 icon（棒 INK2 線上實測：SW 端 17747 bytes 舊檔 vs 網路 64353 新檔）。
-const CACHE_VERSION = "v2";
+// v2→v3：2026-09-06 站名統一「新竹出發多日遊」動了 manifest（short_name）——
+// manifest.webmanifest 在 SHELL_ASSETS 裡走 cache-first，照檔頭規則推號。
+const CACHE_VERSION = "v3";
 const CACHE_NAME = `hsinchu-multiday-${CACHE_VERSION}`;
 
 // 殼層資源：install 時預熱，之後 cache-first。都是同源、幾乎不變的檔案。
