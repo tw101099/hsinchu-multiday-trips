@@ -417,7 +417,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .rrow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
 .blodge{
-  margin:0 0 10px; padding:0 12px 10px;
+  margin:0 0 10px; padding:8px 12px 10px;
   border:1px solid var(--accent); border-top:0; border-radius:0 0 8px 8px;
   background:var(--accent-soft);
 }
@@ -1625,7 +1625,7 @@ function drawBasePins(){
     const sel = S.base.has(b.id);
     const isFtrip = ftripActive && TRIP_BASES.has(b.id);
 
-    const dim = !!(trip && !TRIP_BASES.has(b.id));
+    const dim = !!(trip && !TRIP_BASES.has(b.id) && !sel && BASE_SEL!==b.id);
     const cls = "basepin" + (BASE_SEL===b.id?" on":"") + (sel?" sel":"") + (isFtrip?" ftrip":"") +
                 (dim?" dim":"");
     const m=L.marker(b.anchor, {
