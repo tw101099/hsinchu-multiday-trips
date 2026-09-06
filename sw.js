@@ -42,7 +42,10 @@
 // v2→v3：2026-09-06 站名統一「新竹出發多日遊」動了 manifest（short_name）——
 // manifest.webmanifest 在 SHELL_ASSETS 裡走 cache-first，照檔頭規則推號。
 // v3→v4：2026-09-06 og/icon 再更新一版（降低水彩數位飽和感，codex 0abad4fe），icons 是 cache-first 殼層資源，照規則推號。
-const CACHE_VERSION = "v4";
+// v4→v5：2026-09-06 增補規格 v2「紋理加強」把亮色 --bg 提到 #fdfbf6，manifest 的
+// background_color 跟著走（既有邏輯＝manifest 底色就是站的亮色底）——manifest.webmanifest
+// 在 SHELL_ASSETS 裡走 cache-first，跟 v2→v3 完全同一種情形，照檔頭規則推號。
+const CACHE_VERSION = "v5";
 const CACHE_NAME = `hsinchu-multiday-${CACHE_VERSION}`;
 
 // 殼層資源：install 時預熱，之後 cache-first。都是同源、幾乎不變的檔案。

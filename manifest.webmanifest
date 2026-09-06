@@ -8,7 +8,7 @@
   "orientation": "any",
   "lang": "zh-Hant-TW",
   "dir": "ltr",
-  "background_color": "#fbf8f2",
+  "background_color": "#fdfbf6",
   "theme_color": "#4a4038",
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
