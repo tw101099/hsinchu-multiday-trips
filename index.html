@@ -2361,7 +2361,7 @@ function selectTrip(id, fromBase){
 
     if (!HASH_APPLYING && !isMapOnly() && !fromBase) SCROLL_LIST=true;
 
-    if (!fromBase) SCROLL_TRIPTOP=true;
+    SCROLL_TRIPTOP=true;
     S.tripsOpen=false; openItin(); openTripPath(TRIP_BY_ID[id]); fitTrip();
     if (!ACCORDION_MQ.matches) accordion("bases");
   } else {
