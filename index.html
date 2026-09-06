@@ -940,6 +940,8 @@ button.tnight:hover .chev{color:var(--accent)}
 
 .basepin.dim{opacity:.4}
 
+.pin.dim, .lodgemk.dim{opacity:.4}
+
 .basepin.ftrip::after{
   content:""; position:absolute; inset:-6px; border-radius:999px;
   border:2.5px solid var(--tc, var(--accent)); pointer-events:none;
@@ -1629,10 +1631,10 @@ function initOSM(why){
   draw();
 }
 
-function markerHTML(p){
+function markerHTML(p, dim){
   const c=(TH[p.theme]||{}).color||"#888";
   const on = p.id===S.sel || !!(INLINE && INLINE.id===p.id);
-  return `<div class="pin${p.theme==="lodging"?" lodge":""}${on?" on":""}" style="color:${c}">` +
+  return `<div class="pin${p.theme==="lodging"?" lodge":""}${on?" on":""}${dim?" dim":""}" style="color:${c}">` +
          `<svg viewBox="0 0 16 16" class="ic" style="margin:0">${ICON[p.theme]||""}</svg>` +
          `<span class="pinlbl">${esc(p.name)}</span></div>`;
 }
@@ -1656,13 +1658,36 @@ function tipHTML(p){
     (p.season?`<i>◈ ${esc(p.season)}</i>`:"");
 }
 
+function mapVisibleBases(){
+  const trip = S.trip && TRIP_BY_ID[S.trip];
+  if (!trip) return null;
+  const tb = baseIdsOfTrip(S.trip);
+  const corrs = new Set([trip.code]);
+  tb.forEach(bid=>{ const c=BASE_CORRIDOR[bid]; if (c) corrs.add(c); });
+  const vis = new Set(tb);
+  corrs.forEach(c=>{ const s=CORR_BASES[c]; if (s) s.forEach(bid=>vis.add(bid)); });
+  S.base.forEach(bid=>vis.add(bid));
+  if (BASE_SEL) vis.add(BASE_SEL);
+  return vis;
+}
 function draw(){
   if (!ready) return;
-  const list=shown().slice();
-  const ids=new Set(list.map(p=>p.id));
+
+  const VIS = mapVisibleBases();
+  let list=shown().slice();
+  let ids=new Set(list.map(p=>p.id));
+
+  if (VIS){
+    PLACES.forEach(p=>{ if (VIS.has(p.base) && !ids.has(p.id)){ list.push(p); ids.add(p.id); } });
+    list = list.filter(p=>VIS.has(p.base));
+    ids = new Set(list.map(p=>p.id));
+  }
   if (S.sel && BY_ID[S.sel] && !ids.has(S.sel)){ list.push(BY_ID[S.sel]); ids.add(S.sel); }
 
-  tripStops().forEach(p=>{ if (!ids.has(p.id)){ list.push(p); ids.add(p.id); } });
+  
+  const stops = tripStops();
+  const stopIds = new Set(stops.map(p=>p.id));
+  stops.forEach(p=>{ if (!ids.has(p.id)){ list.push(p); ids.add(p.id); } });
 
   if (engine==="osm"){
     lines.clearLayers(); pts.clearLayers(); marks={};
@@ -1673,18 +1698,21 @@ function draw(){
 
     if (focused || zoom >= POI_ZOOM) list.forEach(p=>{
       const on = p.id===S.sel || !!(INLINE && INLINE.id===p.id);
+
+      const dim = !!(VIS && !stopIds.has(p.id) && !on);
       let m;
       if (asIcon){
-        m = L.marker([p.lat,p.lng], {icon:L.divIcon({className:"", html:markerHTML(p), iconSize:[26,26]}),
+        m = L.marker([p.lat,p.lng], {icon:L.divIcon({className:"", html:markerHTML(p, dim), iconSize:[26,26]}),
                                      zIndexOffset:on?900:0});
       } else if (p.theme==="lodging"){
         m = L.marker([p.lat,p.lng], {
-          icon:L.divIcon({className:"lodgemk"+(on?" on":""), iconSize:[18,18], iconAnchor:[9,9],
+          icon:L.divIcon({className:"lodgemk"+(on?" on":"")+(dim?" dim":""), iconSize:[18,18], iconAnchor:[9,9],
                           html:`<span class="ld" style="background:${(TH[p.theme]||{}).color||"#888"}"></span>`}),
           zIndexOffset:on?900:0});
       } else {
         m = L.circleMarker([p.lat,p.lng],{radius:on?9:5.5, color:"#fff", weight:on?2.5:1.2,
-                                          fillColor:(TH[p.theme]||{}).color||"#888", fillOpacity:1,
+                                          fillColor:(TH[p.theme]||{}).color||"#888",
+                                          opacity:dim?.4:1, fillOpacity:dim?.4:1,
                                           bubblingMouseEvents:false});
       }
       m.addTo(pts);
@@ -1729,8 +1757,11 @@ function drawBasePins(){
   const trip = S.trip && TRIP_BY_ID[S.trip];
   const ftripActive = !!(trip && trip.cat==="f");
   const showLabel = zoom >= BASE_LABEL_ZOOM;
+
+  const VIS = mapVisibleBases();
   BASES.forEach(b=>{
     if (!b.anchor) return;
+    if (VIS && !VIS.has(b.id)) return;
     const sel = S.base.has(b.id);
     const isFtrip = ftripActive && TRIP_BASES.has(b.id);
 
@@ -2405,6 +2436,17 @@ const TRIPS_BY_BASE = {};
 TRIPS.forEach(t=>baseIdsOfTrip(t.id).forEach(bid=>{
   (TRIPS_BY_BASE[bid] = TRIPS_BY_BASE[bid] || []).push(t);
 }));
+
+const BASE_CORRIDOR = {};
+BASES.forEach(b=>{
+  const hit = (TRIPS_BY_BASE[b.id]||[]).filter(t=>t.cat===b.cat);
+  if (hit.length) BASE_CORRIDOR[b.id] = hit[0].code;
+});
+
+const CORR_BASES = {};
+const corrBucket = c => (CORR_BASES[c] = CORR_BASES[c] || new Set());
+BASES.forEach(b=>{ const c=BASE_CORRIDOR[b.id]; if (c) corrBucket(c).add(b.id); });
+TRIPS.forEach(t=>{ const s=corrBucket(t.code); baseIdsOfTrip(t.id).forEach(bid=>s.add(bid)); });
 function tripBaseIds(){
   return baseIdsOfTrip(S.trip);
 }
