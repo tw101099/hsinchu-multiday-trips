@@ -36,7 +36,10 @@
 // 這道閘門要倚靠的那份副本親手刪掉，下一次開站反而少一層保護。SW 自己的更新
 // 靠瀏覽器對 sw.js 的位元組比對，跟版本號無關。
 
-const CACHE_VERSION = "v1";
+// v1→v2：2026-09-06 水墨改版換了 og 與五顆 icon（棒 INK2），照上面那條規則推號，
+// 逼 activate 清掉舊快取——不推的話 icons 走 cache-first 且命中不 revalidate，
+// 回訪者會永遠拿到舊 icon（棒 INK2 線上實測：SW 端 17747 bytes 舊檔 vs 網路 64353 新檔）。
+const CACHE_VERSION = "v2";
 const CACHE_NAME = `hsinchu-multiday-${CACHE_VERSION}`;
 
 // 殼層資源：install 時預熱，之後 cache-first。都是同源、幾乎不變的檔案。
