@@ -2326,7 +2326,7 @@ function tripStopIds(){
   return new Set(tripStops().map(p=>p.id));
 }
 
-function selectTrip(id){
+function selectTrip(id, fromBase){
   S.trip = (S.trip===id) ? null : id;   // 再點一次同一條＝關掉（連帶收掉地圖上的路線）
 
   NIGHT = null;
@@ -2359,9 +2359,9 @@ function selectTrip(id){
     if (isTwoLane()) S.basesOpen=true;
     S.listOpen=true;
 
-    if (!HASH_APPLYING && !isMapOnly()) SCROLL_LIST=true;
+    if (!HASH_APPLYING && !isMapOnly() && !fromBase) SCROLL_LIST=true;
 
-    SCROLL_TRIPTOP=true;
+    if (!fromBase) SCROLL_TRIPTOP=true;
     S.tripsOpen=false; openItin(); openTripPath(TRIP_BY_ID[id]); fitTrip();
     if (!ACCORDION_MQ.matches) accordion("bases");
   } else {
@@ -2793,14 +2793,14 @@ function baseTripsBlock(b){
   }
   rows.forEach(t=>{
     const el=document.createElement("button");
-    el.type="button"; el.className="trow row-select";
+    el.type="button"; el.className="trow row-select btrow";
     el.setAttribute("aria-pressed", S.trip===t.id);
     el.dataset.tripid=t.id;
     el.title = t.name;
     el.innerHTML=`<span class="tcode">${esc(t.code||"")}</span>` +
       `<span class="tl">${esc(t.name)}</span>` +
       `<span class="tdays num">${(t.days||[]).length} 天</span>`;
-    el.onclick=()=>selectTrip(t.id);
+    el.onclick=()=>selectTrip(t.id, true);
     box.appendChild(el);
   });
   return box;
@@ -3134,13 +3134,14 @@ let SCROLL_NEAR=null;
 
 let PIN=null;
 
-const PIN_CLASSES=["row","tstop","tnight","rrow","zhead","ghead","tcath"];
+const PIN_CLASSES=["row","tstop","tnight","rrow","zhead","ghead","tcath","btrow"];
 function pinSelector(el){
   const cls=PIN_CLASSES.find(c=>el.classList.contains(c));
   if (!cls) return null;
   const d=el.dataset;
   if (cls==="row" && d.id) return `.row[data-id="${d.id}"]`;
   if (cls==="tstop" && d.tid) return `.tstop[data-tid="${d.tid}"]`;
+  if (cls==="btrow" && d.tripid) return `.btrow[data-tripid="${d.tripid}"]`;
   if ((cls==="rrow" || cls==="ghead") && d.bid) return `.${cls}[data-bid="${d.bid}"]`;
   return "."+cls;
 }
