@@ -1701,7 +1701,8 @@ function draw(){
 
       const dim = !!(VIS && !stopIds.has(p.id) && !on);
       let m;
-      if (asIcon){
+
+      if (asIcon || on){
         m = L.marker([p.lat,p.lng], {icon:L.divIcon({className:"", html:markerHTML(p, dim), iconSize:[26,26]}),
                                      zIndexOffset:on?900:0});
       } else if (p.theme==="lodging"){
@@ -1716,7 +1717,7 @@ function draw(){
                                           bubblingMouseEvents:false});
       }
       m.addTo(pts);
-      m.bindTooltip(tipHTML(p), {direction:"top", offset:[0,asIcon?-14:-8], className:"tt", opacity:1});
+      m.bindTooltip(tipHTML(p), {direction:"top", offset:[0,(asIcon||on)?-14:-8], className:"tt", opacity:1});
       m.on("mouseover", ()=>highlightRow(p.id,true));
       m.on("mouseout", ()=>highlightRow(p.id,false));
       m.on("click", ()=>select(p.id));
