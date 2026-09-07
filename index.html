@@ -1545,7 +1545,8 @@ function originDist(oid, p){
 const esc = s => (s||"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 let engine=null, map=null, marks={}, lines=null, pts=null, ready=false, zoom=11;
-const ICON_ZOOM = 14;
+
+const ICON_ZOOM = 13;
 
 const POI_ZOOM = 10;
 
@@ -1953,7 +1954,7 @@ function toggleLocate(){
     } else {
       LOC.dot.setLatLng(ll); LOC.ring.setLatLng(ll); LOC.ring.setRadius(acc);
     }
-    if (!LOC.first){ LOC.first=true; map.setView(ll, Math.max(map.getZoom(), 14), {animate:false}); }
+    if (!LOC.first){ LOC.first=true; map.setView(ll, Math.max(map.getZoom(), ICON_ZOOM), {animate:false}); }
   }, err=>{
     locSay(err && err.code===1 ? "定位權限未開啟" : "定位失敗");
     stopLocate();
