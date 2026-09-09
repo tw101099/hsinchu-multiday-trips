@@ -31,6 +31,10 @@
   --line:#e6ddcc; --line2:#d1c6b0;
 
   --accent:#4a4038; --accent-soft:#efe9dc; --on-accent:#fffefb;
+
+  --accent-rgb:74,64,56;
+
+  --ring-glow:0 0 0 4px rgba(var(--accent-rgb),.18);
   --warn:#9a5b17;
 
   --danger:#9c3b2c;
@@ -66,6 +70,7 @@
     --ink:#ede4d3; --ink2:#b3a794; --ink3:#978c79;
     --line:#514840; --line2:#65594e;   
     --accent:#c9bda8; --accent-soft:#35302a; --on-accent:#1c1a17;
+    --accent-rgb:201,189,168;   
     --warn:#e0a45c;
     --danger:#c17167;
     --sb:#4f463d; --sb-hover:#6a5f52;
@@ -90,6 +95,7 @@
     --ink:#ede4d3; --ink2:#b3a794; --ink3:#978c79;
     --line:#514840; --line2:#65594e;   
     --accent:#c9bda8; --accent-soft:#35302a; --on-accent:#1c1a17;
+    --accent-rgb:201,189,168;   
     --warn:#e0a45c;
         --danger:#c17167;
     --sb:#4f463d; --sb-hover:#6a5f52;
@@ -615,7 +621,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .tag{font-size:11px; padding:0 7px; border-radius:999px; border:1px solid var(--line2); color:var(--ink2); white-space:nowrap}
 
 .tag.hard{color:var(--ink)}
-.star{color:var(--accent); font-size:11px}
+
 .empty{padding:26px 6px; color:var(--ink2); font-size:14px}
 .empty button{border:0; background:none; color:var(--accent); text-decoration:underline; padding:0}
 
@@ -917,31 +923,37 @@ button.tnight:hover .chev{color:var(--accent)}
 }
 :root[data-theme="dark"] .hubpin{background:#AD9CCF}
 .hubpin svg{width:12px; height:12px; stroke:var(--panel); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+
 .pin{
   position:relative; display:grid; place-items:center; width:26px !important; height:26px !important;
-  margin:-13px 0 0 -13px !important; border-radius:999px; background:var(--panel);
+  border-radius:999px; background:var(--panel);
   border:1.5px solid currentColor; box-shadow:0 1px 4px rgba(var(--sh),.28);
 }
 .pin svg{width:15px; height:15px; margin:0; stroke-width:1.6}
 
 .pin.lodge{border-radius:8px}
 
+.pin.tripstop{
+  width:32px !important; height:32px !important;
+}
+.pin.tripstop svg{width:18px; height:18px}
+.pin.tripstop .pinlbl{left:36px}
+
 .lodgemk .ld{
   display:block; width:18px; height:18px; border-radius:4px;
   border:2.5px solid #fff; box-shadow:0 1px 5px rgba(var(--sh),.36);
 }
-.lodgemk.on .ld{outline:3px solid var(--accent); outline-offset:1px}
 
 .basepin{position:relative}
+
 .basepin .bp{
-  display:grid; place-items:center; width:26px; height:26px; border-radius:999px;
+  display:grid; place-items:center; width:22px; height:22px; border-radius:999px;
   border:2.5px solid var(--panel); box-shadow:0 1px 6px rgba(var(--sh),.42);
 }
-.basepin .bp svg{display:block; width:14px; height:14px; stroke:var(--panel); fill:none;
+.basepin .bp svg{display:block; width:12px; height:12px; stroke:var(--panel); fill:none;
                  stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
 
-.basepin.sel .bp{outline:3px solid var(--accent); outline-offset:1px}
-.basepin.on .bp{outline:3px solid var(--accent); outline-offset:2px}
+.basepin .pinlbl{left:26px}
 
 .basepin.dim{opacity:.4}
 
@@ -960,17 +972,30 @@ button.tnight:hover .chev{color:var(--accent)}
 .pin, .hubpin, .mypin, .basepin .bp, .lodgemk .ld, .zonepin .zp{
   background-image:var(--pinfx) !important;
 }
-.pin.on{outline:3px solid var(--accent); outline-offset:1px}
 
-.basepin.hov .bp{outline:3px solid var(--accent); outline-offset:1px}
+.pin.on, .lodgemk.on .ld, .basepin.sel .bp, .basepin.on .bp{
+  outline:2.5px solid var(--accent); outline-offset:1px;
+  box-shadow:0 0 0 7.5px rgba(var(--accent-rgb),.18), 0 1px 5px rgba(var(--sh),.32);
+}
+
+.ringmk{pointer-events:none}
+.ringmk .rk{
+  display:block; width:100%; height:100%; border-radius:999px;
+  border:2.5px solid var(--accent); box-shadow:var(--ring-glow);
+}
+
+.basepin.hov .bp{
+  outline:2.5px solid var(--accent); outline-offset:1px;
+  box-shadow:0 1px 6px rgba(var(--sh),.42), 0 0 0 6px rgba(var(--accent-rgb),.18);
+}
 .basepin.hov{opacity:1}
 
-.hovstop, .basepin.hovbase{pointer-events:none}
-.hovstop .hs{
-  display:block; width:28px; height:28px; border-radius:999px;
-  border:2.5px solid var(--accent); box-shadow:0 1px 6px rgba(var(--sh),.28);
+.basepin.hovbase{pointer-events:none}
+.basepin.hovbase .bp{
+  transform:scale(1.22);
+  outline:2.5px solid var(--accent); outline-offset:1px;
+  box-shadow:0 1px 6px rgba(var(--sh),.42), 0 0 0 6px rgba(var(--accent-rgb),.18);
 }
-.basepin.hovbase .bp{transform:scale(1.22); outline:3px solid var(--accent); outline-offset:1px}
 
 .leaflet-container{font:inherit}
 
@@ -1599,6 +1624,22 @@ const POI_ZOOM = 10;
 
 const BASE_LABEL_ZOOM = 11;
 
+const STOP_LABEL_ZOOM = 11;
+
+let STOP_MARK = new Set();
+
+const stopBig = p => STOP_MARK.has(p.id) && zoom >= STOP_LABEL_ZOOM;
+const placeIsIcon = p => zoom >= ICON_ZOOM || stopBig(p) || placeOn(p.id);
+
+function stopRing(p, z){
+  const size = stopBig(p) ? 36 : 28;
+  const h = size / 2;
+  return L.marker([p.lat, p.lng], {
+    icon: L.divIcon({className:"ringmk", iconSize:[size,size], iconAnchor:[h,h],
+                     html:'<span class="rk"></span>'}),
+    interactive:false, zIndexOffset:z});
+}
+
 function note(html){
   const el=document.getElementById("mapnote");
   if (!html){ el.style.display="none"; return; }
@@ -1669,7 +1710,8 @@ function initOSM(why){
     const z=map.getZoom();
     const crossed = ((z>=ICON_ZOOM) !== (zoom>=ICON_ZOOM)) ||
                     ((z>=POI_ZOOM)  !== (zoom>=POI_ZOOM)) ||
-                    ((z>=BASE_LABEL_ZOOM) !== (zoom>=BASE_LABEL_ZOOM));
+                    ((z>=BASE_LABEL_ZOOM) !== (zoom>=BASE_LABEL_ZOOM)) ||
+                    ((z>=STOP_LABEL_ZOOM) !== (zoom>=STOP_LABEL_ZOOM));
     zoom=z;
     if (crossed) draw();
   });
@@ -1682,7 +1724,8 @@ function initOSM(why){
 function markerHTML(p, dim){
   const c=(TH[p.theme]||{}).color||"#888";
   const on = placeOn(p.id);
-  return `<div class="pin${p.theme==="lodging"?" lodge":""}${on?" on":""}${dim?" dim":""}" style="color:${c}">` +
+  return `<div class="pin${p.theme==="lodging"?" lodge":""}${on?" on":""}${dim?" dim":""}` +
+         `${stopBig(p)?" tripstop":""}" style="color:${c}">` +
          `<svg viewBox="0 0 16 16" class="ic" style="margin:0">${ICON[p.theme]||""}</svg>` +
          `<span class="pinlbl">${esc(p.name)}</span></div>`;
 }
@@ -1738,6 +1781,8 @@ function draw(){
   
   const stops = tripStops();
   const stopIds = new Set(stops.map(p=>p.id));
+
+  STOP_MARK = stopIds;
   stops.forEach(p=>{ if (!ids.has(p.id)){ list.push(p); ids.add(p.id); } });
 
   if (engine==="osm"){
@@ -1750,6 +1795,8 @@ function draw(){
 
       addPlaceMarker(p, !!(VIS && !stopIds.has(p.id) && !placeOn(p.id)));
     });
+
+    if (S.trip) stops.forEach(p=>stopRing(p, 1100).addTo(pts));
     const front = S.sel || (INLINE && INLINE.id);
     if (front && marks[front] && marks[front].bringToFront) marks[front].bringToFront();
     drawBasePins();
@@ -1758,11 +1805,14 @@ function draw(){
 
 function addPlaceMarker(p, dim){
   const on = placeOn(p.id);
-  const asIcon = zoom >= ICON_ZOOM;
+
+  const asIcon = placeIsIcon(p);
   let m;
 
   if (asIcon || on){
-    m = L.marker([p.lat,p.lng], {icon:L.divIcon({className:"", html:markerHTML(p, dim), iconSize:[26,26]}),
+
+    const s = stopBig(p) ? 32 : 26;
+    m = L.marker([p.lat,p.lng], {icon:L.divIcon({className:"", html:markerHTML(p, dim), iconSize:[s,s], iconAnchor:[s/2,s/2]}),
                                  zIndexOffset:on?900:0});
   } else if (p.theme==="lodging"){
     m = L.marker([p.lat,p.lng], {
@@ -1824,8 +1874,9 @@ function drawBasePins(){
     const dim = !!(trip && !TRIP_BASES.has(b.id) && !sel && BASE_SEL!==b.id);
     const cls = "basepin" + (BASE_SEL===b.id?" on":"") + (sel?" sel":"") + (isFtrip?" ftrip":"") +
                 (dim?" dim":"");
+
     const m=L.marker(b.anchor, {
-      icon:L.divIcon({className:cls, iconSize:[26,26], iconAnchor:[13,13],
+      icon:L.divIcon({className:cls, iconSize:[22,22], iconAnchor:[11,11],
         html:`<span class="bp" style="background:${baseColor(b)}">` +
              `<svg viewBox="0 0 16 16"><path d="M2.5 8.5 8 3l5.5 5.5M4 7v6h8V7"/></svg></span>` +
              (showLabel ? `<span class="pinlbl">${esc(b.name)}</span>` : "")}),
@@ -2117,7 +2168,8 @@ function hoverPlaceOff(){
 }
 
 function hovBasePin(b){
-  return L.marker(b.anchor, {icon:L.divIcon({className:"basepin hovbase", iconSize:[26,26], iconAnchor:[13,13],
+
+  return L.marker(b.anchor, {icon:L.divIcon({className:"basepin hovbase", iconSize:[22,22], iconAnchor:[11,11],
                         html:`<span class="bp" style="background:${baseColor(b)}">` +
                              `<svg viewBox="0 0 16 16"><path d="M2.5 8.5 8 3l5.5 5.5M4 7v6h8V7"/></svg></span>` +
                              `<span class="pinlbl">${esc(b.name)}</span>`}),
@@ -2177,9 +2229,8 @@ function hoverTripOn(tid){
   (t.days||[]).forEach(d=>(d.stops||[]).forEach(nm=>{
     const p=BY_NAME[nm];
     if (!p) return;
-    L.marker([p.lat,p.lng], {icon:L.divIcon({className:"hovstop", iconSize:[28,28], iconAnchor:[14,14],
-                                             html:'<span class="hs"></span>'}),
-                             interactive:false, zIndexOffset:1200}).addTo(g);
+
+    stopRing(p, 1200).addTo(g);
   }));
   baseIdsOfTrip(tid).forEach(bid=>{
     const b=BS[bid];
@@ -2506,7 +2557,7 @@ function rowFor(p, extra, rel, key, selMode){
       ? `<span class="tmk" title="這條推薦行程會去的地方"></span>` : "") +
 
     `${ico(p.theme,(TH[p.theme]||{}).color)}` +
-    `<span>${esc(p.name)}${(!PUBLIC && p.in_user_list)?' <i class="star" title="你收藏過的">★</i>':''}</span>` +
+    `<span>${esc(p.name)}</span>` +
     `<span class="tag ${HARD.has(p.diff)?"hard":""}">${EFFORT[p.diff]||p.diff}</span>` +
     placeStatusBadge(p) +
     (off?`<span class="off">不在篩選內</span>`:"") + `</div>` +
@@ -2639,6 +2690,29 @@ const TRIPS_BY_BASE = {};
 TRIPS.forEach(t=>baseIdsOfTrip(t.id).forEach(bid=>{
   (TRIPS_BY_BASE[bid] = TRIPS_BY_BASE[bid] || []).push(t);
 }));
+
+const TRIP_FLAG = {};
+TRIPS.forEach(t=>{
+  const r = t.code ? CR[t.code] : null;
+  const corrSusp = !!(r && r.status === "suspended");
+  const corrWarn = !!(r && r.status === "warning");
+  let stopSusp = false, stopPartial = false;
+  (t.days||[]).forEach(d=>(d.stops||[]).forEach(nm=>{
+    const p = BY_NAME[nm];
+    if (!p) return;
+    if (p.status === "suspended") stopSusp = true;
+    else if (p.status === "partial") stopPartial = true;
+  }));
+  if (corrSusp || stopSusp)
+    TRIP_FLAG[t.id] = {ic:"⛔", why: corrSusp ? "這條路線整段暫停" : "這趟行程含暫停開放的停點"};
+  else if (corrWarn || stopPartial)
+    TRIP_FLAG[t.id] = {ic:"⚠", why: corrWarn ? "這條路線有通行提醒" : "這趟行程含部分開放的停點"};
+});
+
+function tripFlagHTML(tid){
+  const f = TRIP_FLAG[tid];
+  return f ? `<span class="stico" title="${esc(f.why)}">${f.ic}</span>` : "";
+}
 
 const BASE_CORRIDOR = {};
 BASES.forEach(b=>{
@@ -2872,7 +2946,9 @@ function tripPicker(mini){
     const bn = bns.join("→");
 
     const showBase = bn && (!mini || bns.length > 1);
+
     b.innerHTML = `<span class="tl">${esc(t.one_line || t.name)}</span>` +
+      tripFlagHTML(t.id) +
       (showBase ? `<span class="tbs" title="這條行程每一晚的過夜基地">${esc(bn)}</span>` : "") +
       `<span class="tdays num">${t.days.length} 天</span>`;
 
@@ -2901,9 +2977,7 @@ function tripPicker(mini){
       `<span class="tcode">${esc(r.id)}</span>` +
       `<span class="nm">${esc(r.name)}</span>` +
 
-      (susp ? `<span class="stico" title="目前暫停">⛔</span>`
-            : warn ? `<span class="stico" title="注意">⚠</span>`
-            : note ? `<span class="stico info" title="提醒">ⓘ</span>` : "") +
+      (note ? `<span class="stico info" title="提醒">ⓘ</span>` : "") +
 
       (!mini && r.survey_remote
         ? `<span class="away rmt" title="${esc(r.survey_drive||"先開車到本島港口／機場，再接船班或航班")}">` +
@@ -3153,6 +3227,7 @@ function baseTripsBlock(b){
     el.title = t.name;
     el.innerHTML=`<span class="tcode">${esc(t.code||"")}</span>` +
       `<span class="tl">${esc(t.one_line||t.name)}</span>` +
+      tripFlagHTML(t.id) +
       `<span class="tdays num">${(t.days||[]).length} 天</span>`;
     el.onclick=()=>selectTrip(t.id, true);
     hoverWire(el, "trip", t.id);
@@ -3226,6 +3301,7 @@ function qTripSection(){
       `<span class="tl">${esc(t.name)}` +
       (t.one_line ? `<span class="qol">${esc(t.one_line)}</span>` : "") +
       `</span>` +
+      tripFlagHTML(t.id) +
       `<span class="tdays num">${(t.days||[]).length} 天</span>`;
     el.onclick=()=>selectTrip(t.id, true);
     hoverWire(el, "trip", t.id);
@@ -3415,7 +3491,7 @@ function renderPanel(){
     ()=>{ S.footOpen=!S.footOpen; save(); render(); }, "toplevel deskonly"));
   if (S.footOpen){
     const f=document.createElement("p"); f.className="foot";
-    f.innerHTML = (PUBLIC ? "" : "★ 是你自己收藏過的地方。") +
+    f.innerHTML =
       "清單上的「離基地」車程是實際道路算出來的，停留時間是估的；" +
       "推薦行程的各段車程同樣是實算、首尾自動接新竹，附近精選的距離取自景點之間的車程表。" +
       "山區路況、林道封閉、園區開放時間與店家公休都會變動，出發前請以官方公告與店家粉專為準；" +
