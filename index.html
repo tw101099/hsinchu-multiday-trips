@@ -943,6 +943,27 @@ button.tnight:hover .chev{color:var(--accent)}
 .tday > .detail{margin-left:5px; margin-right:0; width:100%}
 .lodgebox .detail{margin-left:0; margin-right:0}      
 
+.precheck{
+  margin:12px 0 0 5px; width:100%; padding:9px 11px; border-radius:8px;
+  background:var(--sunk); font-size:12px; line-height:1.65; color:var(--ink2);
+}
+.precheck .pch{margin:0 0 5px; font-size:12px; font-weight:700; letter-spacing:.02em; color:var(--ink2)}
+.precheck .pcg + .pcg{margin-top:7px}
+.precheck .pck{margin:0 0 1px; font-size:11px; color:var(--ink3); letter-spacing:.04em}
+.pcrow{
+  display:flex; align-items:flex-start; gap:6px; width:100%; text-align:left;
+  margin:0; padding:2px 5px; border:1px solid transparent; border-radius:6px;
+  background:none; color:inherit; font-size:12px; line-height:1.65;
+}
+.precheck button.pcrow:hover{background:var(--panel); border-color:var(--line2)}
+
+.precheck button.pcrow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent)}
+
+.precheck .pcn{font-weight:600; color:var(--ink2)}
+.precheck .pct{flex:1; min-width:0}
+
+.precheck .stico{line-height:inherit}
+
 .gw{font-family:inherit; max-width:230px; line-height:1.5}
 .gw b{font-size:14px}
 .gw span{display:block; font-size:12px; color:var(--ink2); margin-top:2px}
@@ -3221,6 +3242,71 @@ function renderTrips(){
   return box;
 }
 
+const PRECHECK_BOOK_TAG = "需預約";
+
+const BOOK_STRONG = /預約|訂位|預訂/;
+const BOOK_WEAK   = /申請|許可|入山|入園|登記/;
+const BOOK_NEG    = /不需|不用|無須|毋須/;
+const BOOK_REQ    = /須|必/;
+function bookLine(p){
+  const parts = String(p.note || "").split(/[。；]/)
+    .map(s => s.replace(/^[\s*　]+/, "").replace(/[\s*　]+$/, ""))
+    .filter(Boolean);
+  const pick = re => parts.find(s => re.test(s) && !(BOOK_NEG.test(s) && !BOOK_REQ.test(s)));
+  return pick(BOOK_STRONG) || pick(BOOK_WEAK) || "";
+}
+
+function precheckRow(p, icon, text){
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "pcrow row-select";
+  b.setAttribute("aria-pressed", S.sel === p.id);
+  b.innerHTML = (icon ? `<span class="stico">${icon}</span>` : "") +
+    `<span class="pct"><span class="pcn">${esc(p.name)}</span>　${esc(text || "")}</span>`;
+  b.title = `打開「${p.name}」的景點說明`;
+  b.onclick = () => select(p.id);
+  return b;
+}
+function precheckBlock(){
+  const t = S.trip ? TRIP_BY_ID[S.trip] : null;
+  if (!t) return null;
+
+  const seen = new Set(), stops = [];
+  tripStops().forEach(p => { if (!seen.has(p.id)){ seen.add(p.id); stops.push(p); } });
+  const st = stops.filter(p => p.status);
+  const bk = stops.filter(p => (p.tags || []).includes(PRECHECK_BOOK_TAG));
+
+  const se = stops.filter(p => p.season && !/^[（(]?(四季|全年)/.test(p.season));
+  const r = t.code ? CR[t.code] : null;
+  const corr = (r && (r.status || r.notice)) ? r : null;
+  if (!st.length && !corr && !bk.length && !se.length) return null;
+  const box = document.createElement("div"); box.className = "precheck";
+  const h = document.createElement("p"); h.className = "pch";
+  h.textContent = "出發前檢查";
+  box.appendChild(h);
+  const group = (label, fill) => {
+    const g = document.createElement("div"); g.className = "pcg";
+    const k = document.createElement("p"); k.className = "pck"; k.textContent = label;
+    g.appendChild(k); fill(g); box.appendChild(g);
+  };
+  if (st.length) group("開放狀態", g => st.forEach(p => g.appendChild(precheckRow(
+    p, p.status === "suspended" ? "⛔" : "⚠",
+    p.notice || (p.status === "suspended" ? "目前暫停開放" : "目前部分開放")))));
+  if (corr) group("這條路線", g => {
+    const susp = corr.status === "suspended";
+    const l = document.createElement("p"); l.className = "pcrow";
+    l.innerHTML = `<span class="stico">${susp ? "⛔" : "⚠"}</span>` +
+      `<span class="pct"><span class="pcn">${susp ? "目前暫停" : "通行提醒"}</span>　` +
+      `${esc(corr.notice || "")}</span>`;
+    g.appendChild(l);
+  });
+  if (bk.length) group("預約與申請", g => bk.forEach(p => g.appendChild(
+    precheckRow(p, "", bookLine(p) || "見景點說明"))));
+  if (se.length) group("季節限定", g => se.forEach(p => g.appendChild(
+    precheckRow(p, "", p.season))));
+  return box;
+}
+
 function renderItinerary(){
   const box=document.createElement("div"); box.className="tripbox";
   const days=tripLegs();
@@ -3273,6 +3359,9 @@ function renderItinerary(){
     nightRow(d, i, days.length).forEach(n=>wrap.appendChild(n));
     box.appendChild(wrap);
   });
+
+  const pc = precheckBlock();
+  if (pc) box.appendChild(pc);
 
   return box;
 }
