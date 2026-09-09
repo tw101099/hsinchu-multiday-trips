@@ -616,7 +616,10 @@ button{font:inherit; color:inherit; cursor:pointer}
 .row .t{display:flex; gap:6px; align-items:center; font-size:14.5px; font-weight:600}
 
 .row .m{font-size:12px; color:var(--ink2); margin-top:1px; display:flex; align-items:center; flex-wrap:wrap}
-.row .off{color:var(--ink3); font-size:11px; border:1px dashed var(--line2); border-radius:999px; padding:0 6px}
+
+.row .off, .trow .off{color:var(--ink3); font-size:11px; border:1px dashed var(--line2); border-radius:999px; padding:0 6px}
+
+.trow .off{flex:none; white-space:nowrap; font-weight:400}
 
 .tag{font-size:11px; padding:0 7px; border-radius:999px; border:1px solid var(--line2); color:var(--ink2); white-space:nowrap}
 
@@ -686,6 +689,37 @@ button{font:inherit; color:inherit; cursor:pointer}
 .tripbox{padding:0 14px 14px}
 
 .tpick{display:flex; flex-direction:column; gap:2px; padding:6px 0 2px}
+
+.tfilters{padding:2px 0 7px; margin-bottom:5px; border-bottom:1px solid var(--line)}
+.tfilters .frow{padding:3px 0}
+.tfilters .fkey{width:38px}
+
+.tfilters .chip{padding:2px 7px; font-size:12px}
+.tfilters .chips{gap:4px}
+.tfilters .chip .ic{margin-right:3px}
+
+.tfclear{display:flex; justify-content:flex-end; padding:4px 0 0}
+
+.tfhint{
+  display:flex; align-items:flex-start; gap:8px; margin:2px 0 7px; padding:6px 9px;
+  border:1px solid var(--line); border-radius:8px; background:var(--chip-bg);
+  font-size:12px; line-height:1.55; color:var(--ink2);
+}
+.tfhint .ht{flex:1; min-width:0}
+
+.tfhint .hx{
+  flex:none; display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; margin:-3px -4px -3px 0;
+  border:0; background:none; padding:0; cursor:pointer;
+  font-family:inherit; font-size:14px; line-height:1; color:var(--ink3);
+}
+.tfhint .hx:hover{color:var(--ink)}
+
+.tpick .nonear{margin:6px 2px 2px; font-size:12px; color:var(--ink3); line-height:1.6}
+
+.tpickmini .tfilters{padding:2px 0 6px; margin-bottom:4px}
+.tpickmini .tfilters .frow{padding:2px 0}
+.tpickmini .tfhint{margin:0 0 6px; padding:5px 8px; font-size:11.5px}
 
 .tpickmini .sec.mini{
   min-height:30px; margin-top:0; padding:2px 14px 4px; border-top:0;
@@ -1168,6 +1202,7 @@ const S = { view:"map", base:new Set(), themes:new Set(), diffs:new Set(), budge
             inseason:false, q:"", qtags:[], sel:null,
             basesOpen:false, listOpen:true, sort:"total", sortPicked:false, near:0, footOpen:false,
             trip:null, tripsOpen:true, itinOpen:true,
+            fDays:new Set(), fDrive:new Set(), fStam:new Set(), fTheme:new Set(), tipSeen:false,
             catsOpen:new Set(), corrOpen:new Set(),
             baseCatsOpen:new Set(), autoCats:new Set(), tripAdded:new Set() };
 
@@ -1384,6 +1419,8 @@ function save(){
       seen:true, basesOpen:S.basesOpen, listOpen:S.listOpen,
       footOpen:S.footOpen,
       trip:S.trip, tripsOpen:S.tripsOpen, itinOpen:S.itinOpen,
+      fDays:[...S.fDays], fDrive:[...S.fDrive], fStam:[...S.fStam], fTheme:[...S.fTheme],
+      tipSeen:S.tipSeen,
       catsOpen:[...S.catsOpen], corrOpen:[...S.corrOpen],
       baseCatsOpen:[...S.baseCatsOpen], autoCats:[...S.autoCats], tripAdded:[...S.tripAdded]
     }));
@@ -1406,6 +1443,12 @@ function restore(){
     if (d.listOpen===false) S.listOpen=false;   // 預設是展開，只有明確存過收合才收
     if (d.trip && TRIP_BY_ID[d.trip]) S.trip=d.trip;
     if (typeof d.tripsOpen==="boolean") S.tripsOpen=d.tripsOpen;
+
+    if (Array.isArray(d.fDays)) S.fDays=new Set(d.fDays.filter(x=>F_DAYS.some(o=>o.id===x)));
+    if (Array.isArray(d.fDrive)) S.fDrive=new Set(d.fDrive.filter(x=>F_DRIVE.some(o=>o.id===x)));
+    if (Array.isArray(d.fStam)) S.fStam=new Set(d.fStam.filter(x=>F_STAM.some(o=>o.id===x)));
+    if (Array.isArray(d.fTheme)) S.fTheme=new Set(d.fTheme.filter(x=>TRIP_THEMES.some(t=>t.id===x)));
+    if (d.tipSeen) S.tipSeen=true;   // 只往 true 走，沒有回頭（見 S 的說明）
     if (d.itinOpen===false) S.itinOpen=false;
 
     if (Array.isArray(d.catsOpen)) S.catsOpen=new Set(d.catsOpen.filter(x=>CT[x]));
@@ -2444,7 +2487,7 @@ function renderTripsMini(){
 
   const t = S.trip && TRIP_BY_ID[S.trip];
   box.appendChild(section("推薦行程",
-    S.trip ? null : `${TRIPS.length} 條`, S.tripsOpen,
+    S.trip ? null : `${tripCount()} 條`, S.tripsOpen,
     ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "mini",
     tripSub(t)));
   if (S.tripsOpen) box.appendChild(tripPicker(true));
@@ -2714,6 +2757,81 @@ function tripFlagHTML(tid){
   return f ? `<span class="stico" title="${esc(f.why)}">${f.ic}</span>` : "";
 }
 
+const F_DAYS = [
+  {id:"n2", label:"2 天"},
+  {id:"n3", label:"3 天"},
+  {id:"n4", label:"4 天以上"},
+];
+const F_DRIVE = [
+  {id:"d0", label:"2hr 內"},
+  {id:"d1", label:"2–4hr"},
+  {id:"d2", label:"4hr 以上"},
+];
+const F_STAM = [
+  {id:"s0", label:"輕鬆"},
+  {id:"s1", label:"一般"},
+  {id:"s2", label:"挑戰"},
+];
+
+const TRIP_THEMES = THEMES.filter(t=>t.id!=="lodging" && t.id!=="rest");
+
+const DRIVE_RE = /^\s*(\d+(?:\.\d+)?)\s*(?:[–—-]\s*(\d+(?:\.\d+)?)\s*)?hr\s*$/;
+function driveUpper(txt){
+  const m = DRIVE_RE.exec(txt||"");
+  return m ? parseFloat(m[2]||m[1]) : null;
+}
+function driveBand(u){ return u==null ? null : (u<=2 ? "d0" : (u<=4 ? "d1" : "d2")); }
+const TRIP_FACET = {};
+TRIPS.forEach(t=>{
+  const days = (t.days||[]).length;
+  const r = t.code ? CR[t.code] : null;
+  let hard=false, mid=false;
+  const th = new Set();
+  (t.days||[]).forEach(d=>(d.stops||[]).forEach(nm=>{
+    const p = BY_NAME[nm];
+    if (!p) return;
+    const df = p.diff || "";
+    if (df.indexOf("挑戰")>=0) hard=true;
+    else if (df.indexOf("健行")>=0) mid=true;
+    if (p.theme && p.theme!=="lodging" && p.theme!=="rest") th.add(p.theme);
+  }));
+  TRIP_FACET[t.id] = {
+    days: days<=2 ? "n2" : (days===3 ? "n3" : "n4"),
+    drive: driveBand(driveUpper(r && r.survey_drive)),
+    stam: hard ? "s2" : (mid ? "s1" : "s0"),
+    themes: th,
+  };
+});
+
+function anyTripFilter(){
+  return !!(S.fDays.size || S.fDrive.size || S.fStam.size || S.fTheme.size);
+}
+
+function tripPass(t){
+  const f = TRIP_FACET[t.id];
+  if (!f) return true;
+  if (S.fDays.size && !S.fDays.has(f.days)) return false;
+  if (S.fDrive.size && t.cat!=="ㄊ" && f.drive!=null && !S.fDrive.has(f.drive)) return false;
+  if (S.fStam.size && !S.fStam.has(f.stam)) return false;
+  if (S.fTheme.size){
+    let hit=false;
+    S.fTheme.forEach(x=>{ if (f.themes.has(x)) hit=true; });
+    if (!hit) return false;
+  }
+  return true;
+}
+
+function tripShown(t){ return tripPass(t) || S.trip===t.id; }
+
+function tripCount(){ return anyTripFilter() ? TRIPS.filter(tripShown).length : TRIPS.length; }
+
+function clearTripFilters(){
+  S.fDays=new Set(); S.fDrive=new Set(); S.fStam=new Set(); S.fTheme=new Set();
+  save(); render();
+}
+
+function toggleTripFilter(set, v){ toggleSet(set, v); save(); render(); }
+
 const BASE_CORRIDOR = {};
 BASES.forEach(b=>{
   const hit = (TRIPS_BY_BASE[b.id]||[]).filter(t=>t.cat===b.cat);
@@ -2930,8 +3048,48 @@ function alertBlock(susp, text){
   return a;
 }
 
+function tripHintRow(){
+  const h=document.createElement("div"); h.className="tfhint";
+  const t=document.createElement("span"); t.className="ht";
+  t.textContent="挑不定的話從「天數」這一列按起，再加車程或體力，底下這棵樹會跟著只剩符合的行程。";
+  const x=document.createElement("button");
+  x.type="button"; x.className="hx"; x.textContent="×";
+  x.title="不再顯示這則提示";
+  x.setAttribute("aria-label","關閉提示");
+  x.onclick=()=>{ S.tipSeen=true; save(); render(); };
+  h.append(t,x);
+  return h;
+}
+
+function tripFilterRows(mini){
+  const f=document.createElement("div"); f.className="tfilters";
+  f.appendChild(frow("天數", F_DAYS.map(o=>chip(
+    o.label, S.fDays.has(o.id), ()=>toggleTripFilter(S.fDays,o.id)))));
+
+  f.appendChild(frow("車程", F_DRIVE.map(o=>chip(
+    o.label, S.fDrive.has(o.id), ()=>toggleTripFilter(S.fDrive,o.id))),
+    "依走廊的人工盤點車程（區間取上緣）分帶；「跨區環線與離島」那一類量的不是離新竹"
+    + "的單程車程（縱走寫全程時數、離島是接駁加船班），所以不受這一列篩選"));
+  f.appendChild(frow("體力", F_STAM.map(o=>chip(
+    o.label, S.fStam.has(o.id), ()=>toggleTripFilter(S.fStam,o.id))),
+    "取這趟最硬的那一個停點：含挑戰級停點＝挑戰，含健行＝一般，其餘＝輕鬆"));
+  f.appendChild(frow("主題", TRIP_THEMES.map(t=>chip(
+    t.name, S.fTheme.has(t.id), ()=>toggleTripFilter(S.fTheme,t.id), t.color, t.id)),
+    "這趟行程含任一該主題的停點就算命中（住宿與補給驛站不列，那是每趟都有的）"));
+  if (anyTripFilter()){
+    const w=document.createElement("div"); w.className="tfclear";
+    const c=document.createElement("button");
+    c.type="button"; c.className="clear btn-act"; c.textContent="清除";
+    c.onclick=()=>clearTripFilters();
+    w.appendChild(c); f.appendChild(w);
+  }
+  return f;
+}
 function tripPicker(mini){
   const pick=document.createElement("div"); pick.className="tpick";
+
+  if (!S.tipSeen && !S.trip) pick.appendChild(tripHintRow());
+  pick.appendChild(tripFilterRows(mini));
 
   const selTrip = S.trip ? TRIP_BY_ID[S.trip] : null;
   const selCat = selTrip ? ((selTrip.cat && CT[selTrip.cat]) ? selTrip.cat : null) : null;
@@ -2947,8 +3105,11 @@ function tripPicker(mini){
 
     const showBase = bn && (!mini || bns.length > 1);
 
+    
+    const offTrip = anyTripFilter() && !tripPass(t);
     b.innerHTML = `<span class="tl">${esc(t.one_line || t.name)}</span>` +
       tripFlagHTML(t.id) +
+      (offTrip ? `<span class="off">不在篩選內</span>` : "") +
       (showBase ? `<span class="tbs" title="這條行程每一晚的過夜基地">${esc(bn)}</span>` : "") +
       `<span class="tdays num">${t.days.length} 天</span>`;
 
@@ -3005,10 +3166,12 @@ function tripPicker(mini){
   };
 
   
+
+  const filtering = anyTripFilter();
   const group=(cid, label, color, rows)=>{
     const flat=CORRIDORS.filter(r=>r.cat===cid &&
                                 (r.status==="suspended" || r.status==="warning"));
-    if (!rows.length && !flat.length) return;
+    if (filtering ? !rows.length : (!rows.length && !flat.length)) return;
     const g=document.createElement("div"); g.className="tcat";
     const open=S.catsOpen.has(cid);
     const h=document.createElement("button");
@@ -3027,7 +3190,8 @@ function tripPicker(mini){
       CORRIDORS.filter(r=>r.cat===cid).forEach(r=>{
         const sub=rows.filter(t=>t.code===r.id);
 
-        if (sub.length || r.status || r.notice)
+        
+        if (filtering ? sub.length : (sub.length || r.status || r.notice))
           list.appendChild(corrCard(r, color, sub));
       });
       const stray=rows.filter(t=>!CR[t.code]);
@@ -3038,8 +3202,16 @@ function tripPicker(mini){
     }
     pick.appendChild(g);
   };
-  CATS.forEach(c=>group(c.id, c.name, catColor(c), TRIPS.filter(t=>t.cat===c.id)));
-  group(null, "未分類", catColor(null), TRIPS.filter(t=>!CT[t.cat]));
+
+  const pool = filtering ? TRIPS.filter(tripShown) : TRIPS;
+  CATS.forEach(c=>group(c.id, c.name, catColor(c), pool.filter(t=>t.cat===c.id)));
+  group(null, "未分類", catColor(null), pool.filter(t=>!CT[t.cat]));
+
+  if (filtering && !pick.querySelector(".tcat")){
+    const e=document.createElement("p"); e.className="nonear";
+    e.textContent="沒有行程同時符合這些條件——把其中一組條件放寬，或按上面的「清除」重來。";
+    pick.appendChild(e);
+  }
   return pick;
 }
 
@@ -3442,10 +3614,11 @@ function renderPanel(){
   if (TRIPS.length){
 
     
+
     const t = S.trip && TRIP_BY_ID[S.trip];
 
     tripHost.appendChild(section("推薦行程",
-      S.trip ? null : `${TRIPS.length} 條`, S.tripsOpen,
+      S.trip ? null : `${tripCount()} 條`, S.tripsOpen,
       ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "toplevel deskonly sectrips",
       tripSub(t)));
     if (S.tripsOpen) tripHost.appendChild(renderTrips());
