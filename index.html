@@ -1018,6 +1018,10 @@ button.tnight:hover .chev{color:var(--accent)}
 
 .basepin .pinlbl{left:26px}
 
+.basepin.big .bp{width:32px; height:32px; margin:-5px 0 0 -5px}
+.basepin.big .bp svg{width:17px; height:17px}
+.basepin.big .pinlbl{left:31px}
+
 .basepin.dim{opacity:.4}
 
 .pin.dim, .lodgemk.dim{opacity:.4}
@@ -1026,6 +1030,8 @@ button.tnight:hover .chev{color:var(--accent)}
   content:""; position:absolute; inset:-6px; border-radius:999px;
   border:2.5px solid var(--tc, var(--accent)); pointer-events:none;
 }
+
+.basepin.big.ftrip::after{inset:-10.5px}
 
 .zonepin .zp{
   display:block; width:14px; height:14px; border-radius:4px;
@@ -1054,8 +1060,8 @@ button.tnight:hover .chev{color:var(--accent)}
 .basepin.hov{opacity:1}
 
 .basepin.hovbase{pointer-events:none}
+
 .basepin.hovbase .bp{
-  transform:scale(1.22);
   outline:2.5px solid var(--accent); outline-offset:1px;
   box-shadow:0 1px 6px rgba(var(--sh),.42), 0 0 0 6px rgba(var(--accent-rgb),.18);
 }
@@ -1700,6 +1706,8 @@ const STOP_LABEL_ZOOM = 11;
 
 let STOP_MARK = new Set();
 
+let PLACE_MARKS_ON = false;
+
 const stopBig = p => STOP_MARK.has(p.id) && zoom >= STOP_LABEL_ZOOM;
 const placeIsIcon = p => zoom >= ICON_ZOOM || stopBig(p) || placeOn(p.id);
 
@@ -1709,7 +1717,10 @@ const Z_HOVER_PIN  = 5100;
 
 function stopRing(p, z){
   const m = marks[p.id];
-  const size = !m ? 28 : (stopBig(p) ? 36 : (placeIsIcon(p) ? 28 : 18));
+  const size = stopBig(p) ? 36
+             : placeIsIcon(p) ? 28
+             : (m || PLACE_MARKS_ON) ? 18
+             : 28;
   const h = size / 2;
   return L.marker([p.lat, p.lng], {
     icon: L.divIcon({className:"ringmk", iconSize:[size,size], iconAnchor:[h,h],
@@ -1868,6 +1879,8 @@ function draw(){
 
     const focused = !!(S.trip || BASE_SEL || S.sel || anyFilter());
 
+    PLACE_MARKS_ON = focused || zoom >= POI_ZOOM;
+
     if (focused || zoom >= POI_ZOOM) list.forEach(p=>{
 
       addPlaceMarker(p, !!(VIS && !stopIds.has(p.id) && !placeOn(p.id)));
@@ -1953,8 +1966,10 @@ function drawBasePins(){
     const isFtrip = ftripActive && TRIP_BASES.has(b.id);
 
     const dim = !!(trip && !TRIP_BASES.has(b.id) && !sel && BASE_SEL!==b.id);
+
+    const big = !!(trip && TRIP_BASES.has(b.id) && zoom >= STOP_LABEL_ZOOM);
     const cls = "basepin" + (BASE_SEL===b.id?" on":"") + (sel?" sel":"") + (isFtrip?" ftrip":"") +
-                (dim?" dim":"");
+                (big?" big":"") + (dim?" dim":"");
 
     const m=L.marker(b.anchor, {
       icon:L.divIcon({className:cls, iconSize:[22,22], iconAnchor:[11,11],
@@ -2251,7 +2266,8 @@ function hoverPlaceOff(){
 
 function hovBasePin(b){
 
-  return L.marker(b.anchor, {icon:L.divIcon({className:"basepin hovbase", iconSize:[22,22], iconAnchor:[11,11],
+  const big = zoom >= STOP_LABEL_ZOOM ? " big" : "";
+  return L.marker(b.anchor, {icon:L.divIcon({className:"basepin hovbase"+big, iconSize:[22,22], iconAnchor:[11,11],
                         html:`<span class="bp" style="background:${baseColor(b)}">` +
                              `<svg viewBox="0 0 16 16"><path d="M2.5 8.5 8 3l5.5 5.5M4 7v6h8V7"/></svg></span>` +
                              `<span class="pinlbl">${esc(b.name)}</span>`}),
@@ -2271,8 +2287,11 @@ function hoverRingsOn(ids){
     }
     const el=m.getElement && m.getElement();
     if (!el) return;
-    HOVER_RINGS.push({bid, m, el, z:m.options.zIndexOffset});
+
+    const added = zoom >= STOP_LABEL_ZOOM && !el.classList.contains("big");
+    HOVER_RINGS.push({bid, m, el, z:m.options.zIndexOffset, big:added});
     el.classList.add("hov");
+    if (added) el.classList.add("big");
     if (m.setZIndexOffset) m.setZIndexOffset(Z_HOVER_BASE);
   });
   if (ghosts){ ghosts.addTo(map); HOVER_LAYER=ghosts; }
@@ -2282,6 +2301,7 @@ function hoverRingsOff(){
 
     if (bmarks[o.bid]!==o.m) return;
     o.el.classList.remove("hov");
+    if (o.big) o.el.classList.remove("big");   // 只拔自己加的那一份（見 hoverRingsOn 的 `added`）
     if (o.m.setZIndexOffset) o.m.setZIndexOffset(o.z);
   });
   HOVER_RINGS=[];
