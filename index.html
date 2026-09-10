@@ -187,10 +187,18 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 .logo{font-weight:700; white-space:nowrap}
 .logo small{display:block; font-weight:400; font-size:11px; color:var(--ink3); letter-spacing:.06em}
-.seg{display:flex; background:var(--sunk); border-radius:999px; padding:2px}
-.seg button{border:0; background:none; padding:4px 13px; border-radius:999px; font-size:13px; color:var(--ink2)}
 
-.seg button[aria-pressed=true]{background:var(--accent); color:var(--on-accent)}
+.seg{display:flex; align-items:stretch; gap:2px; padding:2px;
+  background:var(--sunk); border:1px solid var(--line); border-radius:999px}
+.seg button{
+  border:0; border-radius:999px; padding:4px 13px; font-size:13px;
+  background:none; color:var(--ink2);
+  transition:background-color .15s, color .15s, box-shadow .15s;
+}
+.seg button:hover{background:var(--accent-soft); color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
+
+.seg button[aria-pressed=true]{background:var(--accent); color:var(--on-accent); box-shadow:none}
+.seg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 
 #qwrap{
 
@@ -393,7 +401,6 @@ button{font:inherit; color:inherit; cursor:pointer}
   .panel{width:410px; flex:0 0 410px; border-top:0; border-right:1px solid var(--line)}
   .main.nomap .panel{width:auto; flex:1 1 auto}
 
-  .main.deskfold:not(.nomap) > .panel{display:none}
 }
 
 @media (min-width:1280px) and (min-height:560px){
@@ -420,6 +427,46 @@ button{font:inherit; color:inherit; cursor:pointer}
     padding:4px 14px; min-height:38px;
     border-bottom:0; box-shadow:0 1px 0 var(--line);
   }
+
+  .panel.twolane.foldt{width:441px; flex:0 0 441px}
+  .panel.twolane.folde{width:381px; flex:0 0 381px}
+  .panel.twolane.foldt.folde{width:81px; flex:0 0 81px}
+  .main.nomap .panel.twolane.foldt,
+  .main.nomap .panel.twolane.folde,
+  .main.nomap .panel.twolane.foldt.folde{width:auto; flex:1 1 auto}
+
+  .panel.twolane .lane-trip.rail,
+  .panel.twolane .lane-explore.rail{
+    flex:0 0 40px; width:40px; min-width:40px; overflow:hidden;
+  }
+  .railbtn{
+    width:100%; height:100%; border:0; background:var(--sunk); color:var(--ink2);
+    font-size:12.5px; letter-spacing:.12em;
+
+    display:flex; align-items:center; justify-content:center; padding:12px 0;
+    writing-mode:vertical-rl; text-orientation:upright;
+    transition:background-color .15s, color .15s;
+  }
+  .railbtn:hover{background:var(--accent-soft); color:var(--accent)}
+  .railbtn:focus-visible{outline:2px solid var(--accent); outline-offset:-3px}
+
+  .lanefold{
+    flex:none; display:flex; align-items:center; justify-content:center;
+
+    min-width:24px; min-height:38px;
+    padding:0 2px; border:0; background:none; color:var(--ink3);
+  }
+  .lanefold:hover{color:var(--accent)}
+
+  .lanefold .chev{margin-left:0; transform:rotate(90deg)}
+
+  .sechead.hasfold > .trclose{margin-right:2px}
+  .sechead.hasfold > .lanefold{margin-right:14px}
+
+  .lanefoldslot{position:sticky; top:0; z-index:500; height:0;
+                display:flex; justify-content:flex-end; overflow:visible}
+  .lanefoldslot .lanefold{height:38px; margin-right:12px; background:var(--panel)}
+  .panel.twolane.canfold .lane-explore > .sec.basesec{padding-right:36px}
 }
 
 .fbar{
@@ -1186,7 +1233,7 @@ button.tnight:hover .chev{color:var(--accent)}
   .rrow, .trow, .row, .tstop, .tnight,
   .lodgebox button.zhead{min-height:40px}
 
-  .seg button{min-height:36px}
+  .seg button{min-height:34px}
   #theme{min-width:40px; min-height:40px}
   #qwrap{min-height:40px}
 
@@ -1296,7 +1343,7 @@ const S = { view:"map", base:new Set(), themes:new Set(), diffs:new Set(),
             basesOpen:false, listOpen:true, sort:"total", sortPicked:false, near:0, footOpen:false,
             trip:null, tripsOpen:true, itinOpen:true,
             fDays:new Set(), fDrive:new Set(), fStam:new Set(), fFeel:new Set(), tipSeen:false,
-            deskFold:false,
+            foldTrip:false, foldExp:false,
             catsOpen:new Set(), corrOpen:new Set(),
             baseCatsOpen:new Set(), autoCats:new Set(), tripAdded:new Set() };
 
@@ -1513,7 +1560,7 @@ function save(){
       footOpen:S.footOpen,
       trip:S.trip, tripsOpen:S.tripsOpen, itinOpen:S.itinOpen,
       fDays:[...S.fDays], fDrive:[...S.fDrive], fStam:[...S.fStam], fFeel:[...S.fFeel],
-      tipSeen:S.tipSeen, deskFold:S.deskFold,
+      tipSeen:S.tipSeen, foldTrip:S.foldTrip, foldExp:S.foldExp,
       catsOpen:[...S.catsOpen], corrOpen:[...S.corrOpen],
       baseCatsOpen:[...S.baseCatsOpen], autoCats:[...S.autoCats], tripAdded:[...S.tripAdded]
     }));
@@ -1543,7 +1590,9 @@ function restore(){
 
     if (Array.isArray(d.fFeel)) S.fFeel=new Set(d.fFeel.filter(x=>FEEL_VOCAB.includes(x)));
     if (d.tipSeen) S.tipSeen=true;   // 只往 true 走，沒有回頭（見 S 的說明）
-    if (d.deskFold===true) S.deskFold=true;
+
+    if (d.foldTrip===true) S.foldTrip=true;
+    if (d.foldExp===true) S.foldExp=true;
     if (d.itinOpen===false) S.itinOpen=false;
 
     if (Array.isArray(d.catsOpen)) S.catsOpen=new Set(d.catsOpen.filter(x=>CT[x]));
@@ -2238,17 +2287,6 @@ function renderMapBtns(){
     box.appendChild(ib);
   }
 
-  if (DESK_MQ.matches && S.view==="map"){
-    const fb=document.createElement("button");
-    fb.className="btn-act";
-    fb.setAttribute("aria-pressed", S.deskFold);
-    fb.textContent = S.deskFold ? "展開清單" : "收合清單";
-    fb.title = S.deskFold
-      ? "把左邊的行程與景點清單展開回來"
-      : "把左邊的行程與景點清單收起來，地圖佔滿整個畫面";
-    fb.onclick=()=>{ S.deskFold=!S.deskFold; save(); render(); resizeMap(); };
-    box.appendChild(fb);
-  }
 }
 function resizeMap(){
   if (!ready) return;
@@ -3127,6 +3165,8 @@ function tripStopIds(){
 }
 
 function selectTrip(id, fromBase){
+
+  unfoldLane("trip");
   S.trip = (S.trip===id) ? null : id;   // 再點一次同一條＝關掉（連帶收掉地圖上的路線）
 
   NIGHT = null;
@@ -3687,6 +3727,7 @@ function selectBase(id, inPlace){
   if (b && b.anchor && ready) map.setView(b.anchor, Math.max(map.getZoom(),12), {animate:false});
 
   if (!isMapOnly()){
+    unfoldLane("exp");
     openBaseRow(id);
     if (inPlace) SCROLL_NEAR=`.ghead[data-bid="${id}"]`;
     else SCROLL_BASE=id;
@@ -4045,16 +4086,66 @@ const DESK_MQ = matchMedia("(min-width:900px) and (min-height:560px)");
 function scrollBox(){
   return document.querySelector("#panel > .lane-explore") || document.getElementById("panel");
 }
+
+const LANE_KEEP = {exp:0, trip:0};
+const isRail = el => !!(el && el.classList && el.classList.contains("rail"));
+function setLaneFold(which, v){
+  if (which==="trip") S.foldTrip=v; else S.foldExp=v;
+
+  save(); render(); resizeMap();
+}
+
+function laneFoldBtn(which){
+  const b=document.createElement("button");
+  b.type="button"; b.className="lanefold";
+  b.innerHTML=CHEV_SVG;
+  const nm = which==="trip" ? "行程" : "景點";
+  b.title=`收合${nm}這一欄，把空間讓給地圖`;
+  b.setAttribute("aria-label", b.title);
+  b.setAttribute("aria-expanded","true");
+
+  b.onclick=e=>{ e.stopPropagation(); setLaneFold(which,true); };
+  return b;
+}
+
+function railBtn(which){
+  const b=document.createElement("button");
+  b.type="button"; b.className="railbtn";
+  const nm = which==="trip" ? "行程" : "景點";
+  b.textContent=nm;
+  b.title=`展開${nm}這一欄`;
+  b.setAttribute("aria-label", b.title);
+  b.setAttribute("aria-expanded","false");
+  b.onclick=()=>setLaneFold(which,false);
+  return b;
+}
+
+function unfoldLane(which){
+  if (HASH_APPLYING) return;
+  const k = which==="trip" ? "foldTrip" : "foldExp";
+  if (!S[k]) return;
+  S[k]=false;
+  resizeMap();      // 寬度變了（見 setLaneFold 那段的理由）
+}
 function renderPanel(){
   const panel=document.getElementById("panel");
   const two=isTwoLane();
+
   const oldBox=scrollBox();
-  const keep=oldBox?oldBox.scrollTop:0;
+  if (oldBox && !isRail(oldBox)) LANE_KEEP.exp=oldBox.scrollTop;
+  const keep=LANE_KEEP.exp;
   const oldTrip=panel.querySelector(":scope > .lane-trip");
-  const keepTrip=oldTrip?oldTrip.scrollTop:0;
+  if (oldTrip && !isRail(oldTrip)) LANE_KEEP.trip=oldTrip.scrollTop;
+  const keepTrip=LANE_KEEP.trip;
   panel.innerHTML="";
   panel.classList.toggle("twolane", two);
   LANE_STATE=two;   // 讓 syncLanes 知道現在畫的是哪一種，不用再自己去比 DOM
+
+  const foldable = two && S.view==="map";
+  const foldT = foldable && S.foldTrip, foldE = foldable && S.foldExp;
+  panel.classList.toggle("canfold", foldable);
+  panel.classList.toggle("foldt", foldT);
+  panel.classList.toggle("folde", foldE);
 
   let tripHost=panel, expHost=panel;
   if (two){
@@ -4062,6 +4153,23 @@ function renderPanel(){
     expHost=document.createElement("div"); expHost.className="lane lane-explore";
     expHost.addEventListener("scroll", updateTotop, {passive:true});
     panel.append(tripHost, expHost);
+
+    if (foldT){
+      tripHost.classList.add("rail");
+      tripHost.appendChild(railBtn("trip"));
+      tripHost=document.createElement("div");
+    }
+    if (foldE){
+      expHost.classList.add("rail");
+      expHost.appendChild(railBtn("exp"));
+      expHost=document.createElement("div");
+    }
+
+    if (foldable && !foldE){
+      const slot=document.createElement("div"); slot.className="lanefoldslot";
+      slot.appendChild(laneFoldBtn("exp"));
+      expHost.appendChild(slot);
+    }
   }
 
   if (TRIPS.length){
@@ -4075,15 +4183,21 @@ function renderPanel(){
       ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "toplevel deskonly sectrips",
       tripSub(t));
 
-    if (S.trip){
+    
+    const foldBtn = foldable ? laneFoldBtn("trip") : null;
+    if (S.trip || foldBtn){
       const head=document.createElement("div"); head.className="sechead trhead";
-      const x=document.createElement("button");
-      x.type="button"; x.className="trclose";
-      x.textContent="×";
-      x.title="關閉行程，返回行程全覽";
-      x.setAttribute("aria-label","關閉行程，返回行程全覽");
-      x.onclick=e=>{ e.stopPropagation(); selectTrip(S.trip); };
-      head.append(trsec, x);
+      head.appendChild(trsec);
+      if (S.trip){
+        const x=document.createElement("button");
+        x.type="button"; x.className="trclose";
+        x.textContent="×";
+        x.title="關閉行程，返回行程全覽";
+        x.setAttribute("aria-label","關閉行程，返回行程全覽");
+        x.onclick=e=>{ e.stopPropagation(); selectTrip(S.trip); };
+        head.appendChild(x);
+      }
+      if (foldBtn){ head.classList.add("hasfold"); head.appendChild(foldBtn); }
       tripHost.appendChild(head);
     } else {
       tripHost.appendChild(trsec);
@@ -4197,14 +4311,19 @@ function renderPanel(){
 
   
 
+  
   if (SCROLL_LIST){
-    const sec=(!two && (box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin")))
-              || box.querySelector(".sec.seclist");
-    if (sec){
-      const hdr=two?tripHost.querySelector(":scope > .sec.toplevel"):null;
-      const secH=sec.getBoundingClientRect().height;
-      const want=hdr?(hdr.getBoundingClientRect().bottom-secH):stopAt(false);
-      box.scrollTop += (sec.getBoundingClientRect().top - want);
+    const grp = two ? box.querySelector(".results .ghead.tripgrp") : null;
+    if (grp) anchorTo(grp, stopAt(true));
+    else {
+      const sec=(!two && (box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin")))
+                || box.querySelector(".sec.seclist");
+      if (sec){
+        const hdr=two?tripHost.querySelector(":scope > .sec.toplevel"):null;
+        const secH=sec.getBoundingClientRect().height;
+        const want=hdr?(hdr.getBoundingClientRect().bottom-secH):stopAt(false);
+        box.scrollTop += (sec.getBoundingClientRect().top - want);
+      }
     }
     SCROLL_LIST=false;
   }
@@ -4291,6 +4410,8 @@ function select(id, keepBase, inPlace){
     }
   }
   if (!isMapOnly()){
+
+    unfoldLane("exp");
     S.listOpen=true;
     if (inPlace) SCROLL_NEAR=`.results > .row[data-id="${id}"]`;
     else SCROLL_TO=id;
@@ -4339,8 +4460,7 @@ function render(){
   document.getElementById("tally").innerHTML =
     `<span class="num">${shown().length}</span> / <span class="num">${PLACES.length}</span>`;
 
-  document.getElementById("main").classList.toggle("deskfold", S.deskFold);
-
+  
   syncReset();
   draw(); renderPanel(); renderMapBtns(); renderMapCard(); updateTotop();
   syncHash();
