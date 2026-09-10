@@ -359,6 +359,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 
   .main:not(.nomap) .tripbox,
 
+  .main:not(.nomap) .qtrips,
+
   .main:not(.nomap) .sec.basesec,
   .main:not(.nomap) .rlist,
 
@@ -375,6 +377,8 @@ button{font:inherit; color:inherit; cursor:pointer}
   .main{flex-direction:row}
   .panel{width:410px; flex:0 0 410px; border-top:0; border-right:1px solid var(--line)}
   .main.nomap .panel{width:auto; flex:1 1 auto}
+
+  .main.deskfold:not(.nomap) > .panel{display:none}
 }
 
 @media (min-width:1280px) and (min-height:560px){
@@ -542,7 +546,10 @@ button{font:inherit; color:inherit; cursor:pointer}
 .qbh .n{flex:none; font-size:11px; font-weight:400; color:var(--ink3);
         font-variant-numeric:tabular-nums}
 
-.results > .rrow, .results > .trow{margin-left:4px; width:calc(100% - 4px)}
+.results > .rrow{margin-left:4px; width:calc(100% - 4px)}
+
+.qtrips{padding:0 14px}
+.qtrips .trow{margin-left:4px; width:calc(100% - 4px)}
 
 .trow .tl .qol{margin-left:7px; font-size:11.5px; color:var(--ink3)}
 .trow[aria-pressed=true] .tl .qol{color:var(--ink2); font-weight:400}
@@ -631,8 +638,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 .main.nomap .results{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:0 14px; align-items:start}
 .main.nomap .ghead, .main.nomap .gintro, .main.nomap .detail,
 .main.nomap .results > .blodge,
+
 .main.nomap .results > .qbh, .main.nomap .results > .rrow,
-.main.nomap .results > .trow,
 .main.nomap .results .tcath{grid-column:1/-1}
 
 @media (min-width:700px){
@@ -694,9 +701,9 @@ button{font:inherit; color:inherit; cursor:pointer}
 .tfilters .frow{padding:3px 0}
 .tfilters .fkey{width:38px}
 
-.tfilters .chip{padding:2px 7px; font-size:12px}
-.tfilters .chips{gap:4px}
-.tfilters .chip .ic{margin-right:3px}
+.tfilters .chip, .lfilters .chip{padding:2px 7px; font-size:12px}
+.tfilters .chips, .lfilters .chips{gap:4px}
+.tfilters .chip .ic, .lfilters .chip .ic{margin-right:3px}
 
 .tfclear{display:flex; justify-content:flex-end; padding:4px 0 0}
 
@@ -1236,6 +1243,7 @@ const S = { view:"map", base:new Set(), themes:new Set(), diffs:new Set(), budge
             basesOpen:false, listOpen:true, sort:"total", sortPicked:false, near:0, footOpen:false,
             trip:null, tripsOpen:true, itinOpen:true,
             fDays:new Set(), fDrive:new Set(), fStam:new Set(), fTheme:new Set(), tipSeen:false,
+            deskFold:false,
             catsOpen:new Set(), corrOpen:new Set(),
             baseCatsOpen:new Set(), autoCats:new Set(), tripAdded:new Set() };
 
@@ -1453,7 +1461,7 @@ function save(){
       footOpen:S.footOpen,
       trip:S.trip, tripsOpen:S.tripsOpen, itinOpen:S.itinOpen,
       fDays:[...S.fDays], fDrive:[...S.fDrive], fStam:[...S.fStam], fTheme:[...S.fTheme],
-      tipSeen:S.tipSeen,
+      tipSeen:S.tipSeen, deskFold:S.deskFold,
       catsOpen:[...S.catsOpen], corrOpen:[...S.corrOpen],
       baseCatsOpen:[...S.baseCatsOpen], autoCats:[...S.autoCats], tripAdded:[...S.tripAdded]
     }));
@@ -1482,6 +1490,7 @@ function restore(){
     if (Array.isArray(d.fStam)) S.fStam=new Set(d.fStam.filter(x=>F_STAM.some(o=>o.id===x)));
     if (Array.isArray(d.fTheme)) S.fTheme=new Set(d.fTheme.filter(x=>TRIP_THEMES.some(t=>t.id===x)));
     if (d.tipSeen) S.tipSeen=true;   // 只往 true 走，沒有回頭（見 S 的說明）
+    if (d.deskFold===true) S.deskFold=true;
     if (d.itinOpen===false) S.itinOpen=false;
 
     if (Array.isArray(d.catsOpen)) S.catsOpen=new Set(d.catsOpen.filter(x=>CT[x]));
@@ -1579,18 +1588,28 @@ function termHit(p, hay, t){
   return hay.includes(t);
 }
 
-function passExcept(p, skip){
-  if (skip!=="base" && S.base.size && !S.base.has(p.base)) return false;
-  if (skip!=="themes" && S.themes.size && !S.themes.has(p.theme)) return false;
-  if (skip!=="diffs" && S.diffs.size && !S.diffs.has(p.diff)) return false;
-  if (skip!=="budget" && S.budget.size && !S.budget.has(bud(p))) return false;
-  if (skip!=="inseason" && S.inseason && !months(p).includes(MONTH)) return false;
-  if (S.q || S.qtags.length){
-    const hay=(p.name+p.town+p.desc+p.note+p.season+p.kind+(p.tags||[]).join("")).toLowerCase();
-    if (S.q && !termHit(p, hay, S.q)) return false;
-    for (const t of S.qtags) if (!termHit(p, hay, t)) return false;
-  }
+const PASS_AXES = [
+  {id:"base",     blocks:p=>S.base.size   && !S.base.has(p.base),         clear:()=>{ S.base=new Set(); }},
+  {id:"themes",   blocks:p=>S.themes.size && !S.themes.has(p.theme),      clear:()=>{ S.themes=new Set(); }},
+  {id:"diffs",    blocks:p=>S.diffs.size  && !S.diffs.has(p.diff),        clear:()=>{ S.diffs=new Set(); }},
+  {id:"budget",   blocks:p=>S.budget.size && !S.budget.has(bud(p)),       clear:()=>{ S.budget=new Set(); }},
+  {id:"inseason", blocks:p=>S.inseason    && !months(p).includes(MONTH),  clear:()=>{ S.inseason=false; }},
+];
+
+function matchQ(p){
+  if (!(S.q || S.qtags.length)) return true;
+  const hay=(p.name+p.town+p.desc+p.note+p.season+p.kind+(p.tags||[]).join("")).toLowerCase();
+  if (S.q && !termHit(p, hay, S.q)) return false;
+  for (const t of S.qtags) if (!termHit(p, hay, t)) return false;
   return true;
+}
+function passExcept(p, skip){
+  for (const a of PASS_AXES) if (a.id!==skip && a.blocks(p)) return false;
+  return matchQ(p);
+}
+
+function releaseFor(p){
+  PASS_AXES.forEach(a=>{ if (a.blocks(p)) a.clear(); });
 }
 const pass = p => passExcept(p, null);
 const shown = () => {
@@ -2154,6 +2173,18 @@ function renderMapBtns(){
       S.view="list"; syncViews(); openItin(); SCROLL_ITIN=true; save(); render();
     };
     box.appendChild(ib);
+  }
+
+  if (DESK_MQ.matches && S.view==="map"){
+    const fb=document.createElement("button");
+    fb.className="btn-act";
+    fb.setAttribute("aria-pressed", S.deskFold);
+    fb.textContent = S.deskFold ? "展開清單" : "收合清單";
+    fb.title = S.deskFold
+      ? "把左邊的行程與景點清單展開回來"
+      : "把左邊的行程與景點清單收起來，地圖佔滿整個畫面";
+    fb.onclick=()=>{ S.deskFold=!S.deskFold; save(); render(); resizeMap(); };
+    box.appendChild(fb);
   }
 }
 function resizeMap(){
@@ -2921,18 +2952,25 @@ function anyTripFilter(){
   return !!(S.fDays.size || S.fDrive.size || S.fStam.size || S.fTheme.size);
 }
 
-function tripPass(t){
+function tripPassWith(t, sets){
   const f = TRIP_FACET[t.id];
   if (!f) return true;
-  if (S.fDays.size && !S.fDays.has(f.days)) return false;
-  if (S.fDrive.size && t.cat!=="ㄊ" && f.drive!=null && !S.fDrive.has(f.drive)) return false;
-  if (S.fStam.size && !S.fStam.has(f.stam)) return false;
-  if (S.fTheme.size){
+  if (sets.fDays.size && !sets.fDays.has(f.days)) return false;
+  if (sets.fDrive.size && t.cat!=="ㄊ" && f.drive!=null && !sets.fDrive.has(f.drive)) return false;
+  if (sets.fStam.size && !sets.fStam.has(f.stam)) return false;
+  if (sets.fTheme.size){
     let hit=false;
-    S.fTheme.forEach(x=>{ if (f.themes.has(x)) hit=true; });
+    sets.fTheme.forEach(x=>{ if (f.themes.has(x)) hit=true; });
     if (!hit) return false;
   }
   return true;
+}
+function tripPass(t){ return tripPassWith(t, S); }
+
+function tripChipCount(key, v){
+  const sets={fDays:S.fDays, fDrive:S.fDrive, fStam:S.fStam, fTheme:S.fTheme};
+  sets[key]=new Set([v]);
+  return TRIPS.filter(t=>tripPassWith(t, sets)).length;
 }
 
 function tripShown(t){ return tripPass(t) || S.trip===t.id; }
@@ -3184,20 +3222,26 @@ function tripHintRow(){
   return h;
 }
 
+const tchipLabel = (text, n) => `${esc(text)}<span class="cnt num">${n}</span>`;
 function tripFilterRows(mini){
   const f=document.createElement("div"); f.className="tfilters";
   f.appendChild(frow("天數", F_DAYS.map(o=>chip(
-    o.label, S.fDays.has(o.id), ()=>toggleTripFilter(S.fDays,o.id)))));
+    tchipLabel(o.label, tripChipCount("fDays", o.id)),
+    S.fDays.has(o.id), ()=>toggleTripFilter(S.fDays,o.id)))));
 
+  
   f.appendChild(frow("車程", F_DRIVE.map(o=>chip(
-    o.label, S.fDrive.has(o.id), ()=>toggleTripFilter(S.fDrive,o.id))),
+    tchipLabel(o.label, tripChipCount("fDrive", o.id)),
+    S.fDrive.has(o.id), ()=>toggleTripFilter(S.fDrive,o.id))),
     "依走廊的人工盤點車程（區間取上緣）分帶；「跨區環線與離島」那一類量的不是離新竹"
     + "的單程車程（縱走寫全程時數、離島是接駁加船班），所以不受這一列篩選"));
   f.appendChild(frow("體力", F_STAM.map(o=>chip(
-    o.label, S.fStam.has(o.id), ()=>toggleTripFilter(S.fStam,o.id))),
+    tchipLabel(o.label, tripChipCount("fStam", o.id)),
+    S.fStam.has(o.id), ()=>toggleTripFilter(S.fStam,o.id))),
     "取這趟最硬的那一個停點：含挑戰級停點＝挑戰，含健行＝一般，其餘＝輕鬆"));
   f.appendChild(frow("主題", TRIP_THEMES.map(t=>chip(
-    t.name, S.fTheme.has(t.id), ()=>toggleTripFilter(S.fTheme,t.id), t.color, t.id)),
+    tchipLabel(t.name, tripChipCount("fTheme", t.id)),
+    S.fTheme.has(t.id), ()=>toggleTripFilter(S.fTheme,t.id), t.color, t.id)),
     "這趟行程含任一該主題的停點就算命中（住宿與補給驛站不列，那是每趟都有的）"));
   if (anyTripFilter()){
     const w=document.createElement("div"); w.className="tfclear";
@@ -3686,6 +3730,33 @@ function qTripSection(){
   return frag;
 }
 
+function qGlobalSection(list){
+  if (!qTerms().length || list.length) return null;
+  const hits=PLACES.filter(matchQ);
+  if (!hits.length) return null;
+  const frag=document.createDocumentFragment();
+  const h=document.createElement("div");
+  h.className="qbh";
+  h.innerHTML=`<span class="nm">全站符合</span><span class="n">${hits.length} 個</span>`;
+  frag.appendChild(h);
+  hits.slice(0,3).forEach(p=>{
+    const b=BS[p.base];
+    const where=(b && b.name) || p.town || "";
+    const el=document.createElement("button");
+    el.type="button"; el.className="rrow row-select";
+    el.setAttribute("aria-pressed", S.sel===p.id);
+    el.dataset.pid=p.id;
+    el.title=`打開「${p.name}」，並放下把它擋在清單外的那幾組條件`;
+    el.innerHTML=`<span class="qbi" aria-hidden="true">⌕</span>` +
+      `<span class="nm">${esc(p.name)}</span>` +
+      (where ? `<span class="n">${esc(where)}</span>` : "");
+    el.onclick=()=>{ releaseFor(p); EXTRA=new Set(); save(); select(p.id); };
+    hoverWire(el, "place", p.id);
+    frag.appendChild(el);
+  });
+  return frag;
+}
+
 function renderList(){
   const wrap=document.createElement("div"); wrap.className="results";
   const list=shown();
@@ -3693,8 +3764,9 @@ function renderList(){
   const qb=qBaseSection();
   if (qb) wrap.appendChild(qb);
 
-  const qt=qTripSection();
-  if (qt) wrap.appendChild(qt);
+  
+  const qg=qGlobalSection(list);
+  if (qg) wrap.appendChild(qg);
 
   if (!list.length && !(BASE_SEL && BS[BASE_SEL])){
     const d=document.createElement("div"); d.className="empty";
@@ -3793,6 +3865,8 @@ const TWO_LANE_MQ = matchMedia("(min-width:1280px) and (min-height:560px)");
 
 const isTwoLane = () => TWO_LANE_MQ.matches;
 
+const DESK_MQ = matchMedia("(min-width:900px) and (min-height:560px)");
+
 function scrollBox(){
   return document.querySelector("#panel > .lane-explore") || document.getElementById("panel");
 }
@@ -3825,6 +3899,14 @@ function renderPanel(){
       S.trip ? null : `${tripCount()} 條`, S.tripsOpen,
       ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "toplevel deskonly sectrips",
       tripSub(t)));
+
+    const qt=qTripSection();
+    if (qt){
+
+      const qw=document.createElement("div"); qw.className="qtrips";
+      qw.appendChild(qt);
+      tripHost.appendChild(qw);
+    }
     if (S.tripsOpen) tripHost.appendChild(renderTrips());
 
     if (t){
@@ -3985,6 +4067,8 @@ function pinSelector(el){
   if (cls==="row" && d.id) return `.row[data-id="${d.id}"]`;
   if (cls==="tstop" && d.tid) return `.tstop[data-tid="${d.tid}"]`;
   if (cls==="btrow" && d.tripid) return `.btrow[data-tripid="${d.tripid}"]`;
+
+  if (cls==="rrow" && d.pid) return `.rrow[data-pid="${d.pid}"]`;
   if ((cls==="rrow" || cls==="ghead") && d.bid) return `.${cls}[data-bid="${d.bid}"]`;
   return "."+cls;
 }
@@ -4030,8 +4114,7 @@ function updateTotop(){
   btn.hidden = isMapOnly();
   if (btn.hidden) return;
   const main=document.getElementById("main");
-  const docked = matchMedia("(min-width:900px) and (min-height:560px)").matches &&
-                 main && !main.classList.contains("nomap");
+  const docked = DESK_MQ.matches && main && !main.classList.contains("nomap");
   btn.classList.toggle("docked", docked);
   btn.classList.toggle("wide", docked && isTwoLane());
   const box=scrollBox();
@@ -4060,6 +4143,8 @@ function render(){
   TRIP_COLOR = tripColor();
   document.getElementById("tally").innerHTML =
     `<span class="num">${shown().length}</span> / <span class="num">${PLACES.length}</span>`;
+
+  document.getElementById("main").classList.toggle("deskfold", S.deskFold);
   draw(); renderPanel(); renderMapBtns(); renderMapCard(); updateTotop();
   syncHash();
 }
