@@ -675,6 +675,9 @@ button{font:inherit; color:inherit; cursor:pointer}
 }
 
 .acts .primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+
+.detail .acts a, .detail .acts button{padding:2px 7px; font-size:12px}
+@media (max-width:899px){ .detail .acts{row-gap:16px} }
 .nearby{margin-top:11px; border-top:1px solid var(--line); padding-top:8px}
 .nearby .row{padding:5px 6px}
 .nearby .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
@@ -1786,12 +1789,14 @@ const stopBig = p => STOP_MARK.has(p.id) && zoom >= STOP_LABEL_ZOOM;
 const placeIsIcon = p => zoom >= ICON_ZOOM || stopBig(p) || placeOn(p.id);
 
 const Z_HOVER_RING = 5000;   
-const Z_HOVER_BASE = 5050;   
-const Z_HOVER_PIN  = 5100;   
+const Z_HOVER_STOP = 7000;   
+const Z_HOVER_BASE = 9000;   
+const Z_HOVER_PIN  = 11000;  
 
-function stopRing(p, z){
+function stopRing(p, z, asStop){
   const m = marks[p.id];
-  const size = stopBig(p) ? 36
+  const big = asStop ? zoom >= STOP_LABEL_ZOOM : stopBig(p);
+  const size = big ? 36
              : placeIsIcon(p) ? 28
              : (m || PLACE_MARKS_ON) ? 18
              : 28;
@@ -1884,11 +1889,11 @@ function initOSM(why){
   draw();
 }
 
-function markerHTML(p, dim){
+function markerHTML(p, dim, asStop){
   const c=(TH[p.theme]||{}).color||"#888";
   const on = placeOn(p.id);
   return `<div class="pin${p.theme==="lodging"?" lodge":""}${on?" on":""}${dim?" dim":""}` +
-         `${stopBig(p)?" tripstop":""}" style="color:${c}">` +
+         `${(asStop || stopBig(p))?" tripstop":""}" style="color:${c}">` +
          `<svg viewBox="0 0 16 16" class="ic" style="margin:0">${ICON[p.theme]||""}</svg>` +
          `<span class="pinlbl">${esc(p.name)}</span></div>`;
 }
@@ -2290,8 +2295,6 @@ let HOVER_PREV = null;               // 景點層換掉的那一顆原始 marker
 let HOVER_RINGS = [];                // 基地／走廊層動過的那幾顆，帶還原用的舊值
 let HOVER_LAYER = null;              // 行程層那個用完即丟的 layerGroup
 
-let HOVER_STOPS = [];
-
 function hoverWire(el, kind, id){
   if (!HOVER_OK || !el || !id) return;
   el.addEventListener("mouseenter", ()=>hoverEnter(kind, id));
@@ -2328,7 +2331,7 @@ function hoverOff(){
 function hoverDrop(){
   if (HOVER_T){ clearTimeout(HOVER_T); HOVER_T=null; }
   if (HOVER_LAYER && map){ map.removeLayer(HOVER_LAYER); HOVER_LAYER=null; }
-  HOVER_ON=null; HOVER_PLACE=null; HOVER_PREV=null; HOVER_RINGS=[]; HOVER_STOPS=[];
+  HOVER_ON=null; HOVER_PLACE=null; HOVER_PREV=null; HOVER_RINGS=[];
 }
 
 function hoverPlaceOn(id){
@@ -2421,7 +2424,8 @@ function hoverTripOn(tid){
     const p=BY_NAME[nm];
     if (!p) return;
 
-    stopRing(p, Z_HOVER_RING).addTo(g);
+    
+    stopRing(p, Z_HOVER_RING, true).addTo(g);
     hoverStopMark(p, g);
   }));
   baseIdsOfTrip(tid).forEach(bid=>{
@@ -2434,18 +2438,19 @@ function hoverTripOn(tid){
 }
 
 function hoverStopMark(p, g){
-  const m = marks[p.id];
-  if (m && m.setZIndexOffset){
-    HOVER_STOPS.push({id:p.id, m, z:m.options.zIndexOffset});
-    m.setZIndexOffset(Z_HOVER_PIN);
+
+  if (zoom >= STOP_LABEL_ZOOM){
+    L.marker([p.lat,p.lng], {
+      icon: L.divIcon({className:"dotghost", iconSize:[32,32], iconAnchor:[16,16],
+                       html:markerHTML(p, false, true)}),
+      interactive:false, zIndexOffset:Z_HOVER_STOP}).addTo(g);
     return;
   }
-  if (!m && !PLACE_MARKS_ON) return;   // 全島視野：環獨挑（預覽語意）
-  if (!m && placeIsIcon(p)){
+  if (p.theme==="lodging"){
     L.marker([p.lat,p.lng], {
-      icon: L.divIcon({className:"dotghost", iconSize:[26,26], iconAnchor:[13,13],
-                       html:markerHTML(p,false)}),
-      interactive:false, zIndexOffset:Z_HOVER_PIN}).addTo(g);
+      icon: L.divIcon({className:"lodgemk dotghost", iconSize:[18,18], iconAnchor:[9,9],
+                       html:`<span class="ld" style="background:${(TH[p.theme]||{}).color||"#888"}"></span>`}),
+      interactive:false, zIndexOffset:Z_HOVER_STOP}).addTo(g);
     return;
   }
   const c = (TH[p.theme]||{}).color || "#888";
@@ -2453,16 +2458,10 @@ function hoverStopMark(p, g){
     icon: L.divIcon({className:"dotghost", iconSize:[13,13], iconAnchor:[6.5,6.5],
                      html:`<svg viewBox="0 0 13 13" width="13" height="13">` +
                           `<circle cx="6.5" cy="6.5" r="5.5" fill="${c}" stroke="#fff" stroke-width="1.2"/></svg>`}),
-    interactive:false, zIndexOffset:Z_HOVER_PIN}).addTo(g);
+    interactive:false, zIndexOffset:Z_HOVER_STOP}).addTo(g);
 }
 
 function hoverTripOff(){
-  HOVER_STOPS.forEach(o=>{
-
-    if (marks[o.id]!==o.m) return;
-    o.m.setZIndexOffset(o.z);
-  });
-  HOVER_STOPS=[];
   if (HOVER_LAYER && map){ map.removeLayer(HOVER_LAYER); HOVER_LAYER=null; }
 }
 function highlightRow(id,on){
