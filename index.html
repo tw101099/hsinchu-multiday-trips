@@ -153,8 +153,11 @@ button{font:inherit; color:inherit; cursor:pointer}
 .acts a, .acts button,
 .mapcard .acts a, .mapcard .acts button,
 .tdhead .tdnav,
-.sechead .shbtn,
+
+.shfoot .shbtn,
 .clear, .ghost, #sort,
+
+#qreset, .qmore,
 .mapbtns button,
 .tags .tag{
   font-size:12.5px; line-height:1.5; padding:3px 10px; border-radius:999px;
@@ -224,6 +227,13 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 #q::-webkit-search-cancel-button{-webkit-appearance:none; appearance:none; display:none}
 
+#qreset{
+  flex:none; display:inline-flex; align-items:center; gap:4px;
+  white-space:nowrap; font-family:inherit;
+}
+#qreset[hidden]{display:none}
+#qreset .gl{font-size:13px; line-height:1}
+
 #theme{
   flex:none; display:flex; align-items:center; justify-content:center;
   border:1px solid var(--line2); background:var(--chip-bg); border-radius:999px;
@@ -238,6 +248,9 @@ button{font:inherit; color:inherit; cursor:pointer}
   .tally{display:none}
 
   #qwrap{flex:1 1 80px; min-width:80px; max-width:none}
+
+  #qreset .lbl{display:none}
+  #qreset{padding:3px 8px}
 }
 
 .main{flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden}
@@ -393,7 +406,9 @@ button{font:inherit; color:inherit; cursor:pointer}
   .panel.twolane .lane-trip{flex:0 0 340px; width:340px; border-right:1px solid var(--line)}
   .panel.twolane .lane-explore{flex:1 1 auto; min-width:0}
 
-  .panel.twolane .lane-trip > .sec.toplevel:first-child{
+  
+  .panel.twolane .lane-trip > .sec.toplevel:first-child,
+  .panel.twolane .lane-trip > .sechead.trhead:first-child{
     position:sticky; top:0; z-index:400; background:var(--panel);
   }
 
@@ -480,8 +495,16 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .sechead > .sec.toplevel{padding-right:8px}
 
-.sechead > .shbtn{
-  flex:none; margin-right:14px; font-family:inherit; white-space:nowrap;
+.sechead > .trclose{
+  flex:none; display:flex; align-items:center; justify-content:center;
+  margin-right:14px; padding:0 2px; border:0; background:none;
+  color:var(--ink3); font-size:16px; line-height:1; font-family:inherit;
+}
+.sechead > .trclose:hover{color:var(--accent)}
+
+.shfoot{display:flex; justify-content:flex-end; padding:12px 0 2px}
+.shfoot .shbtn{
+  flex:none; font-family:inherit; white-space:nowrap;
 }
 .subrows{margin-top:5px}
 
@@ -553,6 +576,12 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .trow .tl .qol{margin-left:7px; font-size:11.5px; color:var(--ink3)}
 .trow[aria-pressed=true] .tl .qol{color:var(--ink2); font-weight:400}
+
+.qmorew{display:flex; margin:1px 0 6px 4px}
+.qmore{
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:inherit; white-space:nowrap;
+}
 
 .rrow .qbi{flex:none; width:13px; text-align:center; font-size:13px; line-height:1; color:var(--ink3)}
 .rrow[aria-pressed=true] .qbi{color:var(--accent)}
@@ -633,13 +662,18 @@ button{font:inherit; color:inherit; cursor:pointer}
 .tag.hard{color:var(--ink)}
 
 .empty{padding:26px 6px; color:var(--ink2); font-size:14px}
-.empty button{border:0; background:none; color:var(--accent); text-decoration:underline; padding:0}
+.empty .eh{margin:0; font-size:14px; color:var(--ink)}
+.empty .ec{margin:7px 0 0; font-size:12.5px; line-height:1.7; color:var(--ink3)}
+
+.empty .ec .cb{white-space:nowrap}
+.empty .ea{margin-top:12px; display:flex}
 
 .main.nomap .results{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:0 14px; align-items:start}
 .main.nomap .ghead, .main.nomap .gintro, .main.nomap .detail,
 .main.nomap .results > .blodge,
 
 .main.nomap .results > .qbh, .main.nomap .results > .rrow,
+.main.nomap .results > .empty, .main.nomap .results > .qmorew,
 .main.nomap .results .tcath{grid-column:1/-1}
 
 @media (min-width:700px){
@@ -1160,14 +1194,15 @@ button.tnight:hover .chev{color:var(--accent)}
 
   
 
-  .clear, .ghost, #sort, .wider, .mapbtns button{min-height:40px}
+  .clear, .ghost, #sort, .wider, .mapbtns button,
+  .shfoot .shbtn, #qreset, .qmore{min-height:40px}
   .mapbtns button{display:inline-flex; align-items:center}
   .acts a, .acts button, .mapcard .acts a, .mapcard .acts button,
-  .tdhead .tdnav, .sechead .shbtn{position:relative}
+  .tdhead .tdnav{position:relative}
   .acts a, .mapcard .acts a, .tdhead .tdnav{display:inline-flex; align-items:center}
   .acts a::after, .acts button::after,
   .mapcard .acts a::after, .mapcard .acts button::after,
-  .tdhead .tdnav::after, .sechead .shbtn::after{
+  .tdhead .tdnav::after{
     content:""; position:absolute; left:0; right:0; top:50%;
     transform:translateY(-50%); height:40px;
   }
@@ -1183,6 +1218,8 @@ button.tnight:hover .chev{color:var(--accent)}
   }
 
   #qx{min-width:40px; min-height:40px; margin:-4px -9px -4px 0}
+
+  .sechead > .trclose{min-width:40px; min-height:40px}
 }
 @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
 </style>
@@ -1206,6 +1243,8 @@ button.tnight:hover .chev{color:var(--accent)}
     </div>
 
     <div id="qwrap"><input id="q" type="search" aria-label="搜尋景點或主題" placeholder="搜尋景點或主題"><button id="qx" type="button" hidden aria-label="清除搜尋文字" title="清除搜尋文字">×</button></div>
+
+    <button id="qreset" class="btn-act" type="button" hidden aria-label="重置所有篩選與行程" title="重置所有篩選與行程"><span class="gl" aria-hidden="true">⟲</span><span class="lbl">重置</span></button>
     <button id="theme" class="btn-act" title="切換明暗" aria-label="切換明暗"></button>
     <div class="tally" id="tally"></div>
   </header>
@@ -1642,6 +1681,10 @@ const BASE_HAY = Object.fromEntries(
 function qTerms(){
   return (S.q ? [S.q] : []).concat(S.qtags);
 }
+
+const QMORE_CAP = 3;
+const QEXP = { trips:false, bases:false };
+function qExpReset(){ QEXP.trips=false; QEXP.bases=false; }
 
 function qBaseHits(){
   const terms=qTerms();
@@ -2525,7 +2568,7 @@ function shareBtn(){
   b.type="button"; b.className="shbtn btn-act";
   const nativeShare = !!navigator.share && matchMedia("(pointer:coarse)").matches;
 
-  const label = "分享";
+  const label = "分享這趟行程";
   b.textContent=label;
   b.title = nativeShare ? "把這一趟分享出去" : "複製這一趟的連結";
   b.onclick=e=>{
@@ -2558,6 +2601,7 @@ function searchFor(term){
   const t=String(term).trim().toLowerCase();   // 與 #q 的 input 處理常式同一條正規化
   if (!t) return;
   if (!S.qtags.includes(t)) S.qtags.push(t);   // 重複點同一顆不疊加
+  qExpReset();                                 // 詞變了＝那兩節換人（棒 U1 件四）
   renderQTags();
   const w=document.getElementById("qwrap"); if (w) w.scrollLeft=w.scrollWidth;
   filterChanged();
@@ -2576,6 +2620,7 @@ function renderQTags(){
       e.stopPropagation();
       S.qtags=S.qtags.filter(v=>v!==t);
       SCROLL_GROUP=true;
+      qExpReset();                             // 詞變了＝那兩節換人（棒 U1 件四）
       renderQTags(); filterChanged();
     };
     w.insertBefore(b, qi);
@@ -2593,6 +2638,7 @@ function resetQ(){
   const qi=document.getElementById("q"); if (qi) qi.value="";
   renderQTags();
   syncQX();
+  qExpReset();
 }
 
 function wireTags(root, inline){
@@ -2611,6 +2657,46 @@ function clearAll(){
   S.base=new Set(); S.themes=new Set(); S.diffs=new Set(); S.budget=new Set();
   S.inseason=false; S.sel=null; EXTRA=new Set(); resetQ();
   S.near=0;
+  SCROLL_RESET=true;
+  save(); render();
+}
+
+function condBits(){
+  const out=[];
+  const lb = (arr, v) => (arr.find(o=>o.id===v)||{}).label || v;
+  const t = S.trip && TRIP_BY_ID[S.trip];
+  if (t) out.push(["行程", t.name]);
+  if (S.fDays.size)  out.push(["天數", [...S.fDays].map(v=>lb(F_DAYS,v)).join("、")]);
+  if (S.fDrive.size) out.push(["車程", [...S.fDrive].map(v=>lb(F_DRIVE,v)).join("、")]);
+  if (S.fStam.size)  out.push(["體力", [...S.fStam].map(v=>lb(F_STAM,v)).join("、")]);
+  if (S.fFeel.size)  out.push(["個性", [...S.fFeel].join("、")]);
+  if (S.base.size)   out.push(["基地", [...S.base].map(b=>(BS[b]||{}).name||b).join("、")]);
+  if (S.themes.size) out.push(["主題", [...S.themes].map(x=>(TH[x]||{}).name||x).join("、")]);
+  if (S.budget.size) out.push(["時間", [...S.budget].map(v=>lb(BUDGETS,v)).join("、")]);
+  if (S.diffs.size)  out.push(["費力", [...S.diffs].map(d=>EFFORT[d]||d).join("、")]);
+  if (S.inseason)    out.push(["季節", `${MONTH} 月當季`]);
+  if (S.qtags.length) out.push(["搜尋", S.qtags.map(x=>`「${x}」`).join("、")]);
+  if (S.q)           out.push(["搜尋", `「${S.q}」`]);
+  return out;
+}
+
+function anyCondition(){
+  return !!(condBits().length || BASE_SEL || QEXP.trips || QEXP.bases);
+}
+
+function syncReset(){
+  const b=document.getElementById("qreset");
+  if (b) b.hidden = !anyCondition();
+}
+
+function resetAll(){
+  dropTrip();
+  S.fDays=new Set(); S.fDrive=new Set(); S.fStam=new Set(); S.fFeel=new Set();
+  S.base=new Set(); S.themes=new Set(); S.diffs=new Set(); S.budget=new Set();
+  S.inseason=false;
+  closeBaseDetail(); closePlace();
+  EXTRA=new Set();
+  resetQ();
   SCROLL_RESET=true;
   save(); render();
 }
@@ -3085,15 +3171,22 @@ function selectTrip(id, fromBase){
     S.tripsOpen=false; openItin(); openTripPath(TRIP_BY_ID[id]); fitTrip();
     if (!ACCORDION_MQ.matches) accordion("bases");
   } else {
-    S.tripAdded.forEach(bid=>S.base.delete(bid));
-    S.tripAdded=new Set();
-
-    S.autoCats.forEach(k=>S.baseCatsOpen.delete(k));
-    S.autoCats=new Set();
-    S.tripsOpen=true;
+    dropTrip();
     accordion("trips");
   }
   save(); render();
+}
+
+function dropTrip(){
+  S.trip=null;
+
+  NIGHT=null;
+  S.tripAdded.forEach(bid=>S.base.delete(bid));
+  S.tripAdded=new Set();
+
+  S.autoCats.forEach(k=>S.baseCatsOpen.delete(k));
+  S.autoCats=new Set();
+  S.tripsOpen=true;
 }
 
 function fitTrip(){
@@ -3582,6 +3675,10 @@ function renderItinerary(){
   const pc = precheckBlock();
   if (pc) box.appendChild(pc);
 
+  const sf = document.createElement("div"); sf.className="shfoot";
+  sf.appendChild(shareBtn());
+  box.appendChild(sf);
+
   return box;
 }
 
@@ -3728,6 +3825,19 @@ function baseLodgeBox(b){
   return d;
 }
 
+function qMoreRow(kind, rest, unit, noun){
+  const w=document.createElement("div"); w.className="qmorew";
+  const b=document.createElement("button");
+  b.type="button"; b.className="qmore btn-act";
+  const open=QEXP[kind];
+  b.textContent = open ? `只顯示前 ${QMORE_CAP} ${unit}` : `查看其餘 ${rest} ${unit}${noun}`;
+  b.title = open ? `收回這一節，只留前 ${QMORE_CAP} ${unit}`
+                 : `把命中的${noun}全部列出來（還有 ${rest} ${unit}）`;
+  b.setAttribute("aria-expanded", open);
+  b.onclick=e=>{ e.stopPropagation(); QEXP[kind]=!QEXP[kind]; render(); };
+  w.appendChild(b);
+  return w;
+}
 function qBaseSection(){
   const hits=qBaseHits();
   if (!hits.length) return null;
@@ -3736,7 +3846,8 @@ function qBaseSection(){
   h.className="qbh";
   h.innerHTML=`<span class="nm">基地</span><span class="n">${hits.length} 個</span>`;
   frag.appendChild(h);
-  hits.slice(0,3).forEach(b=>{
+
+  (QEXP.bases ? hits : hits.slice(0,QMORE_CAP)).forEach(b=>{
     const pts=BASE_POINTS[b.id]||[];
     const nl=pts.filter(p=>p.theme==="lodging").length;
     const np=pts.length-nl;
@@ -3759,6 +3870,7 @@ function qBaseSection(){
     hoverWire(el, "base", b.id);
     frag.appendChild(el);
   });
+  if (hits.length>QMORE_CAP) frag.appendChild(qMoreRow("bases", hits.length-QMORE_CAP, "個", "基地"));
   return frag;
 }
 
@@ -3770,7 +3882,8 @@ function qTripSection(){
   h.className="qbh";
   h.innerHTML=`<span class="nm">行程</span><span class="n">${hits.length} 條</span>`;
   frag.appendChild(h);
-  hits.slice(0,3).forEach(t=>{
+
+  (QEXP.trips ? hits : hits.slice(0,QMORE_CAP)).forEach(t=>{
     const el=document.createElement("button");
     el.type="button"; el.className="trow row-select btrow";
     el.setAttribute("aria-pressed", S.trip===t.id);
@@ -3787,6 +3900,7 @@ function qTripSection(){
     hoverWire(el, "trip", t.id);
     frag.appendChild(el);
   });
+  if (hits.length>QMORE_CAP) frag.appendChild(qMoreRow("trips", hits.length-QMORE_CAP, "條", "行程"));
   return frag;
 }
 
@@ -3828,11 +3942,27 @@ function renderList(){
   const qg=qGlobalSection(list);
   if (qg) wrap.appendChild(qg);
 
+  
   if (!list.length && !(BASE_SEL && BS[BASE_SEL])){
     const d=document.createElement("div"); d.className="empty";
-    d.innerHTML="這組條件沒有東西。";
-    const b=document.createElement("button"); b.textContent="清掉條件"; b.onclick=clearAll;
-    d.appendChild(b); wrap.appendChild(d); return wrap;
+    const h=document.createElement("p"); h.className="eh";
+    h.textContent="在目前條件下找不到內容";
+    d.appendChild(h);
+    const bits=condBits();
+
+    if (bits.length){
+      const c=document.createElement("p"); c.className="ec";
+      c.innerHTML="目前仍套用："+bits.map(([k,v])=>
+        `<span class="cb">＜${esc(k)}：${esc(v)}＞</span>`).join("、");
+      d.appendChild(c);
+    }
+    const a=document.createElement("div"); a.className="ea";
+    const b=document.createElement("button");
+    b.type="button"; b.className="qmore btn-act"; b.textContent="重置全部條件";
+    b.title="清掉上面列出的全部條件，回到剛進站的樣子";
+    b.onclick=e=>{ e.stopPropagation(); resetAll(); };
+    a.appendChild(b); d.appendChild(a);
+    wrap.appendChild(d); return wrap;
   }
   const cmp=(SORTS.find(s=>s.id===S.sort)||SORTS[0]).fn;
 
@@ -3955,10 +4085,24 @@ function renderPanel(){
 
     const t = S.trip && TRIP_BY_ID[S.trip];
 
-    tripHost.appendChild(section("推薦行程",
+    const trsec = section("推薦行程",
       S.trip ? null : `${tripCount()} 條`, S.tripsOpen,
       ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "toplevel deskonly sectrips",
-      tripSub(t)));
+      tripSub(t));
+
+    if (S.trip){
+      const head=document.createElement("div"); head.className="sechead trhead";
+      const x=document.createElement("button");
+      x.type="button"; x.className="trclose";
+      x.textContent="×";
+      x.title="關閉行程，返回行程全覽";
+      x.setAttribute("aria-label","關閉行程，返回行程全覽");
+      x.onclick=e=>{ e.stopPropagation(); selectTrip(S.trip); };
+      head.append(trsec, x);
+      tripHost.appendChild(head);
+    } else {
+      tripHost.appendChild(trsec);
+    }
 
     const qt=qTripSection();
     if (qt){
@@ -3972,11 +4116,9 @@ function renderPanel(){
     if (t){
 
       
-      const head=document.createElement("div"); head.className="sechead";
-      head.append(section("詳細行程", null, S.itinOpen,
+      tripHost.appendChild(section("詳細行程", null, S.itinOpen,
         ()=>{ S.itinOpen=!S.itinOpen; save(); render(); }, "toplevel deskonly secitin",
-        itinSub(t)), shareBtn());
-      tripHost.appendChild(head);
+        itinSub(t)));
       if (S.itinOpen) tripHost.appendChild(renderItinerary());
     }
   }
@@ -4205,6 +4347,8 @@ function render(){
     `<span class="num">${shown().length}</span> / <span class="num">${PLACES.length}</span>`;
 
   document.getElementById("main").classList.toggle("deskfold", S.deskFold);
+
+  syncReset();
   draw(); renderPanel(); renderMapBtns(); renderMapCard(); updateTotop();
   syncHash();
 }
@@ -4228,7 +4372,7 @@ document.querySelectorAll("#views button").forEach(b=>{
   };
 });
 document.getElementById("q").addEventListener("input", e=>{
-  S.q=e.target.value.trim().toLowerCase(); syncQX(); filterChanged();
+  S.q=e.target.value.trim().toLowerCase(); syncQX(); qExpReset(); filterChanged();
 });
 
 document.getElementById("qx").onclick=e=>{
@@ -4236,13 +4380,20 @@ document.getElementById("qx").onclick=e=>{
   const qi=document.getElementById("q");
   qi.value=""; S.q="";
   syncQX();
+  qExpReset();                                 // 詞變了＝那兩節換人（棒 U1 件四）
   SCROLL_GROUP=true;
   filterChanged();
   qi.focus();
 };
+
+document.getElementById("qreset").onclick=e=>{
+  e.stopPropagation();
+  resetAll();
+};
 document.getElementById("q").addEventListener("keydown", e=>{
   if (e.key==="Backspace" && !e.target.value && S.qtags.length){
     S.qtags.pop(); SCROLL_GROUP=true;   // 同 × 移除：放寬條件捲回清單開頭
+    qExpReset();                        // 詞變了＝那兩節換人（棒 U1 件四）
     renderQTags(); filterChanged();
   }
 });
