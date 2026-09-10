@@ -192,7 +192,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   background:var(--sunk); border:1px solid var(--line); border-radius:999px}
 .seg button{
   border:0; border-radius:999px; padding:4px 13px; font-size:13px;
-  background:none; color:var(--ink2);
+  background:var(--bg); color:var(--ink2);
   transition:background-color .15s, color .15s, box-shadow .15s;
 }
 .seg button:hover{background:var(--accent-soft); color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
@@ -635,6 +635,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .qtrips{padding:0 14px}
 .qtrips .trow{margin-left:4px; width:calc(100% - 4px)}
+.qtrips .trow + .trow{margin-top:3px}
 
 .qbases{padding:0 14px}
 .qbases .rrow{margin-left:4px; width:calc(100% - 4px)}
@@ -648,8 +649,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   font-family:inherit; white-space:nowrap;
 }
 
-.rrow .qbi{flex:none; width:13px; text-align:center; font-size:13px; line-height:1; color:var(--ink3)}
-.rrow[aria-pressed=true] .qbi{color:var(--accent)}
+.rrow .rbar.qbar{background:var(--accent)}
 
 .results > .row{content-visibility:auto; contain-intrinsic-size:auto 43.4px}
 .results > .detail{margin-left:17px}
@@ -1138,9 +1138,9 @@ button.tnight:hover .chev{color:var(--accent)}
 .basepin.big .bp svg{width:17px; height:17px}
 .basepin.big .pinlbl{left:31px}
 
-.basepin.dim{opacity:.4}
+.basepin.dim{opacity:.6}
 
-.pin.dim, .lodgemk.dim{opacity:.4}
+.pin.dim, .lodgemk.dim{opacity:.6}
 
 .basepin.ftrip::after{
   content:""; position:absolute; inset:-6px; border-radius:999px;
@@ -1198,7 +1198,8 @@ button.tnight:hover .chev{color:var(--accent)}
 :root .leaflet-tile{filter:var(--tile)}
 
 .bar, .panel, .fbar, .mapcard, .loctip, .leaflet-tooltip.tt,
-.panel.twolane .lane-trip > .sec.toplevel:first-child{
+.panel.twolane .lane-trip > .sec.toplevel:first-child,
+.panel.twolane .lane-trip > .sechead.trhead:first-child{
   background-image:var(--paper-panel);
 }
 
@@ -1909,10 +1910,14 @@ let PLACE_MARKS_ON = false;
 const stopBig = p => STOP_MARK.has(p.id) && zoom >= STOP_LABEL_ZOOM;
 const placeIsIcon = p => zoom >= ICON_ZOOM || stopBig(p) || placeOn(p.id);
 
-const Z_HOVER_RING = 5000;   
-const Z_HOVER_STOP = 7000;   
-const Z_HOVER_BASE = 9000;   
-const Z_HOVER_PIN  = 11000;  
+const Z_STOP_RING  = 4000;   
+const Z_TRIP_STOP  = 6000;   
+const Z_TRIP_BASE  = 8000;   
+const Z_PLACE_ON   = 10000;  
+const Z_HOVER_RING = 12000;  
+const Z_HOVER_STOP = 14000;  
+const Z_HOVER_BASE = 16000;  
+const Z_HOVER_PIN  = 18000;  
 
 function stopRing(p, z, asStop){
   const m = marks[p.id];
@@ -2087,7 +2092,7 @@ function draw(){
       addPlaceMarker(p, !!(VIS && !stopIds.has(p.id) && !placeOn(p.id)));
     });
 
-    if (S.trip) stops.forEach(p=>stopRing(p, 1900).addTo(pts));   // 1100→1900：跟著停點 2000 帶走（見 addPlaceMarker 的 zoff）
+    if (S.trip) stops.forEach(p=>stopRing(p, Z_STOP_RING).addTo(pts));
 
     drawBasePins();
   }
@@ -2100,8 +2105,8 @@ function addPlaceMarker(p, dim){
 
   
   const zoff = HOVER_PLACE===p.id ? Z_HOVER_PIN
-             : on ? 3000
-             : STOP_MARK.has(p.id) ? 2000 : 0;
+             : on ? Z_PLACE_ON
+             : STOP_MARK.has(p.id) ? Z_TRIP_STOP : 0;
   let m;
 
   if (asIcon || on){
@@ -2117,7 +2122,7 @@ function addPlaceMarker(p, dim){
   } else {
     m = L.circleMarker([p.lat,p.lng],{radius:on?9:5.5, color:"#fff", weight:on?2.5:1.2,
                                       fillColor:(TH[p.theme]||{}).color||"#888",
-                                      opacity:dim?.4:1, fillOpacity:dim?.4:1,
+                                      opacity:dim?.6:1, fillOpacity:dim?.6:1,
                                       bubblingMouseEvents:false});
   }
   m.addTo(pts);
@@ -2178,7 +2183,7 @@ function drawBasePins(){
              `<svg viewBox="0 0 16 16"><path d="M2.5 8.5 8 3l5.5 5.5M4 7v6h8V7"/></svg></span>` +
              (showLabel ? `<span class="pinlbl">${esc(b.name)}</span>` : "")}),
 
-      zIndexOffset: dim ? 1450 : (trip && TRIP_BASES.has(b.id) ? 2500 : 1500)});
+      zIndexOffset: dim ? 1450 : (trip && TRIP_BASES.has(b.id) ? Z_TRIP_BASE : 1500)});
 
     m.bindTooltip(`<b>${esc(b.name)}</b><i>${esc(b.town||"")}` +
                   (b.drive_min!=null?`　離新竹約 ${estT(b.drive_min)}`:"") + `</i>`,
@@ -3908,7 +3913,8 @@ function qBaseSection(){
     el.title = BASE_SEL===b.id
       ? `收起「${b.name}」的住宿清單`
       : `到景點清單裡展開「${b.name}」那一組（地圖同時帶到這個基地）`;
-    el.innerHTML=`<span class="qbi" aria-hidden="true">⌂</span>` +
+
+    el.innerHTML=`<span class="rbar qbar" aria-hidden="true"></span>` +
       `<span class="nm">${esc(b.name)}</span>` +
 
       (b.drive_min!=null
