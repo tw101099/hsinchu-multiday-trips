@@ -1067,6 +1067,7 @@ button.tnight:hover .chev{color:var(--accent)}
 .basepin.hov{opacity:1}
 
 .basepin.hovbase{pointer-events:none}
+.dotghost{pointer-events:none}
 
 .basepin.hovbase .bp{
   outline:2.5px solid var(--accent); outline-offset:1px;
@@ -2051,7 +2052,7 @@ function drawBasePins(){
              `<svg viewBox="0 0 16 16"><path d="M2.5 8.5 8 3l5.5 5.5M4 7v6h8V7"/></svg></span>` +
              (showLabel ? `<span class="pinlbl">${esc(b.name)}</span>` : "")}),
 
-      zIndexOffset: dim ? 1450 : (trip && TRIP_BASES.has(b.id) ? 1600 : 1500)});
+      zIndexOffset: dim ? 1450 : (trip && TRIP_BASES.has(b.id) ? 2500 : 1500)});
 
     m.bindTooltip(`<b>${esc(b.name)}</b><i>${esc(b.town||"")}` +
                   (b.drive_min!=null?`　離新竹約 ${estT(b.drive_min)}`:"") + `</i>`,
@@ -2289,6 +2290,8 @@ let HOVER_PREV = null;               // 景點層換掉的那一顆原始 marker
 let HOVER_RINGS = [];                // 基地／走廊層動過的那幾顆，帶還原用的舊值
 let HOVER_LAYER = null;              // 行程層那個用完即丟的 layerGroup
 
+let HOVER_STOPS = [];
+
 function hoverWire(el, kind, id){
   if (!HOVER_OK || !el || !id) return;
   el.addEventListener("mouseenter", ()=>hoverEnter(kind, id));
@@ -2319,13 +2322,13 @@ function hoverOff(){
   HOVER_ON = null;
   hoverPlaceOff();
   hoverRingsOff();
-  if (HOVER_LAYER){ map.removeLayer(HOVER_LAYER); HOVER_LAYER=null; }
+  hoverTripOff();
 }
 
 function hoverDrop(){
   if (HOVER_T){ clearTimeout(HOVER_T); HOVER_T=null; }
   if (HOVER_LAYER && map){ map.removeLayer(HOVER_LAYER); HOVER_LAYER=null; }
-  HOVER_ON=null; HOVER_PLACE=null; HOVER_PREV=null; HOVER_RINGS=[];
+  HOVER_ON=null; HOVER_PLACE=null; HOVER_PREV=null; HOVER_RINGS=[]; HOVER_STOPS=[];
 }
 
 function hoverPlaceOn(id){
@@ -2419,6 +2422,7 @@ function hoverTripOn(tid){
     if (!p) return;
 
     stopRing(p, Z_HOVER_RING).addTo(g);
+    hoverStopMark(p, g);
   }));
   baseIdsOfTrip(tid).forEach(bid=>{
     const b=BS[bid];
@@ -2427,6 +2431,39 @@ function hoverTripOn(tid){
   });
   g.addTo(map);
   HOVER_LAYER=g;
+}
+
+function hoverStopMark(p, g){
+  const m = marks[p.id];
+  if (m && m.setZIndexOffset){
+    HOVER_STOPS.push({id:p.id, m, z:m.options.zIndexOffset});
+    m.setZIndexOffset(Z_HOVER_PIN);
+    return;
+  }
+  if (!m && !PLACE_MARKS_ON) return;   // 全島視野：環獨挑（預覽語意）
+  if (!m && placeIsIcon(p)){
+    L.marker([p.lat,p.lng], {
+      icon: L.divIcon({className:"dotghost", iconSize:[26,26], iconAnchor:[13,13],
+                       html:markerHTML(p,false)}),
+      interactive:false, zIndexOffset:Z_HOVER_PIN}).addTo(g);
+    return;
+  }
+  const c = (TH[p.theme]||{}).color || "#888";
+  L.marker([p.lat,p.lng], {
+    icon: L.divIcon({className:"dotghost", iconSize:[13,13], iconAnchor:[6.5,6.5],
+                     html:`<svg viewBox="0 0 13 13" width="13" height="13">` +
+                          `<circle cx="6.5" cy="6.5" r="5.5" fill="${c}" stroke="#fff" stroke-width="1.2"/></svg>`}),
+    interactive:false, zIndexOffset:Z_HOVER_PIN}).addTo(g);
+}
+
+function hoverTripOff(){
+  HOVER_STOPS.forEach(o=>{
+
+    if (marks[o.id]!==o.m) return;
+    o.m.setZIndexOffset(o.z);
+  });
+  HOVER_STOPS=[];
+  if (HOVER_LAYER && map){ map.removeLayer(HOVER_LAYER); HOVER_LAYER=null; }
 }
 function highlightRow(id,on){
   const el=document.querySelector(`.row[data-id="${id}"]`);
