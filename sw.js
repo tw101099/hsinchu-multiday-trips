@@ -45,7 +45,12 @@
 // v4→v5：2026-09-06 增補規格 v2「紋理加強」把亮色 --bg 提到 #fdfbf6，manifest 的
 // background_color 跟著走（既有邏輯＝manifest 底色就是站的亮色底）——manifest.webmanifest
 // 在 SHELL_ASSETS 裡走 cache-first，跟 v2→v3 完全同一種情形，照檔頭規則推號。
-const CACHE_VERSION = "v5";
+// v5→v6：2026-09-10 棒 SPLIT 把三份大資料（車程矩陣、原點列、行程腿線）從 index.html
+// 拆進 `data/`，本檔新增 `data/` 這條路由（見下面 isDataAsset）。**推號是本人在任務書
+// 裡指定的**，理由也站得住：舊快取裡那份 9.4 MB 的內嵌版 index.html 從此不會再被
+// 用到（下一次上線就被新版蓋掉），留著只是佔著使用者手機 9 MB。舊版在被清掉之前
+// 仍然是完整可離線的一頁，所以這一刀沒有中斷任何人的離線能力。
+const CACHE_VERSION = "v6";
 const CACHE_NAME = `hsinchu-multiday-${CACHE_VERSION}`;
 
 // 殼層資源：install 時預熱，之後 cache-first。都是同源、幾乎不變的檔案。
@@ -100,6 +105,12 @@ function isNavigationRequest(request) {
 function isShellAsset(url) {
   // manifest 與 icons：同源、路徑在 scope 底下的 manifest.webmanifest 或 icons/*
   return /\/manifest\.webmanifest$/.test(url.pathname) || /\/icons\//.test(url.pathname);
+}
+
+// 拆出頁面外的三份大資料（2026-09-10 棒 SPLIT）：`data/legs.json`、
+// `data/neighbors.bin`、`data/neighbors-origins.json`。
+function isDataAsset(url) {
+  return /\/data\//.test(url.pathname);
 }
 
 // 「慢到不正常」的門檻（見檔頭）。網路正常的一趟遠遠碰不到它。
@@ -163,6 +174,56 @@ async function networkFirst(request, event) {
   }
 }
 
+// `data/` 三份資料：**跟導覽請求同款的 network-first ＋ 快取後備**，兩個地方不同：
+//
+//   1. **後備只認自己那一份**。`cachedFallback` 會退到 `./`／`./index.html`——那對
+//      頁面是對的（拿舊頁總比空白好），對 `.bin`／`.json` 是災難：前端會拿到一份
+//      HTML 去解 JSON、去灌 Uint16Array。查不到就讓它失敗，前端有降級態接得住。
+//   2. **同一份資料的舊版本要清掉**。URL 帶 `?v=<內容摘要>`（見 build.py），
+//      每發布一次就是一把新鑰匙，不清的話使用者手機上會一版一版疊著 7 MB。
+//      清的時機是「新版已經抓到手」，所以不會出現「舊的刪了新的沒到」的空窗。
+//
+// 逾時那道閘（NET_TIMEOUT_MS）照樣有：資料檔比頁面大，網路半死時先給快取那一份
+// 讓站可用，網路那一趟仍然跑完、仍然寫進快取。
+async function pruneOldVersions(cache, url) {
+  const keys = await cache.keys();
+  await Promise.all(
+    keys
+      .filter((req) => {
+        const u = new URL(req.url);
+        return u.origin === url.origin && u.pathname === url.pathname && u.search !== url.search;
+      })
+      .map((req) => cache.delete(req))
+  );
+}
+
+async function networkFirstData(request, event) {
+  const url = new URL(request.url);
+  const opening = caches.open(CACHE_NAME);
+  const network = fetch(request).then(async (fresh) => {
+    if (fresh && fresh.ok) {
+      const cache = await opening;
+      await cache.put(request, fresh.clone());
+      await pruneOldVersions(cache, url);
+    }
+    return fresh;
+  });
+  if (event) event.waitUntil(network.catch(() => {}));
+  else network.catch(() => {});
+
+  try {
+    const first = await Promise.race([network, timeoutAfter(NET_TIMEOUT_MS)]);
+    if (first !== TIMED_OUT) return first;
+    const cached = await (await opening).match(request);
+    if (cached) return cached;
+    return await network;
+  } catch (err) {
+    const cached = await (await opening).match(request);
+    if (cached) return cached;
+    throw err; // 前端的 fetch 因此 reject → 降級態＋一行 console 警告
+  }
+}
+
 async function cacheFirst(request) {
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(request);
@@ -188,6 +249,11 @@ self.addEventListener("fetch", (event) => {
 
   if (isShellAsset(url)) {
     event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  if (isDataAsset(url)) {
+    event.respondWith(networkFirstData(request, event));
     return;
   }
 
