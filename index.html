@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>新竹出發多日遊｜挑一趟過夜的行程</title>
 <meta name="description" content="從新竹出發、過一夜以上的自駕行程：1002 個景點與住宿，依基地、主題與時間篩選，可以直接排成一趟兩天一夜。">
 <meta property="og:type" content="website">
@@ -428,6 +428,9 @@ button{font:inherit; color:inherit; cursor:pointer}
     background:var(--panel); border-top:1px solid var(--line);
 
     padding-bottom:env(safe-area-inset-bottom);
+
+    padding-left:env(safe-area-inset-left);
+    padding-right:env(safe-area-inset-right);
   }
 
   .mnav button{
@@ -1603,6 +1606,11 @@ button.tnight:hover .chev{color:var(--accent)}
 
   .sechead > .trclose{min-width:40px; min-height:40px}
 }
+
+@media (max-width:699px), (pointer:coarse){
+  input, textarea, select, #q, #sort{font-size:16px}
+}
+
 @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
 </style>
 
@@ -2605,9 +2613,10 @@ function fit(items){
   if (!mapSized()){ PENDING_FIT=true; return; }   // 見 PENDING_FIT
   map.fitBounds(L.latLngBounds(items.map(p=>[p.lat,p.lng])).pad(.15), {animate:false});
 }
+
 function panTo(p){
   if (!ready) return;
-  map.setView([p.lat,p.lng], Math.max(map.getZoom(),13), {animate:true});
+  map.setView([p.lat,p.lng], Math.max(map.getZoom(),13), {animate: !RM.matches});
 }
 
 const hasMapCard = () => !matchMedia("(min-width:900px) and (min-height:560px)").matches;
@@ -5345,7 +5354,7 @@ function render(){
 document.querySelectorAll("#views button").forEach(b=>{
   b.onclick=()=>{
     if (b.dataset.v===S.view){
-      scrollBox().scrollTo({top:0, behavior:"smooth"});
+      scrollBox().scrollTo({top:0, behavior: RM.matches ? "auto" : "smooth"});
       return;
     }
     S.view=b.dataset.v; syncViews();
