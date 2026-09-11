@@ -427,12 +427,16 @@ button{font:inherit; color:inherit; cursor:pointer}
   #app[data-mtab=place] .sechead.trhead,
   #app[data-mtab=place] .sec.sectrips,
   #app[data-mtab=place] .qtrips,
+
+  #app[data-mtab=place] .mf-trip,
   #app[data-mtab=place] .tripbox,
   #app[data-mtab=place] .sec.secitin{display:none}
   #app[data-mtab=trip] .sec.basesec,
   #app[data-mtab=trip] .qbases,
   #app[data-mtab=trip] .rlist,
   #app[data-mtab=trip] .sec.seclist,
+
+  #app[data-mtab=trip] .mf-place,
   #app[data-mtab=trip] .lfilters,
   #app[data-mtab=trip] .fbar,
   #app[data-mtab=trip] .results,
@@ -446,6 +450,106 @@ button{font:inherit; color:inherit; cursor:pointer}
   #app[data-mtab=map] .panel{display:none; border-top:0}
 
   .totop{bottom:calc(16px + var(--navh) + env(safe-area-inset-bottom))}
+
+  .panel .tfilters, .panel .tfhint, .panel .lfilters{display:none}
+
+}
+
+.sheetwrap{display:none; position:fixed; inset:0; z-index:1200}
+.sheetmask{position:absolute; inset:0; background:rgba(var(--sh),.42)}
+
+html.sheeton .panel{overflow:hidden}
+.sheet{
+  position:absolute; left:0; right:0; bottom:0;
+  display:flex; flex-direction:column;
+
+  max-height:82vh; max-height:82dvh;
+  background:var(--panel); border-top:1px solid var(--line);
+  border-radius:16px 16px 0 0;
+  box-shadow:0 -3px 20px rgba(var(--sh),.20);
+
+  padding-bottom:env(safe-area-inset-bottom);
+}
+@keyframes sheetup{from{transform:translateY(100%)} to{transform:none}}
+@keyframes sheetfade{from{opacity:0} to{opacity:1}}
+.sheetwrap[data-open] .sheet{animation:sheetup .24s cubic-bezier(.22,.61,.36,1)}
+.sheetwrap[data-open] .sheetmask{animation:sheetfade .18s ease-out}
+
+@media (prefers-reduced-motion:reduce){
+  .sheetwrap[data-open] .sheet{animation:none}
+}
+
+.sheetgrab{
+  flex:none; height:40px; border:0; background:none; padding:0; width:100%;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.sheetgrab span{display:block; width:38px; height:4px; border-radius:999px; background:var(--line)}
+.sheetgrab:hover span{background:var(--accent)}
+.sheetgrab:focus-visible{outline:2px solid var(--accent); outline-offset:-3px}
+
+.sheethead{
+  flex:none; display:flex; align-items:center; gap:10px;
+  padding:0 14px 8px; border-bottom:1px solid var(--line);
+}
+.sheettitle{flex:1; min-width:0; font-size:15px; font-weight:700; color:var(--ink)}
+.sheetbody{
+  flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch; padding:4px 14px 12px;
+}
+
+.sheetbody .frow{flex-direction:column; align-items:stretch; gap:5px; padding:9px 0}
+.sheetbody .fkey{width:auto; padding-top:0; font-size:12px}
+.sheetbody .tfilters, .sheetbody .lfilters{padding:0; margin:0; border-bottom:0}
+
+.sheetbody .tfclear{display:none}
+
+.sheetfoot{
+  flex:none; display:flex; align-items:center; gap:10px;
+  padding:9px 14px 12px; border-top:1px solid var(--line); background:var(--panel);
+}
+
+.sheetbtn{
+  min-height:44px; padding:0 16px; border-radius:999px; cursor:pointer;
+  font-family:inherit; font-size:13.5px; line-height:1.4;
+  border:1px solid var(--line); background:var(--chip-bg); color:var(--ink2);
+}
+.sheetbtn.sb-clear{flex:none}
+.sheetbtn.sb-go{flex:1 1 auto; font-weight:600; background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.sheetbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.sheetreset{
+  flex:none; min-height:40px; padding:0 10px; border:0; background:none; cursor:pointer;
+  font-family:inherit; font-size:13px; color:var(--ink3); text-decoration:underline;
+  text-underline-offset:3px;
+}
+.sheetreset:hover{color:var(--accent)}
+.sheetreset:focus-visible{outline:2px solid var(--accent); outline-offset:-2px; border-radius:6px}
+
+.mfbar{display:none; align-items:center; gap:8px; padding:5px 14px 9px; flex-wrap:wrap}
+.mfbtn{
+  flex:none; min-height:40px; padding:0 14px; border-radius:999px; cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:inherit; font-size:13.5px; line-height:1.4;
+  border:1px solid var(--line); background:var(--chip-bg); color:var(--ink);
+}
+.mfbtn[aria-expanded=true]{background:var(--accent-soft); border-color:var(--accent); font-weight:600}
+.mfbtn .mfn{font-size:15px; line-height:1; color:var(--accent)}
+
+.mfsum{display:flex; flex-wrap:wrap; gap:6px; align-items:center; flex:1 1 auto; min-width:0}
+.mfsum .mfv{
+  font-size:12px; line-height:1.5; padding:2px 8px; border-radius:999px;
+  border:1px solid var(--line); color:var(--ink2);
+}
+
+.mfx{
+  flex:none; width:40px; height:40px; border:0; background:none; cursor:pointer;
+  font-size:19px; line-height:1; color:var(--ink3); border-radius:999px;
+}
+.mfx:hover{color:var(--accent); background:var(--hover-bg)}
+.mfx:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+
+@media (max-width:899px), (max-height:559px){
+  .mfbar{display:flex}
+  .sheetwrap[data-open]{display:block}
 }
 
 @media (min-width:900px) and (min-height:560px){
@@ -1393,6 +1497,19 @@ button.tnight:hover .chev{color:var(--accent)}
   <svg viewBox="0 0 16 16"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5"/></svg>
 </button>
 
+<div class="sheetwrap" id="sheetwrap">
+  <div class="sheetmask" id="sheetmask"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheettitle">
+    <button type="button" class="sheetgrab" id="sheetgrab" aria-label="收合篩選"><span></span></button>
+    <div class="sheethead">
+      <div class="sheettitle" id="sheettitle">篩選</div>
+      <button type="button" class="sheetreset" id="sheetreset">重置</button>
+    </div>
+    <div class="sheetbody" id="sheetbody"></div>
+    <div class="sheetfoot" id="sheetfoot"></div>
+  </div>
+</div>
+
 <script>
 const THEMES = [{"id": "heritage", "emoji": "🏛️", "name": "古蹟人文", "color": "#6E5A94", "dark": "#AD9CCF", "desc": "宗祠、老屋、古橋、日式建築"}, {"id": "water", "emoji": "💧", "name": "水庫湖埤", "color": "#3F6A94", "dark": "#86AFD0", "desc": "水庫、湖、埤塘、圳道"}, {"id": "coast", "emoji": "🌊", "name": "海岸濕地", "color": "#4696AA", "dark": "#86BDCB", "desc": "沙灘、堤岸、單車道、夕陽"}, {"id": "trail-mountain", "emoji": "⛰️", "name": "高山林道", "color": "#6B8A4F", "dark": "#9EBB80", "desc": "林道、巨木、部落，車程與體力都要算"}, {"id": "trail-near", "emoji": "🚶", "name": "近郊步道", "color": "#91AB63", "dark": "#C0D09F", "desc": "台地郊山、古道、環湖，兩三小時解決"}, {"id": "food", "emoji": "🍜", "name": "吃的", "color": "#B8933A", "dark": "#D9BE6A", "desc": "路上與山上的館子小吃"}, {"id": "cafe", "emoji": "☕", "name": "咖啡茶館", "color": "#C4763A", "dark": "#E5A66E", "desc": "景觀咖啡、老屋茶館、山中書店"}, {"id": "oldstreet", "emoji": "🏮", "name": "老街聚落", "color": "#A8463A", "dark": "#D98D7E", "desc": "客家庄與礦業聚落，吃喝採買"}, {"id": "rest", "emoji": "🛣️", "name": "補給驛站", "color": "#777064", "dark": "#B9B0A1", "desc": "公路休息站與驛站，或偏遠路線上的補給與旅遊服務點"}, {"id": "lodging", "emoji": "🛏️", "name": "住宿", "color": "#974E73", "dark": "#CE97B1", "desc": "民宿、飯店、露營區；價位與訂房方式寫在提醒欄"}];
 const CATS = [{"id": "ㄅ", "name": "桃竹苗後山", "color": "#A8463A", "dark": "#D98D7E"}, {"id": "ㄆ", "name": "宜蘭北海岸東北角", "color": "#C4763A", "dark": "#E5A66E"}, {"id": "ㄇ", "name": "中台灣山林湖泊", "color": "#B8933A", "dark": "#D9BE6A"}, {"id": "ㄈ", "name": "南台灣山海原鄉", "color": "#6B8A4F", "dark": "#9EBB80"}, {"id": "ㄉ", "name": "花東縱谷海岸", "color": "#3F6A94", "dark": "#86AFD0"}, {"id": "ㄊ", "name": "跨區環線與離島", "color": "#6E5A94", "dark": "#AD9CCF"}];
@@ -1446,13 +1563,6 @@ let SCROLL_ITIN = false;                  // 下一次 renderPanel 要不要捲�
 let SCROLL_LIST = false;                  // 下一次 renderPanel 要不要捲到「景點清單」那顆標題
 
 let SCROLL_TRIPTOP = false;
-
-const ACCORDION_MQ = matchMedia("(max-width:899px)");
-function accordion(justOpened){
-  if (!ACCORDION_MQ.matches) return;
-  if (justOpened==="trips" && S.tripsOpen) S.basesOpen=false;
-  if (justOpened==="bases" && S.basesOpen) S.tripsOpen=false;
-}
 
 let INLINE = null;
 const inlineOpen = key => !!(INLINE && INLINE.key===key);
@@ -2787,23 +2897,32 @@ function clearAll(){
   save(); render();
 }
 
+function clearPlaceFilters(){
+  S.themes=new Set(); S.diffs=new Set(); S.inseason=false;
+  S.base=new Set(); closeBaseDetail();
+  S.sel=null; EXTRA=new Set(); S.near=0;
+  save(); render();
+}
+
 function condBits(){
   const out=[];
   const lb = (arr, v) => (arr.find(o=>o.id===v)||{}).label || v;
   const t = S.trip && TRIP_BY_ID[S.trip];
-  if (t) out.push(["行程", t.name]);
-  if (S.fDays.size)  out.push(["天數", [...S.fDays].map(v=>lb(F_DAYS,v)).join("、")]);
-  if (S.fDrive.size) out.push(["車程", [...S.fDrive].map(v=>lb(F_DRIVE,v)).join("、")]);
-  if (S.fStam.size)  out.push(["體力", [...S.fStam].map(v=>lb(F_STAM,v)).join("、")]);
-  if (S.fFeel.size)  out.push(["風格", [...S.fFeel].join("、")]);
-  if (S.base.size)   out.push(["基地", [...S.base].map(b=>(BS[b]||{}).name||b).join("、")]);
-  if (S.themes.size) out.push(["主題", [...S.themes].map(x=>(TH[x]||{}).name||x).join("、")]);
-  if (S.diffs.size)  out.push(["費力", [...S.diffs].map(d=>EFFORT[d]||d).join("、")]);
-  if (S.inseason)    out.push(["季節", `${MONTH} 月當季`]);
-  if (S.qtags.length) out.push(["搜尋", S.qtags.map(x=>`「${x}」`).join("、")]);
-  if (S.q)           out.push(["搜尋", `「${S.q}」`]);
+  if (t) out.push(["行程", t.name, "trip"]);
+  if (S.fDays.size)  out.push(["天數", [...S.fDays].map(v=>lb(F_DAYS,v)).join("、"), "tripf"]);
+  if (S.fDrive.size) out.push(["車程", [...S.fDrive].map(v=>lb(F_DRIVE,v)).join("、"), "tripf"]);
+  if (S.fStam.size)  out.push(["體力", [...S.fStam].map(v=>lb(F_STAM,v)).join("、"), "tripf"]);
+  if (S.fFeel.size)  out.push(["風格", [...S.fFeel].join("、"), "tripf"]);
+  if (S.base.size)   out.push(["基地", [...S.base].map(b=>(BS[b]||{}).name||b).join("、"), "base"]);
+  if (S.themes.size) out.push(["主題", [...S.themes].map(x=>(TH[x]||{}).name||x).join("、"), "placef"]);
+  if (S.diffs.size)  out.push(["費力", [...S.diffs].map(d=>EFFORT[d]||d).join("、"), "placef"]);
+  if (S.inseason)    out.push(["季節", `${MONTH} 月當季`, "placef"]);
+  if (S.qtags.length) out.push(["搜尋", S.qtags.map(x=>`「${x}」`).join("、"), "q"]);
+  if (S.q)           out.push(["搜尋", `「${S.q}」`, "q"]);
   return out;
 }
+
+const condBitsOf = g => condBits().filter(b => b[2]===g);
 
 function anyCondition(){
   return !!(condBits().length || BASE_SEL || QEXP.trips || QEXP.bases);
@@ -2888,7 +3007,7 @@ function renderTripsMini(){
   const t = S.trip && TRIP_BY_ID[S.trip];
   box.appendChild(section("推薦行程",
     S.trip ? null : `${tripCount()} 條`, S.tripsOpen,
-    ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "mini",
+    ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "mini",
     tripSub(t)));
   if (S.tripsOpen) box.appendChild(tripPicker(true));
   return box;
@@ -3293,10 +3412,10 @@ function selectTrip(id){
 
     SCROLL_TRIPTOP=true;
     S.tripsOpen=false; openItin(); openTripPath(TRIP_BY_ID[id]); fitTrip();
-    if (!ACCORDION_MQ.matches) accordion("bases");
+
   } else {
     dropTrip();
-    accordion("trips");
+
   }
   save(); render();
 }
@@ -4243,6 +4362,121 @@ function mpageSave(){
   }
   MPAGE=null;
 }
+
+let SHEET = null;          // null／"trip"／"place"＝現在開著哪一張
+
+const circled = n => (n>=1 && n<=20) ? "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳"[n-1] : String(n);
+
+const SHEETS = {
+  trip: {
+    tab:"trip",
+    count: () => S.fDays.size + S.fDrive.size + S.fStam.size + S.fFeel.size,
+    body: () => tripFilterRows(false),
+    clear: clearTripFilters,
+    go: () => `顯示 ${tripCount()} 條行程`,
+  },
+  place: {
+    tab:"place",
+    count: () => S.themes.size + S.diffs.size + (S.inseason?1:0),
+    body: renderListFilters,
+    clear: clearPlaceFilters,
+    go: () => `顯示 ${shown().length} 個景點`,
+  },
+};
+function openSheet(kind){
+  if (!hasMapCard() || !SHEETS[kind] || SHEET===kind) return;
+  SHEET=kind;
+  render();
+  const g=document.getElementById("sheetgrab"); if (g) g.focus();
+}
+
+function closeSheet(){
+  if (!SHEET) return;
+  SHEET=null;
+  render();
+  const b=document.querySelector(".mfbtn");
+  if (b) b.focus({preventScroll:true});
+}
+function sheetFoot(spec){
+  const f=document.createElement("div"); f.id="sheetfoot"; f.className="sheetfoot";
+  const c=document.createElement("button");
+  c.type="button"; c.className="sheetbtn sb-clear"; c.textContent="清除";
+  c.onclick=spec.clear;
+  const g=document.createElement("button");
+  g.type="button"; g.className="sheetbtn sb-go"; g.textContent=spec.go();
+  g.onclick=closeSheet;
+  f.append(c,g);
+  return f;
+}
+function renderSheet(){
+  const wrap=document.getElementById("sheetwrap");
+  if (!wrap) return;
+  const spec = SHEET && SHEETS[SHEET];
+  const on = !!(spec && hasMapCard() && S.tab===spec.tab);
+  if (!on){
+    if (SHEET) SHEET=null;
+    wrap.removeAttribute("data-open");
+    document.documentElement.classList.remove("sheeton");
+    document.getElementById("sheetbody").innerHTML="";
+    document.getElementById("sheetfoot").innerHTML="";
+    return;
+  }
+  const body=document.getElementById("sheetbody");
+
+  const btns=[...body.querySelectorAll("button")];
+  const fi=btns.indexOf(document.activeElement);
+  body.innerHTML="";
+  body.appendChild(spec.body());
+  if (fi>=0){
+    const now=body.querySelectorAll("button");
+    if (now[fi]) now[fi].focus({preventScroll:true});
+  }
+  const foot=document.getElementById("sheetfoot");
+  foot.replaceWith(sheetFoot(spec));
+
+  const rs=document.getElementById("sheetreset");
+  rs.hidden = !spec.count();
+  rs.onclick = spec.clear;
+  wrap.setAttribute("data-open","");
+
+  document.documentElement.classList.add("sheeton");
+}
+
+function mFilterBar(kind){
+  const spec=SHEETS[kind];
+  const n=spec.count();
+
+  const bar=document.createElement("div");
+  bar.className="mfbar " + (kind==="trip" ? "mf-trip" : "mf-place");
+  const b=document.createElement("button");
+  b.type="button"; b.className="mfbtn";
+  b.innerHTML = "篩選" + (n ? `<span class="mfn">${circled(n)}</span>` : "");
+
+  b.setAttribute("aria-haspopup","dialog");
+  b.setAttribute("aria-expanded", SHEET===kind);
+  b.setAttribute("aria-label", n ? `篩選，目前 ${n} 個條件` : "篩選");
+  b.onclick=()=>openSheet(kind);
+  bar.appendChild(b);
+  if (kind==="trip"){
+    const vals=condBitsOf("tripf");
+    if (vals.length){
+      const s=document.createElement("div"); s.className="mfsum";
+      s.innerHTML=vals.map(([,v])=>`<span class="mfv">${esc(v)}</span>`).join("");
+      const x=document.createElement("button");
+      x.type="button"; x.className="mfx"; x.textContent="×";
+      x.title="清除行程篩選";
+      x.setAttribute("aria-label","清除行程篩選");
+      x.onclick=clearTripFilters;
+
+      s.appendChild(x);
+      bar.appendChild(s);
+    }
+  }
+  return bar;
+}
+
+document.getElementById("sheetmask").onclick=closeSheet;
+document.getElementById("sheetgrab").onclick=closeSheet;
 function renderPanel(){
   const panel=document.getElementById("panel");
   const two=isTwoLane();
@@ -4299,7 +4533,7 @@ function renderPanel(){
 
     const trsec = section("推薦行程",
       S.trip ? null : `${tripCount()} 條`, S.tripsOpen,
-      ()=>{ S.tripsOpen=!S.tripsOpen; accordion("trips"); save(); render(); }, "toplevel deskonly sectrips",
+      ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel deskonly sectrips",
       tripSub(t));
 
     
@@ -4325,6 +4559,8 @@ function renderPanel(){
       qw.appendChild(qt);
       tripHost.appendChild(qw);
     }
+
+    if (hasMapCard()) tripHost.appendChild(mFilterBar("trip"));
     if (S.tripsOpen) tripHost.appendChild(renderTrips());
 
     if (t){
@@ -4343,7 +4579,7 @@ function renderPanel(){
 
   expHost.appendChild(section("基地",
     S.base.size ? `${S.base.size}/${BASES.length} 個` : `${BASES.length} 個`, S.basesOpen,
-    ()=>{ S.basesOpen=!S.basesOpen; accordion("bases"); save(); render(); }, "toplevel basesec",
+    ()=>{ S.basesOpen=!S.basesOpen; save(); render(); }, "toplevel basesec",
     baseSub()));
 
   const qb=qBaseSection();
@@ -4364,6 +4600,8 @@ function renderPanel(){
     themeSub()));
   if (S.listOpen){
 
+    
+    if (hasMapCard()) expHost.appendChild(mFilterBar("place"));
     expHost.appendChild(renderListFilters());
     expHost.appendChild(renderFilterBar());
     expHost.appendChild(renderList());
@@ -4610,6 +4848,8 @@ function render(){
   
   syncReset();
   draw(); renderPanel(); renderMapBtns(); renderMapCard(); updateTotop();
+
+  renderSheet();
   syncHash();
 }
 
@@ -4661,6 +4901,8 @@ document.getElementById("qwrap").addEventListener("click", ()=>{
 });
 addEventListener("keydown", e=>{
   if (e.key!=="Escape") return;
+
+  if (SHEET){ closeSheet(); return; }
   if (!S.sel && !INLINE && !NIGHT && !BASE_SEL) return;
   closePlace(); closeBaseDetail(); render();
 });
