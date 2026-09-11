@@ -27,6 +27,7 @@
 
   --hover-bg:#f6f2e9;
   --ink:#2a241e; --ink2:#665b4f; --ink3:#736a5d;
+  --section-title-color:var(--ink2);
 
   --line:#e6ddcc; --line2:#d1c6b0;
 
@@ -299,15 +300,18 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .mcondsum{
   position:absolute; top:10px; left:54px; right:10px; z-index:500; display:none;
-  align-items:center; gap:4px; max-width:calc(100% - 64px);
+  flex-direction:column; align-items:stretch; gap:0; max-width:calc(100% - 64px);
   background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
-  padding:0 2px 0 10px; font-size:11.5px; line-height:1.5; color:var(--ink2);
+  padding:2px; font-size:11.5px; line-height:1.5; color:var(--ink2);
   box-shadow:0 1px 6px rgba(var(--sh),.13);
 }
-.mcondsum .mcsv{
-  flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-  padding:6px 0;
-}
+.mcondsum .mcsrow{display:flex; align-items:center; min-height:36px; width:100%; padding:0 6px;
+  border:0; border-radius:8px; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer}
+.mcondsum .mcsline{display:flex; align-items:center; min-width:0}
+.mcondsum .mcsline .mcsrow{flex:1 1 auto; min-width:0}
+.mcondsum .mcsrow:hover{background:var(--hover-bg); color:var(--accent)}
+.mcondsum .mcsv{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.mcondsum .mcsicons{display:flex; align-items:center; gap:6px}
 .mcondsum .mcsk{color:var(--ink3); margin-right:3px}
 
 .mcondsum .mcsg + .mcsg{margin-left:10px}
@@ -472,6 +476,14 @@ button{font:inherit; color:inherit; cursor:pointer}
 
   #app[data-mtab=trip] .tpickmini,
   #app[data-mtab=place] .tpickmini{display:none}
+  #app[data-mtab=trip] .sec.secitin{
+    position:sticky; top:0; z-index:401; background:var(--panel);
+    background-image:var(--paper-panel);
+    color:var(--section-title-color, var(--ink));
+    box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
+  }
+  #app[data-mtab=trip] .sec.secitin .nm,
+  #app[data-mtab=trip] .sec.secitin .ssub{color:inherit}
 
   #app[data-mtab=map] .panel{display:none; border-top:0}
 
@@ -546,6 +558,9 @@ html.sheeton .panel{overflow:hidden}
 .sheetwrap[data-kind=map] .sheetbody .detail{
   margin:0 0 10px; border-top:1px solid var(--accent); border-radius:var(--r);
 }
+.sheetwrap[data-kind=map] .sheetbody .place-card > .place-detail{
+  margin:0; border:0; border-top:1px solid var(--line); border-radius:0;
+}
 .sheetwrap[data-kind=map] .sheetbody .tripbox{padding:0}
 .sheetwrap[data-kind=map] .sheetbody .gintro,
 .sheetwrap[data-kind=map] .sheetbody .blodge{margin-left:0; width:auto}
@@ -553,17 +568,18 @@ html.sheeton .panel{overflow:hidden}
 .sheetfoot:empty{display:none}
 
 .sheetfoot{
-  flex:none; display:flex; align-items:center; gap:10px;
+  flex:none; display:flex; align-items:center; justify-content:flex-end; gap:10px;
   padding:9px 14px 12px; border-top:1px solid var(--line); background:var(--panel);
 }
 
 .sheetbtn{
-  min-height:44px; padding:0 16px; border-radius:999px; cursor:pointer;
+  min-height:32px; padding:0 14px; border-radius:999px; cursor:pointer; position:relative;
   font-family:inherit; font-size:13.5px; line-height:1.4;
   border:1px solid var(--line); background:var(--chip-bg); color:var(--ink2);
 }
 .sheetbtn.sb-clear{flex:none}
-.sheetbtn.sb-go{flex:1 1 auto; font-weight:600; background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.sheetbtn.sb-go{flex:none; font-weight:600; background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.sheetbtn::after{content:""; position:absolute; inset:-6px 0}
 .sheetbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 .sheetreset{
   flex:none; min-height:40px; padding:0 10px; border:0; background:none; cursor:pointer;
@@ -573,12 +589,18 @@ html.sheeton .panel{overflow:hidden}
 .sheetreset:hover{color:var(--accent)}
 .sheetreset:focus-visible{outline:2px solid var(--accent); outline-offset:-2px; border-radius:6px}
 
-.mfbar{display:none; align-items:center; gap:8px; padding:5px 14px 9px; flex-wrap:wrap}
+.mfbar{display:none; align-items:center; justify-content:flex-end; gap:8px; padding:3px 14px; min-height:38px; flex-wrap:nowrap}
 .mfbtn{
-  flex:none; min-height:40px; padding:0 14px; border-radius:999px; cursor:pointer;
+  flex:none; min-height:32px; padding:0 12px; border-radius:999px; cursor:pointer; position:relative;
   display:inline-flex; align-items:center; gap:6px;
   font-family:inherit; font-size:13.5px; line-height:1.4;
   border:1px solid var(--line); background:var(--chip-bg); color:var(--ink);
+}
+.mfbtn::after{content:""; position:absolute; inset:-6px 0}
+.mf-place .mfbtn{margin-left:auto}
+@media (max-width:899px), (max-height:559px){
+  .sechead > .mf-trip{display:flex; flex:none; width:auto; min-height:0; padding:3px 8px 3px 0}
+  .fbar > .mf-place{display:flex; padding:0; min-height:0; margin-left:auto}
 }
 .mfbtn[aria-expanded=true]{background:var(--accent-soft); border-color:var(--accent); font-weight:600}
 .mfbtn .mfn{font-size:15px; line-height:1; color:var(--accent)}
@@ -626,11 +648,18 @@ html.sheeton .panel{overflow:hidden}
   .panel.twolane .lane-trip{flex:0 0 var(--lane1w); width:var(--lane1w); border-right:1px solid var(--line)}
   .panel.twolane .lane-explore{flex:1 1 auto; min-width:0}
 
-  
+
   .panel.twolane .lane-trip > .sec.toplevel:first-child,
   .panel.twolane .lane-trip > .sechead.trhead:first-child{
     position:sticky; top:0; z-index:400; background:var(--panel);
   }
+  .panel.twolane .lane-trip > .sec.secitin{
+    position:sticky; top:var(--l1h); z-index:399; background:var(--panel);
+    color:var(--section-title-color, var(--ink));
+    box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
+  }
+  .panel.twolane .lane-trip > .sec.secitin .nm,
+  .panel.twolane .lane-trip > .sec.secitin .ssub{color:inherit}
 
   .panel.twolane .lane-trip > .sec.toplevel:first-child:hover{background:var(--hover-bg)}
 
@@ -644,9 +673,13 @@ html.sheeton .panel{overflow:hidden}
   .panel.twolane .lane-explore > .sec.basesec,
   .panel.twolane .lane-explore > .sec.seclist{
     position:sticky; z-index:400; background:var(--panel);
+    box-shadow:inset 0 -1px 0 var(--line);
   }
   .panel.twolane .lane-explore > .sec.basesec{top:0}
   .panel.twolane .lane-explore > .sec.seclist{top:var(--l1h)}
+  .panel.twolane .lane-explore > .fbar{
+    box-shadow:inset 0 -1px 0 var(--line), 0 2px 4px rgb(60 45 30 / 6%);
+  }
 
   .panel.twolane .lane-explore > .sec.basesec:hover,
   .panel.twolane .lane-explore > .sec.seclist:hover{background:var(--hover-bg)}
@@ -687,7 +720,7 @@ html.sheeton .panel{overflow:hidden}
 
   .lanefold:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
 
-  
+
   .lanefold.lf-trip{right:calc(100% - var(--lane1w))}
   .lanefold.lf-exp{right:0}
 
@@ -845,6 +878,7 @@ html.sheeton .panel{overflow:hidden}
 .qtrips{padding:0 14px}
 .qtrips .trow{margin-left:4px; width:calc(100% - 4px)}
 .qtrips .trow + .trow{margin-top:3px}
+.qtrips .qmorew{margin-top:10px; margin-bottom:10px}
 
 .qbases{padding:0 14px}
 .qbases .rrow{margin-left:4px; width:calc(100% - 4px)}
@@ -852,10 +886,13 @@ html.sheeton .panel{overflow:hidden}
 .trow .tl .qol{margin-left:7px; font-size:11.5px; color:var(--ink3)}
 .trow[aria-pressed=true] .tl .qol{color:var(--ink2); font-weight:400}
 
-.qmorew{display:flex; margin:1px 0 6px 4px}
+.qmorew{display:flex; margin:10px 0 10px 4px}
 .qmore{
   display:inline-flex; align-items:center; justify-content:center;
   font-family:inherit; white-space:nowrap;
+}
+.qtrips, .qbases{
+  padding-bottom:12px; margin-bottom:8px; border-bottom:1px solid var(--line);
 }
 
 .rrow .rbar.qbar{background:var(--accent)}
@@ -955,8 +992,22 @@ html.sheeton .panel{overflow:hidden}
 
 .detail{
   border:1px solid var(--accent); border-top:0; border-radius:0 0 var(--r) var(--r);
-  margin:-1px 9px 10px; padding:11px 13px 13px; background:var(--accent-soft);
+  margin:-1px 9px 10px; padding:11px 13px 13px; background:var(--accent-soft); overflow:hidden;
 }
+.place-card{
+  width:100%; border:1px solid var(--accent); border-radius:var(--r);
+  background:var(--accent-soft); overflow:hidden; margin:0 0 10px;
+}
+.place-card.timeline{width:calc(100% - 5px); margin-left:5px}
+.place-card > .place-summary{
+  width:100%; margin:0; border:0; border-radius:0; background:transparent;
+}
+.place-card > .place-detail{
+  margin:0; border:0; border-top:1px solid var(--line); border-radius:0;
+  background:transparent;
+}
+.sheetbody .place-detail{border-top:1px solid var(--accent); border-radius:var(--r); margin:0}
+.sheetbody .place-card > .place-detail{border-top:1px solid var(--line); border-radius:0}
 .detail h3{margin:0 0 8px; font-size:12px; color:var(--ink3); font-weight:600; letter-spacing:.06em}
 .facts{display:grid; grid-template-columns:auto 1fr; gap:2px 14px; font-size:13px; margin:0 0 10px}
 .facts dt{color:var(--ink3)}
@@ -982,9 +1033,6 @@ html.sheeton .panel{overflow:hidden}
 }
 
 .acts .primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
-
-.detail .acts a, .detail .acts button{padding:2px 7px; font-size:12px}
-@media (max-width:899px){ .detail .acts{row-gap:16px} }
 .nearby{margin-top:11px; border-top:1px solid var(--line); padding-top:8px}
 .nearby .row{padding:5px 6px}
 .nearby .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
@@ -1003,25 +1051,6 @@ html.sheeton .panel{overflow:hidden}
 .hgic{width:5.5px; height:9px; flex:none; stroke:currentColor; fill:none; stroke-width:1.3;
       stroke-linecap:round; stroke-linejoin:round}
 
-.tdback{
-  position:sticky; top:0; z-index:400;
-  display:flex; align-items:center; gap:2px;
-  padding:4px 14px 4px 6px; background:var(--panel);
-  border-bottom:1px solid var(--line);
-}
-.tdbk{
-  flex:none; width:44px; height:44px; border:0; background:none; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; color:var(--ink2);
-  border-radius:999px;
-}
-.tdbk svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6;
-          stroke-linecap:round; stroke-linejoin:round}
-.tdbk:hover{color:var(--accent); background:var(--hover-bg)}
-.tdbk:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
-.tdbt{
-  flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-  font-size:15px; font-weight:700; color:var(--ink);
-}
 .tripbox{padding:0 14px 14px}
 
 .tpick{display:flex; flex-direction:column; gap:2px; padding:6px 0 2px}
@@ -1281,6 +1310,18 @@ button.tnight:hover .chev{color:var(--accent)}
 }
 .lodgebox button.zhead:hover .zloc{color:var(--accent)}
 .lodgebox button.zhead[aria-pressed=true] .zloc{color:var(--accent)}
+.lodgebox .zhead.locatable{
+  display:flex; align-items:center; gap:7px; width:100%; padding:4px 8px;
+  border:1px solid var(--line); border-radius:8px; background:var(--sunk);
+}
+.lodgebox .zhead.locatable .zn{flex:1; min-width:0}
+.lodgebox .zlocbtn{
+  flex:none; width:40px; height:32px; margin:-4px -8px -4px 0; padding:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  border:0; border-radius:8px; background:none; color:var(--ink3); cursor:pointer;
+}
+.lodgebox .zlocbtn:hover{background:var(--panel); color:var(--accent)}
+.lodgebox .zlocbtn .zloc{width:14px; height:14px}
 
 .lodgebox .znote{margin:1px 0 5px 8px; font-size:11.5px; color:var(--ink2); line-height:1.6}
 
@@ -1377,12 +1418,12 @@ button.tnight:hover .chev{color:var(--accent)}
 
 .basepin.big.ftrip::after{inset:-10.5px}
 
-.zonepin .zp{
-  display:block; width:14px; height:14px; border-radius:4px;
-  border:2px solid var(--panel); box-shadow:0 1px 4px rgba(var(--sh),.36);
+.lodgemk.zonefocus .ld, .pin.zonefocus{
+  outline:2.5px solid var(--accent); outline-offset:2px;
+  box-shadow:0 0 0 8px rgba(var(--accent-rgb),.16), 0 1px 5px rgba(var(--sh),.32);
 }
 
-.pin, .hubpin, .mypin, .basepin .bp, .lodgemk .ld, .zonepin .zp{
+.pin, .hubpin, .mypin, .basepin .bp, .lodgemk .ld, .poidot .pd{
   background-image:var(--pinfx) !important;
 }
 
@@ -1391,11 +1432,25 @@ button.tnight:hover .chev{color:var(--accent)}
   box-shadow:0 0 0 7.5px rgba(var(--accent-rgb),.18), 0 1px 5px rgba(var(--sh),.32);
 }
 
-.ringmk{pointer-events:none}
-.ringmk .rk{
-  display:block; width:100%; height:100%; border-radius:999px;
-  border:2.5px solid var(--accent); box-shadow:var(--ring-glow);
+.pin.has-halo, .poidot.has-halo, .lodgemk.has-halo{position:relative}
+.pin.has-halo::before, .poidot.has-halo::before, .lodgemk.has-halo::before{
+  content:""; position:absolute; z-index:-1; pointer-events:none; border-radius:999px;
+  inset:-4px; border:2px solid var(--accent);
+  box-shadow:0 0 0 3px rgba(var(--accent-rgb),.14);
 }
+.pin.tripstop.has-halo::before{inset:-3px; border-width:2.5px}
+.lodgemk.has-halo::before{border-radius:7px; inset:-3px; border-width:2px}
+.poidot.has-halo::before{
+  inset:-2px; border-width:1.5px;
+  box-shadow:0 0 0 2px rgba(var(--accent-rgb),.12);
+}
+.poidot{position:relative; width:13px; height:13px; pointer-events:auto}
+.poidot .pd{display:block; width:13px; height:13px; border-radius:999px;
+  border:1.2px solid #fff; box-shadow:0 1px 4px rgba(var(--sh),.32)}
+.pin.query-match, .poidot.query-match, .lodgemk.query-match,
+.basepin.query-match{filter:drop-shadow(0 0 4px rgba(var(--accent-rgb),.45))}
+.pin.query-match, .poidot.query-match, .lodgemk.query-match{transform:scale(1.12)}
+.basepin.query-match .bp{transform:scale(1.12); outline:1.5px solid var(--accent); outline-offset:2px}
 
 .basepin.hov .bp{
   outline:2.5px solid var(--accent); outline-offset:1px;
@@ -1426,10 +1481,11 @@ button.tnight:hover .chev{color:var(--accent)}
 :root .leaflet-tile{filter:var(--tile)}
 
 .bar, .panel, .fbar, .mapcard, .loctip, .leaflet-tooltip.tt,
-.lanefold, .tdback,
+.lanefold,
 .panel.twolane .lane-explore > .sec.basesec,
 .panel.twolane .lane-explore > .sec.seclist,
 .panel.twolane .lane-trip > .sec.toplevel:first-child,
+.panel.twolane .lane-trip > .sec.secitin,
 .panel.twolane .lane-trip > .sechead.trhead:first-child{
   background-image:var(--paper-panel);
 }
@@ -1481,9 +1537,21 @@ button.tnight:hover .chev{color:var(--accent)}
   .bar .tally{margin-left:0}
 
   #app:not([data-msearch]) #qwrap{display:none}
-  #qreset, #theme{display:none}
   #app:not([data-msearch]) #msearch,
-  #app:not([data-msearch]) #mmore{display:inline-flex}
+  #app:not([data-msearch]) #qreset,
+  #app:not([data-msearch]) #theme{display:inline-flex}
+  #app:not([data-msearch]) #qreset[hidden]{display:none}
+  #app[data-msearch] #qreset, #app[data-msearch] #theme{display:none}
+  #app:not([data-msearch]) #qreset .lbl{display:none}
+  #app:not([data-msearch]) #qreset{
+    min-width:40px; min-height:40px; padding:0; border:0; background:none;
+  }
+  #mmore, #mmenu{display:none!important}
+  .bar .logo{order:1}
+  #msearch{order:2}
+  #qreset{order:3}
+  #theme{order:4}
+  .bar .tally{order:5}
 
   #app[data-msearch] .logo,
   #app[data-msearch] .tally{display:none}
@@ -1539,7 +1607,7 @@ button.tnight:hover .chev{color:var(--accent)}
 #mmenu button[hidden]{display:none}
 
 #mcond{
-  flex:0 0 100%; align-items:center; gap:10px;
+  flex:0 0 100%; align-items:center; gap:10px; min-height:38px;
   margin-top:2px; padding-top:7px; border-top:1px solid var(--line);
   font-size:12.5px; color:var(--ink3);
 }
@@ -1577,10 +1645,15 @@ button.tnight:hover .chev{color:var(--accent)}
   #theme{min-width:40px; min-height:40px}
   #qwrap{min-height:40px}
 
-  
+
 
   .clear, .ghost, #sort, .wider, .mapbtns button,
-  .shfoot .shbtn, #qreset, .qmore{min-height:40px}
+  .shfoot .shbtn, .qmore{min-height:32px; position:relative}
+  .clear::after, .ghost::after, .wider::after, .mapbtns button::after,
+  .shfoot .shbtn::after, .qmore::after{
+    content:""; position:absolute; left:0; right:0; top:50%;
+    transform:translateY(-50%); height:44px;
+  }
   .mapbtns button{display:inline-flex; align-items:center}
   .acts a, .acts button, .mapcard .acts a, .mapcard .acts button,
   .tdhead .tdnav{position:relative}
@@ -1696,7 +1769,6 @@ button.tnight:hover .chev{color:var(--accent)}
     <button type="button" class="sheetgrab" id="sheetgrab" aria-label="收合篩選"><span></span></button>
     <div class="sheethead">
       <div class="sheettitle" id="sheettitle">篩選</div>
-      <button type="button" class="sheetreset" id="sheetreset">重置</button>
     </div>
     <div class="sheetbody" id="sheetbody"></div>
     <div class="sheetfoot" id="sheetfoot"></div>
@@ -1750,6 +1822,8 @@ const RM = matchMedia("(prefers-reduced-motion: reduce)");
 let SCROLL_RESET = false;
 
 let BASE_SEL = null, ZONE_SEL = null;
+let ZONE_FOCUS = null, ZONE_FOCUS_TIMER = null;
+let ZONE_VIEW = null;       // 手機住宿帶 Sheet 的內容快照；不是選中狀態
 
 let SCROLL_BASE = null;
 let SCROLL_ITIN = false;                  // 下一次 renderPanel 要不要捲到「詳細行程」那顆標題
@@ -1800,9 +1874,10 @@ function toggleNight(key, b){
 }
 
 function inlineRow(p, key, extra, rel, noNear){
-  const out=[rowFor(p, extra, rel, key)];
-  if (inlineOpen(key)) out.push(renderDetail(p, true, noNear));
-  return out;
+  const summary=rowFor(p, extra, rel,key);
+  return inlineOpen(key)
+    ? [placeCard(summary, renderDetail(p, true, noNear))]
+    : [summary];
 }
 const TH = Object.fromEntries(THEMES.map(t=>[t.id,t]));
 const BS = Object.fromEntries(BASES.map(b=>[b.id,b]));
@@ -1931,9 +2006,11 @@ const SORTS = [
   {id:"stay",  label:"依停留", fn:(a,b)=>b.stay_h-a.stay_h},
   {id:"name",  label:"依名稱",     fn:(a,b)=>a.name.localeCompare(b.name,"zh-Hant")},
 ];
-const ico = (theme, color) =>
-  `<svg class="ic" viewBox="0 0 16 16" role="img"${color?` style="color:${color}"`:""}>` +
-  `<title>${(TH[theme]||{}).name||""}</title>${ICON[theme]||""}</svg>`;
+const ico = (theme, color) => {
+  const label=(TH[theme]||{}).name||"";
+  return `<svg class="ic" viewBox="0 0 16 16" role="img" aria-label="${esc(label)}"${color?` style="color:${color}"`:""}>` +
+    `<title>${esc(label)}</title>${ICON[theme]||""}</svg>`;
+};
 
 const LSKEY = "hsinchu-multiday:v1";
 function save(){
@@ -2303,28 +2380,16 @@ let PLACE_MARKS_ON = false;
 const stopBig = p => STOP_MARK.has(p.id) && zoom >= STOP_LABEL_ZOOM;
 const placeIsIcon = p => zoom >= ICON_ZOOM || stopBig(p) || placeOn(p.id);
 
-const Z_STOP_RING  = 4000;   
-const Z_TRIP_STOP  = 6000;   
-const Z_TRIP_BASE  = 8000;   
-const Z_PLACE_ON   = 10000;  
-const Z_HOVER_RING = 12000;  
-const Z_HOVER_STOP = 14000;  
-const Z_HOVER_BASE = 16000;  
-const Z_HOVER_PIN  = 18000;  
-
-function stopRing(p, z, asStop){
-  const m = marks[p.id];
-  const big = asStop ? zoom >= STOP_LABEL_ZOOM : stopBig(p);
-  const size = big ? 36
-             : placeIsIcon(p) ? 28
-             : (m || PLACE_MARKS_ON) ? 18
-             : 28;
-  const h = size / 2;
-  return L.marker([p.lat, p.lng], {
-    icon: L.divIcon({className:"ringmk", iconSize:[size,size], iconAnchor:[h,h],
-                     html:'<span class="rk"></span>'}),
-    interactive:false, zIndexOffset:z});
-}
+const Z_LODGING_NORMAL = 0;
+const Z_PLACE_NORMAL = 2000;
+const Z_BASE_NORMAL  = 4000;
+const Z_QUERY_MATCH  = 8000;
+const Z_TRIP_STOP    = 12000;
+const Z_TRIP_BASE    = 14000;
+const Z_PLACE_ON     = 18000;
+const Z_HOVER_STOP   = 20000;
+const Z_HOVER_BASE   = 20000;
+const Z_HOVER_PIN    = 20000;
 
 function note(html){
   const el=document.getElementById("mapnote");
@@ -2469,12 +2534,15 @@ function draw(){
   }
   if (S.sel && BY_ID[S.sel] && !ids.has(S.sel)){ list.push(BY_ID[S.sel]); ids.add(S.sel); }
 
-  
+
   const stops = tripStops();
   const stopIds = new Set(stops.map(p=>p.id));
 
   STOP_MARK = stopIds;
   stops.forEach(p=>{ if (!ids.has(p.id)){ list.push(p); ids.add(p.id); } });
+  if (ZONE_FOCUS) lodgingOf(ZONE_FOCUS.bid).forEach(p=>{
+    if (ZONE_FOCUS.ids.has(p.id) && !ids.has(p.id)){ list.push(p); ids.add(p.id); }
+  });
 
   if (engine==="osm"){
     lines.clearLayers(); pts.clearLayers(); marks={}; bmarks={};
@@ -2489,7 +2557,7 @@ function draw(){
       addPlaceMarker(p, !!(VIS && !stopIds.has(p.id) && !placeOn(p.id)));
     });
 
-    if (S.trip) stops.forEach(p=>stopRing(p, Z_STOP_RING).addTo(pts));
+
 
     drawBasePins();
   }
@@ -2497,30 +2565,35 @@ function draw(){
 
 function addPlaceMarker(p, dim){
   const on = placeOn(p.id);
+  const query = qTerms().length && matchQ(p);
+  const zoneFocus = !!(ZONE_FOCUS && ZONE_FOCUS.ids.has(p.id));
 
   const asIcon = placeIsIcon(p);
 
-  
+
   const zoff = HOVER_PLACE===p.id ? Z_HOVER_PIN
              : on ? Z_PLACE_ON
-             : STOP_MARK.has(p.id) ? Z_TRIP_STOP : 0;
+             : STOP_MARK.has(p.id) ? Z_TRIP_STOP
+             : query ? Z_QUERY_MATCH
+             : p.theme==="lodging" ? Z_LODGING_NORMAL : Z_PLACE_NORMAL;
   let m;
 
   if (asIcon || on){
 
     const s = stopBig(p) ? 32 : 26;
-    m = L.marker([p.lat,p.lng], {icon:L.divIcon({className:"", html:markerHTML(p, dim), iconSize:[s,s], iconAnchor:[s/2,s/2]}),
+    const html=markerHTML(p, dim).replace('class="pin', `class="pin${STOP_MARK.has(p.id)?" has-halo":""}${query?" query-match":""}${zoneFocus?" zonefocus":""}`);
+    m = L.marker([p.lat,p.lng], {icon:L.divIcon({className:"", html, iconSize:[s,s], iconAnchor:[s/2,s/2]}),
                                  zIndexOffset:zoff});
   } else if (p.theme==="lodging"){
     m = L.marker([p.lat,p.lng], {
-      icon:L.divIcon({className:"lodgemk"+(on?" on":"")+(dim?" dim":""), iconSize:[18,18], iconAnchor:[9,9],
+      icon:L.divIcon({className:"lodgemk"+(on?" on":"")+(dim?" dim":"")+(STOP_MARK.has(p.id)?" has-halo":"")+(query?" query-match":"")+(zoneFocus?" zonefocus":""), iconSize:[18,18], iconAnchor:[9,9],
                       html:`<span class="ld" style="background:${(TH[p.theme]||{}).color||"#888"}"></span>`}),
       zIndexOffset:zoff});
   } else {
-    m = L.circleMarker([p.lat,p.lng],{radius:on?9:5.5, color:"#fff", weight:on?2.5:1.2,
-                                      fillColor:(TH[p.theme]||{}).color||"#888",
-                                      opacity:dim?.6:1, fillOpacity:dim?.6:1,
-                                      bubblingMouseEvents:false});
+    const c=(TH[p.theme]||{}).color||"#888";
+    const cls="poidot"+(dim?" dim":"")+(STOP_MARK.has(p.id)?" has-halo":"")+(query?" query-match":"");
+    m=L.marker([p.lat,p.lng],{icon:L.divIcon({className:cls,iconSize:[13,13],iconAnchor:[6.5,6.5],
+      html:`<span class="pd" style="background:${c}"></span>`}),zIndexOffset:zoff});
   }
   m.addTo(pts);
   m.bindTooltip(tipHTML(p), {direction:"top", offset:[0,(asIcon||on)?-14:-8], className:"tt", opacity:1});
@@ -2574,8 +2647,9 @@ function drawBasePins(){
     const dim = !!(trip && !TRIP_BASES.has(b.id) && !sel && BASE_SEL!==b.id);
 
     const big = !!(trip && TRIP_BASES.has(b.id) && zoom >= STOP_LABEL_ZOOM);
+    const query = qTerms().length && qBaseHits().some(x=>x.id===b.id);
     const cls = "basepin" + (BASE_SEL===b.id?" on":"") + (sel?" sel":"") + (isFtrip?" ftrip":"") +
-                (big?" big":"") + (dim?" dim":"");
+                (big?" big":"") + (dim?" dim":"") + (query?" query-match":"");
 
     const m=L.marker(b.anchor, {
       icon:L.divIcon({className:cls, iconSize:[22,22], iconAnchor:[11,11],
@@ -2583,7 +2657,9 @@ function drawBasePins(){
              `<svg viewBox="0 0 16 16"><path d="M2.5 8.5 8 3l5.5 5.5M4 7v6h8V7"/></svg></span>` +
              (showLabel ? `<span class="pinlbl">${esc(b.name)}</span>` : "")}),
 
-      zIndexOffset: dim ? 1450 : (trip && TRIP_BASES.has(b.id) ? Z_TRIP_BASE : 1500)});
+      zIndexOffset: (BASE_SEL===b.id || (sel && !S.tripAdded.has(b.id))) ? Z_PLACE_ON
+        : (trip && TRIP_BASES.has(b.id) ? Z_TRIP_BASE
+        : (query ? Z_QUERY_MATCH : Z_BASE_NORMAL))});
 
     m.bindTooltip(`<b>${esc(b.name)}</b><i>${esc(b.town||"")}` +
                   (b.drive_min!=null?`　離新竹約 ${estT(b.drive_min)}`:"") + `</i>`,
@@ -2595,17 +2671,6 @@ function drawBasePins(){
 
     if (isFtrip){ const el=m.getElement(); if (el) el.style.setProperty("--tc", TRIP_COLOR); }
 
-    if (BASE_SEL===b.id || (NIGHT && NIGHT.base===b.id)) zonesOf(b).forEach(z=>{
-      const on=ZONE_SEL===z.name;
-      const zm=L.marker([z.anchor.lat, z.anchor.lng], {
-        icon:L.divIcon({className:"zonepin"+(on?" on":""), iconSize:[14,14], iconAnchor:[7,7],
-                        html:`<span class="zp" style="background:${baseColor(b)}"></span>`}),
-        zIndexOffset:1400});
-      zm.bindTooltip(`<b>${esc(z.name)}</b>` + (z.note?`<i>${esc(z.note)}</i>`:""),
-                     {direction:"top", offset:[0,-8], className:"tt", opacity:1});
-      zm.on("click", ()=>selectZone(z.name, b.id));
-      zm.addTo(pts);
-    });
   });
 }
 function fit(items){
@@ -2642,10 +2707,8 @@ function renderMapBtns(){
     ib.className="btn-act";
     ib.textContent="看詳細行程";
 
-    ib.title="切到「行程」頁，看這一趟的逐日行程";
-    ib.onclick=()=>{
-      gotoTab("trip"); openItin(); SCROLL_ITIN=true; save(); render();
-    };
+    ib.title="留在地圖，以底部資訊面板查看逐日行程";
+    ib.onclick=()=>openSheet("mtrip");
     box.appendChild(ib);
   }
 
@@ -2655,31 +2718,40 @@ function renderMapCond(){
   const box=document.getElementById("mcondsum");
   if (!box) return;
   box.innerHTML="";
-  const bits = hasMapCard() && S.tab==="map"
-    ? condBits().filter(([k,,g]) => g==="trip" || g==="base" || (g==="placef" && k==="主題"))
-    : [];
-  if (!bits.length){ box.className="mcondsum"; return; }
+  if (!hasMapCard() || S.tab!=="map") { box.className="mcondsum"; return; }
+  const trip=S.trip && TRIP_BY_ID[S.trip];
+  const bases=[...S.base].map(id=>BS[id]).filter(Boolean);
+  const themes=THEMES.filter(t=>S.themes.has(t.id));
+  if (!trip && !bases.length && !themes.length){ box.className="mcondsum"; return; }
   box.className="mcondsum on";
-  const v=document.createElement("div"); v.className="mcsv";
-
-  v.innerHTML = bits.map(([k,val]) =>
-    `<span class="mcsg"><span class="mcsk">${esc(k)}</span>${esc(val)}</span>`).join("");
-  v.title = bits.map(([k,val]) => `${k} ${val}`).join("　");
-  box.appendChild(v);
-  if (S.trip){
-    const x=document.createElement("button");
-    x.type="button"; x.className="mcsx";
-
-    x.textContent="解除行程";
-    x.title="解除行程，回到沒有選中行程的地圖";
-
-    x.onclick=()=>{
-      const from=S.tab;
-      selectTrip(S.trip);
-      if (S.tab!==from){ gotoTab(from); render(); resizeMap(); }
-    };
-    box.appendChild(x);
+  const row=(label, html, click, title, trailing)=>{
+    const line=document.createElement("div"); line.className="mcsline";
+    const b=document.createElement("button"); b.type="button"; b.className="mcsrow";
+    b.innerHTML=`<span class="mcsk">${label}</span><span class="mcsv">${html}</span>`;
+    b.title=title; b.onclick=click; line.appendChild(b);
+    if (trailing) line.appendChild(trailing);
+    box.appendChild(line); return b;
+  };
+  if (trip){
+    const x=document.createElement("button"); x.type="button"; x.className="mcsx"; x.textContent="×";
+    x.setAttribute("aria-label","解除目前行程"); x.title="解除目前行程";
+    x.onclick=e=>{ e.stopPropagation(); const from=S.tab; selectTrip(S.trip); if(S.tab!==from){gotoTab(from);render();resizeMap();} };
+    row("行程｜", esc(trip.name), ()=>openSheet("mtrip"), `查看「${trip.name}」行程摘要`, x);
   }
+  if (bases.length){
+    const x=document.createElement("button"); x.type="button"; x.className="mcsx"; x.textContent="×";
+    x.setAttribute("aria-label","清除基地條件"); x.title="清除基地條件";
+    x.onclick=e=>{
+      e.stopPropagation(); S.base=new Set(); S.tripAdded=new Set(); closeBaseDetail();
+      save(); render(); resizeMap();
+    };
+    row("基地｜", esc(bases.map(b=>b.name).join("、")), ()=>{
+      if (!BASE_SEL && bases[0]) BASE_SEL=bases[0].id;
+      openSheet("mbase");
+    }, "查看基地與住宿資訊", x);
+  }
+  if (themes.length) row("主題｜", `<span class="mcsicons">${themes.map(t=>ico(t.id,t.color)).join("")}</span>`,
+    ()=>openSheet("mapplace"), `調整景點主題：${themes.map(t=>t.name).join("、")}`);
 }
 function resizeMap(){
   if (!ready) return;
@@ -2912,8 +2984,7 @@ function hoverTripOn(tid){
     const p=BY_NAME[nm];
     if (!p) return;
 
-    
-    stopRing(p, Z_HOVER_RING, true).addTo(g);
+
     hoverStopMark(p, g);
   }));
   baseIdsOfTrip(tid).forEach(bid=>{
@@ -2930,22 +3001,21 @@ function hoverStopMark(p, g){
   if (zoom >= STOP_LABEL_ZOOM){
     L.marker([p.lat,p.lng], {
       icon: L.divIcon({className:"dotghost", iconSize:[32,32], iconAnchor:[16,16],
-                       html:markerHTML(p, false, true)}),
+                       html:markerHTML(p, false, true).replace('class="pin', 'class="pin has-halo')}),
       interactive:false, zIndexOffset:Z_HOVER_STOP}).addTo(g);
     return;
   }
   if (p.theme==="lodging"){
     L.marker([p.lat,p.lng], {
-      icon: L.divIcon({className:"lodgemk dotghost", iconSize:[18,18], iconAnchor:[9,9],
+      icon: L.divIcon({className:"lodgemk dotghost has-halo", iconSize:[18,18], iconAnchor:[9,9],
                        html:`<span class="ld" style="background:${(TH[p.theme]||{}).color||"#888"}"></span>`}),
       interactive:false, zIndexOffset:Z_HOVER_STOP}).addTo(g);
     return;
   }
   const c = (TH[p.theme]||{}).color || "#888";
   L.marker([p.lat,p.lng], {
-    icon: L.divIcon({className:"dotghost", iconSize:[13,13], iconAnchor:[6.5,6.5],
-                     html:`<svg viewBox="0 0 13 13" width="13" height="13">` +
-                          `<circle cx="6.5" cy="6.5" r="5.5" fill="${c}" stroke="#fff" stroke-width="1.2"/></svg>`}),
+    icon: L.divIcon({className:"poidot dotghost has-halo", iconSize:[13,13], iconAnchor:[6.5,6.5],
+                     html:`<span class="pd" style="background:${c}"></span>`}),
     interactive:false, zIndexOffset:Z_HOVER_STOP}).addTo(g);
 }
 
@@ -3233,6 +3303,7 @@ function renderFilterBar(){
     const c=document.createElement("button"); c.className="clear btn-act"; c.textContent="清除";
     c.onclick=e=>{ e.stopPropagation(); clearAll(); }; bar.appendChild(c);
   }
+  if (hasMapCard()) bar.appendChild(mFilterBar("place"));
   return bar;
 }
 
@@ -3318,7 +3389,7 @@ function renderBaseFinder(){
     return b;
   };
 
-  
+
 
   const group=(key, label, color, rows)=>{
     if (!rows.length) return;
@@ -3364,7 +3435,7 @@ function placeStatusBadge(p){
 function rowFor(p, extra, rel, key, selMode){
   const b=document.createElement("button");
 
-  b.className="row " + (selMode?"row-select":"row-toggle"); b.dataset.id=p.id;
+  b.className="row place-summary " + (selMode?"row-select":"row-toggle"); b.dataset.id=p.id;
   b.setAttribute(selMode?"aria-pressed":"aria-expanded",
                  selMode ? S.sel===p.id : (key ? inlineOpen(key) : S.sel===p.id));
 
@@ -3434,7 +3505,7 @@ function renderDetail(p, inline, noNear){
       const r=road&&road[x.id];
       return r ? {x, d:r.km, min:r.min, real:true} : null;
     }).filter(o=>o && o.d<=step.km), step.n);
-  const d=document.createElement("div"); d.className="detail";
+  const d=document.createElement("div"); d.className="detail place-detail";
   d.innerHTML =
     `<p class="crumb" style="margin:0 0 8px;font-size:12px;color:var(--ink3)">` +
       `${esc((BS[p.base]||{}).name||p.base||"")}　${esc((TH[p.theme]||{}).name||"")}　${esc(p.kind||"")}</p>` +
@@ -3457,7 +3528,7 @@ function renderDetail(p, inline, noNear){
   const acts=document.createElement("div"); acts.className="acts";
   acts.insertAdjacentHTML("beforeend",
 
-    `<a class="primary btn-act" href="https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HOME.name)}&destination=${encodeURIComponent(gnav(p))}" target="_blank" rel="noopener">導航</a>` +
+    `<a class="btn-act" href="https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HOME.name)}&destination=${encodeURIComponent(gnav(p))}" target="_blank" rel="noopener">導航</a>` +
     `<a class="btn-act" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gview(p))}" target="_blank" rel="noopener">看 Google 地圖</a>` +
     (p.source?`<a class="btn-act" href="${esc(p.source)}" target="_blank" rel="noopener">參考</a>`:""));
   d.appendChild(acts);
@@ -3481,6 +3552,13 @@ function renderDetail(p, inline, noNear){
     d.appendChild(n);
   }
   return d;
+}
+
+function placeCard(summary, detail){
+  const card=document.createElement("article");
+  card.className="place-card is-expanded" + (summary.classList.contains("tstop") ? " timeline" : "");
+  card.append(summary, detail);
+  return card;
 }
 
 function tripLegs(){
@@ -3666,7 +3744,7 @@ function selectTrip(id){
       }
     });
 
-    
+
     if (isTwoLane()) S.basesOpen=true;
     S.listOpen=true;
 
@@ -3748,7 +3826,7 @@ function tripStopRow(p, key){
   const lane2 = stopToLane2();
   const on = lane2 ? (S.sel===p.id) : inlineOpen(key);
   b.type="button";
-  b.className = "tstop " + (lane2?"row-select":"row-toggle") + (!lane2 && on ? " open" : "");
+  b.className = "tstop place-summary " + (lane2?"row-select":"row-toggle") + (!lane2 && on ? " open" : "");
   b.dataset.tid=p.id;
   b.setAttribute(lane2?"aria-pressed":"aria-expanded", on);
   const body=document.createElement("div"); body.className="tb";
@@ -3771,7 +3849,7 @@ function nightRow(d, i, total){
   if (b){
     const el=document.createElement("button");
 
-    
+
     const key = `nb:${S.trip}:${i}:${b.id}`;
     const two = isTwoLane();
     const on = two ? (BASE_SEL===b.id) : nightOpen(key);
@@ -3789,7 +3867,7 @@ function nightRow(d, i, total){
         : "") +
       (two ? "" : CHEV_SVG);
 
-    
+
     el.onclick=()=>{ if (isTwoLane()) selectBase(b.id); else toggleNight(key, b); };
     if (two || !on) return [el];
     const box=document.createElement("div"); box.className="nlodge lodgebox";
@@ -3872,7 +3950,7 @@ function tripFilterRows(mini){
     tchipLabel(o.label, tripChipCount("fDays", o.id)),
     S.fDays.has(o.id), ()=>toggleTripFilter(S.fDays,o.id)))));
 
-  
+
   f.appendChild(frow("車程", F_DRIVE.map(o=>chip(
     tchipLabel(o.label, tripChipCount("fDrive", o.id)),
     S.fDrive.has(o.id), ()=>toggleTripFilter(S.fDrive,o.id))),
@@ -3905,7 +3983,7 @@ function tripPicker(mini){
   const selTrip = S.trip ? TRIP_BY_ID[S.trip] : null;
   const selCat = selTrip ? ((selTrip.cat && CT[selTrip.cat]) ? selTrip.cat : null) : null;
 
-  
+
   const tripRow = t => {
     const b=document.createElement("button");
     b.type="button"; b.className="trow row-select"; b.setAttribute("aria-pressed", S.trip===t.id);
@@ -3916,7 +3994,7 @@ function tripPicker(mini){
 
     const showBase = bn && (!mini || bns.length > 1);
 
-    
+
     const offTrip = anyTripFilter() && !tripPass(t);
     b.innerHTML = `<span class="tl">${esc(t.one_line || t.name)}</span>` +
       tripFlagHTML(t.id) +
@@ -3958,7 +4036,7 @@ function tripPicker(mini){
         ? `<span class="away" title="人工盤點的離新竹車程概估（不是實算值）">` +
           `${esc(r.survey_drive)}</span>` : "")) +
 
-      
+
       CHEV_SVG;
     h.onclick=()=>{ toggleSet(S.corrOpen, r.id); save(); render(); };
 
@@ -3976,7 +4054,7 @@ function tripPicker(mini){
     return card;
   };
 
-  
+
 
   const filtering = anyTripFilter();
   const group=(cid, label, color, rows)=>{
@@ -4001,7 +4079,7 @@ function tripPicker(mini){
       CORRIDORS.filter(r=>r.cat===cid).forEach(r=>{
         const sub=rows.filter(t=>t.code===r.id);
 
-        
+
         if (filtering ? sub.length : (sub.length || r.status || r.notice))
           list.appendChild(corrCard(r, color, sub));
       });
@@ -4111,7 +4189,7 @@ function renderItinerary(){
   }
   const trip = TRIP_BY_ID[S.trip];
 
-  
+
   const feel = (trip && trip.feel) || [];
   if (feel.length){
     const fw = document.createElement("div"); fw.className = "tdfeel";
@@ -4157,8 +4235,10 @@ function renderItinerary(){
     const stopKey = pid => `t:${S.trip}:${i}:${pid}`;
     const putStop = p => {
       const k=stopKey(p.id);
-      wrap.appendChild(tripStopRow(p, k));
-      if (inlineOpen(k)) wrap.appendChild(renderDetail(p, true));
+      const summary=tripStopRow(p, k);
+      wrap.appendChild(inlineOpen(k)
+        ? placeCard(summary, renderDetail(p, true))
+        : summary);
     };
     if ((d.legs||[]).length){
 
@@ -4215,12 +4295,26 @@ function closeBase(){ BASE_SEL=null; ZONE_SEL=null; render(); }
 
 function selectZone(name, bid){
 
-  
-  if (!isMapOnly()){ unfoldLane("exp"); gotoTab("place"); }
-  ZONE_SEL = (ZONE_SEL===name) ? null : name;
-  const z=zonesOf(BS[bid||BASE_SEL]).find(x=>x.name===ZONE_SEL);
-  if (z && ready) map.setView([z.anchor.lat, z.anchor.lng], Math.max(map.getZoom(),13), {animate:false});
-  render();
+
+  const base=BS[bid||BASE_SEL];
+  const z=zonesOf(base).find(x=>x.name===name);
+  if (!z) return;
+  const zoneLodges=lodgingOf(base.id).filter(p=>p.zone===name);
+  const lodges=zoneLodges.filter(p=>p.lat!=null && p.lng!=null);
+  ZONE_SEL=null;
+  ZONE_FOCUS={bid:base.id, name, ids:new Set(lodges.map(p=>p.id))};
+  if (hasMapCard()){
+    ZONE_VIEW={bid:base.id, name, ids:zoneLodges.map(p=>p.id)};
+    gotoTab("map");
+    setSheet("mzone");
+  } else unfoldLane("exp");
+  render(); resizeMap();
+  setTimeout(()=>{
+    if (lodges.length) fit(lodges);
+    else if (ready && z.anchor) map.setView([z.anchor.lat,z.anchor.lng], Math.max(map.getZoom(),13), {animate:false});
+  },80);
+  if (ZONE_FOCUS_TIMER) clearTimeout(ZONE_FOCUS_TIMER);
+  ZONE_FOCUS_TIMER=setTimeout(()=>{ ZONE_FOCUS=null; ZONE_FOCUS_TIMER=null; draw(); },3600);
 }
 
 function zoneHead(name, sel, bid){
@@ -4228,17 +4322,17 @@ function zoneHead(name, sel, bid){
     const p=document.createElement("p"); p.className="zhead plain"; p.textContent=name;
     return p;
   }
-  const on = ZONE_SEL===name;
-  const btn=document.createElement("button");
-  btn.type="button"; btn.className="zhead tog row-select"; btn.setAttribute("aria-pressed", on);
-  btn.title = on ? "取消這條住宿帶" : "選這條住宿帶（地圖帶到這一帶）";
-  btn.innerHTML = `<span class="zn">${esc(name)}</span>` +
-                  `<span class="zck" aria-hidden="true">${on ? "✓" : ""}</span>` +
-                  `<svg class="zloc" viewBox="0 0 16 16" aria-hidden="true">` +
+  const row=document.createElement("div"); row.className="zhead locatable";
+  row.innerHTML=`<span class="zn">${esc(name)}</span>`;
+  const btn=document.createElement("button"); btn.type="button"; btn.className="zlocbtn";
+  btn.title=`在地圖定位「${name}」包含的住宿`;
+  btn.setAttribute("aria-label",btn.title);
+  btn.innerHTML = `<svg class="zloc" viewBox="0 0 16 16" aria-hidden="true">` +
                   `<circle cx="8" cy="8" r="2.2"/><circle cx="8" cy="8" r="5.2"/>` +
                   `<path d="M8 .8v2M8 13.2v2M.8 8h2M13.2 8h2"/></svg>`;
   btn.onclick=()=>selectZone(name, bid);
-  return btn;
+  row.appendChild(btn);
+  return row;
 }
 
 function lodgingBlock(b, keyOf, mode){
@@ -4467,49 +4561,20 @@ function renderList(){
   const wrap=document.createElement("div"); wrap.className="results";
   const list=shown();
 
-  
+
   const gHits = qGlobalHits(list);
   const emptyOn = !list.length && !(BASE_SEL && BS[BASE_SEL]);
-  const qg = gHits ? qGlobalNote(gHits, !emptyOn) : null;
+  const qg = gHits ? qGlobalNote(gHits, true) : null;
   if (qg) wrap.appendChild(qg);
 
-  
+
   if (emptyOn){
+    if (qg) return wrap;
     const d=document.createElement("div"); d.className="empty";
-
-    if (!qg){
-      const h=document.createElement("p"); h.className="eh";
-      h.textContent="在目前條件下找不到內容";
-      d.appendChild(h);
-    }
-    const bits=condBits();
-
-    if (bits.length){
-      const c=document.createElement("p"); c.className="ec";
-      c.innerHTML="目前仍套用："+bits.map(([k,v])=>
-        `<span class="cb">＜${esc(k)}：${esc(v)}＞</span>`).join("、");
-      d.appendChild(c);
-    }
-
-    const a=document.createElement("div"); a.className="ea";
-    const resetBtn = primary => {
-      const b=document.createElement("button");
-      b.type="button"; b.className="qmore btn-act" + (primary ? " primary" : "");
-      b.textContent="重置全部條件";
-      b.title="清掉上面列出的全部條件，回到剛進站的樣子";
-      b.onclick=e=>{ e.stopPropagation(); resetAll(); };
-      return b;
-    };
-    a.appendChild(gHits ? qGlobalBtn(gHits, true) : resetBtn(true));
-    if (S.themes.size || S.diffs.size || S.inseason || S.base.size){
-      const c=document.createElement("button");
-      c.type="button"; c.className="qmore btn-act"; c.textContent="只清除景點篩選";
-      c.title="只放掉主題、費力、季節與基地選取；搜尋文字與行程那一側留著";
-      c.onclick=e=>{ e.stopPropagation(); clearPlaceFilters(); };
-      a.appendChild(c);
-    }
-    if (gHits) a.appendChild(resetBtn(false));
-    d.appendChild(a);
+    const h=document.createElement("p"); h.className="eh";
+    const terms=qTerms();
+    h.textContent=terms.length ? `找不到符合「${terms.join("、")}」的內容。` : "目前條件下沒有內容。";
+    d.appendChild(h);
     wrap.appendChild(d); return wrap;
   }
   const cmp=(SORTS.find(s=>s.id===S.sort)||SORTS[0]).fn;
@@ -4532,8 +4597,10 @@ function renderList(){
     h.title = `${t.code||""} ${t.name||""}`.trim();
     wrap.appendChild(h);
     tripRows.sort(cmp).forEach(p=>{
-      wrap.appendChild(rowFor(p));
-      if (S.sel===p.id) wrap.appendChild(renderDetail(p));
+      const summary=rowFor(p);
+      wrap.appendChild(S.sel===p.id
+        ? placeCard(summary, renderDetail(p))
+        : summary);
     });
   }
   const g={}; rest.forEach(p=>(g[p.base]=g[p.base]||[]).push(p));
@@ -4557,7 +4624,7 @@ function renderList(){
     hoverWire(h, "base", r.id);
     wrap.appendChild(h);
 
-    
+
     if (open) wrap.appendChild(baseIntro(r));
 
     if (BASE_SEL===r.id){
@@ -4567,8 +4634,10 @@ function renderList(){
     g[r.id].sort(cmpFor(r.id)).forEach(p=>{
       const k=dupKey(p);
       if (k){ inlineRow(p, k).forEach(n=>wrap.appendChild(n)); return; }
-      wrap.appendChild(rowFor(p));
-      if (S.sel===p.id) wrap.appendChild(renderDetail(p));
+      const summary=rowFor(p);
+      wrap.appendChild(S.sel===p.id
+        ? placeCard(summary, renderDetail(p))
+        : summary);
     });
   };
 
@@ -4645,8 +4714,7 @@ function gotoTab(t){
 }
 
 const MSCROLL = {trip:0, itin:0, place:0};
-const mpageKey = () => !hasMapCard() ? null
-  : (S.tab==="trip" ? (S.trip ? "itin" : "trip") : S.tab);
+const mpageKey = () => !hasMapCard() ? null : S.tab;
 let MPAGE=null;        // 上一次渲出來的是哪一頁（null＝桌機，或這一次已經存過了）
 let MJUMP=null;        // 下一次 renderPanel 要把面板捲回哪（見上面）
 function mpageSave(){
@@ -4657,17 +4725,42 @@ function mpageSave(){
   MPAGE=null;
 }
 
-let SHEET = null;          // null／"trip"／"place"／"mplace"／"mbase"／"mtrip"＝現在開著哪一張
+let SHEET = null;          // null／"trip"／"place"／"mplace"／"mbase"／"mzone"／"mtrip"＝現在開著哪一張
 
 let SHEET_ST = "peek";
 
 const circled = n => (n>=1 && n<=20) ? "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳"[n-1] : String(n);
 
+function zoneSheetBody(){
+  const view=ZONE_VIEW;
+  const w=document.createElement("div"); w.className="zone-sheet";
+  if (!view) return w;
+  const base=BS[view.bid];
+  const zone=base && zonesOf(base).find(z=>z.name===view.name);
+  const lodges=view.ids.map(id=>BY_ID[id]).filter(Boolean);
+  const intro=document.createElement("p"); intro.className="gintro";
+  intro.textContent=`${base ? base.name+"　" : ""}住宿 ${lodges.length} 家`;
+  w.appendChild(intro);
+  if (zone && zone.note){
+    const note=document.createElement("p"); note.className="znote"; note.textContent=zone.note;
+    w.appendChild(note);
+  }
+  const body=document.createElement("div"); body.className="zbody";
+  if (lodges.length) lodges.forEach(p=>body.appendChild(rowFor(p, null, null, null, true)));
+  else {
+    const empty=document.createElement("p"); empty.className="nonear";
+    empty.textContent="這一帶目前沒有可定位的住宿資料。";
+    body.appendChild(empty);
+  }
+  w.appendChild(body);
+  return w;
+}
+
 const SHEETS = {
   trip: {
     tab:"trip", kind:"filter", title:()=>"篩選",
 
-    ok: () => mpageKey()!=="itin",
+    ok: () => true,
     count: () => S.fDays.size + S.fDrive.size + S.fStam.size + S.fFeel.size,
     body: () => tripFilterRows(false),
     clear: clearTripFilters,
@@ -4675,6 +4768,14 @@ const SHEETS = {
   },
   place: {
     tab:"place", kind:"filter", title:()=>"篩選",
+    ok: () => true,
+    count: () => S.themes.size + S.diffs.size + (S.inseason?1:0),
+    body: renderListFilters,
+    clear: clearPlaceFilters,
+    go: () => `顯示 ${shown().length} 個景點`,
+  },
+  mapplace: {
+    tab:"map", kind:"filter", title:()=>"景點篩選",
     ok: () => true,
     count: () => S.themes.size + S.diffs.size + (S.inseason?1:0),
     body: renderListFilters,
@@ -4701,6 +4802,12 @@ const SHEETS = {
       if (lx) w.appendChild(lx);
       return w;
     },
+  },
+  mzone: {
+    tab:"map", kind:"map",
+    ok: () => !!(ZONE_VIEW && BS[ZONE_VIEW.bid]),
+    title: () => `住宿帶｜${(ZONE_VIEW||{}).name||""}`,
+    body: zoneSheetBody,
   },
   mtrip: {
     tab:"map", kind:"map",
@@ -4784,9 +4891,6 @@ function renderSheet(){
   if (spec.go) foot.replaceWith(sheetFoot(spec));
   else { foot.innerHTML=""; foot.className="sheetfoot"; }
 
-  const rs=document.getElementById("sheetreset");
-  rs.hidden = !(spec.count && spec.count());
-  rs.onclick = spec.clear || null;
 
   document.getElementById("sheettitle").textContent = spec.title();
 
@@ -4816,21 +4920,6 @@ function mFilterBar(kind){
   b.setAttribute("aria-label", n ? `篩選，目前 ${n} 個條件` : "篩選");
   b.onclick=()=>openSheet(kind);
   bar.appendChild(b);
-  if (kind==="trip"){
-    const vals=condBitsOf("tripf");
-    if (vals.length){
-      const s=document.createElement("div"); s.className="mfsum";
-      s.innerHTML=vals.map(([,v])=>`<span class="mfv">${esc(v)}</span>`).join("");
-      const x=document.createElement("button");
-      x.type="button"; x.className="mfx"; x.textContent="×";
-      x.title="清除行程篩選";
-      x.setAttribute("aria-label","清除行程篩選");
-      x.onclick=clearTripFilters;
-
-      s.appendChild(x);
-      bar.appendChild(s);
-    }
-  }
   return bar;
 }
 
@@ -4937,27 +5026,6 @@ function measureSheet(){
   grab.addEventListener("touchend", end, {passive:true});
   grab.addEventListener("touchcancel", end, {passive:true});
 })();
-
-function tripBackBar(t){
-  const bar=document.createElement("div"); bar.className="tdback";
-  const b=document.createElement("button");
-  b.type="button"; b.className="tdbk";
-  b.title="返回行程清單";
-  b.setAttribute("aria-label","返回行程清單");
-  b.innerHTML='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.5 8h-9M7 3.5 2.5 8 7 12.5"/></svg>';
-  b.onclick=backToTripList;
-  const n=document.createElement("div"); n.className="tdbt";
-  n.textContent=(t&&t.name)||"";
-  n.title=(t&&t.name)||"";
-  bar.append(b,n);
-  return bar;
-}
-
-function backToTripList(){
-  if (!S.trip) return;
-  if (HSTEP>0){ history.back(); return; }
-  selectTrip(S.trip);
-}
 function renderPanel(){
   const panel=document.getElementById("panel");
   const two=isTwoLane();
@@ -5008,12 +5076,8 @@ function renderPanel(){
 
   if (TRIPS.length){
 
-    if (mpageKey()==="itin"){
-      tripHost.appendChild(tripBackBar(TRIP_BY_ID[S.trip]));
-      tripHost.appendChild(renderItinerary());
-    } else {
 
-    
+
 
     const t = S.trip && TRIP_BY_ID[S.trip];
 
@@ -5022,10 +5086,13 @@ function renderPanel(){
       ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel deskonly sectrips",
       tripSub(t));
 
-    
-    if (S.trip){
+
+    const tripFilter = hasMapCard() ? mFilterBar("trip") : null;
+    if (S.trip || tripFilter){
       const head=document.createElement("div"); head.className="sechead trhead";
       head.appendChild(trsec);
+      if (tripFilter) head.appendChild(tripFilter);
+      if (S.trip){
       const x=document.createElement("button");
       x.type="button"; x.className="trclose";
       x.textContent="×";
@@ -5033,6 +5100,7 @@ function renderPanel(){
       x.setAttribute("aria-label","關閉行程，返回行程全覽");
       x.onclick=e=>{ e.stopPropagation(); selectTrip(S.trip); };
       head.appendChild(x);
+      }
       tripHost.appendChild(head);
     } else {
       tripHost.appendChild(trsec);
@@ -5046,23 +5114,21 @@ function renderPanel(){
       tripHost.appendChild(qw);
     }
 
-    if (hasMapCard()) tripHost.appendChild(mFilterBar("trip"));
     if (S.tripsOpen) tripHost.appendChild(renderTrips());
 
     if (t){
 
-      
+
       tripHost.appendChild(section("詳細行程", null, S.itinOpen,
         ()=>{ S.itinOpen=!S.itinOpen; save(); render(); }, "toplevel deskonly secitin",
         itinSub(t)));
       if (S.itinOpen) tripHost.appendChild(renderItinerary());
     }
-    }   // ← 手機全頁詳細行程那一支的 else 收在這裡（見這一段開頭）
   }
 
   if (TRIPS.length) expHost.appendChild(renderTripsMini());
 
-  
+
 
   expHost.appendChild(section("基地",
     S.base.size ? `${S.base.size}/${BASES.length} 個` : `${BASES.length} 個`, S.basesOpen,
@@ -5077,7 +5143,7 @@ function renderPanel(){
   }
   if (S.basesOpen) expHost.appendChild(renderBaseFinder());
 
-  
+
 
   const nShown=shown().length, filtered=anyFilter();
 
@@ -5087,8 +5153,7 @@ function renderPanel(){
     themeSub()));
   if (S.listOpen){
 
-    
-    if (hasMapCard()) expHost.appendChild(mFilterBar("place"));
+
     expHost.appendChild(renderListFilters());
     expHost.appendChild(renderFilterBar());
     expHost.appendChild(renderList());
@@ -5097,7 +5162,7 @@ function renderPanel(){
     expHost.appendChild(lg);
   }
 
-  
+
   expHost.appendChild(section("ⓘ 距離與時間說明", null, S.footOpen,
     ()=>{ S.footOpen=!S.footOpen; save(); render(); }, "toplevel deskonly secfoot"));
   if (S.footOpen){
@@ -5110,11 +5175,11 @@ function renderPanel(){
     expHost.appendChild(f);
   }
 
-  
+
 
   const box=two?expHost:panel;
 
-  
+
   const stickyH=el=>(el && getComputedStyle(el).position==="sticky") ? el.offsetHeight : 0;
   const baseH=stickyH(box.querySelector(".sec.basesec"));
   const headH=stickyH(box.querySelector(".sec.seclist"));
@@ -5161,9 +5226,9 @@ function renderPanel(){
     SCROLL_ITIN=false;
   }
 
-  
 
-  
+
+
 
   if (SCROLL_LIST){
     const grp = two ? box.querySelector(".results .ghead.tripgrp") : null;
@@ -5177,7 +5242,7 @@ function renderPanel(){
     SCROLL_LIST=false;
   }
 
-  
+
   if (SCROLL_TO){
 
     const el=box.querySelector(`.results > .row[data-id="${SCROLL_TO}"]`);
@@ -5186,7 +5251,7 @@ function renderPanel(){
     SCROLL_TO=null;
   }
 
-  
+
   if (PIN && !ANCHORED){
     const list=panel.querySelectorAll(PIN.sel);
     const el=list[PIN.idx] || list[0];
@@ -5338,7 +5403,7 @@ function render(){
   document.getElementById("tally").innerHTML =
     `<span class="num">${shown().length}</span> / <span class="num">${PLACES.length}</span>`;
 
-  
+
   syncReset();
 
   syncMSearch(); syncNavDots();
@@ -5416,7 +5481,7 @@ document.getElementById("qwrap").addEventListener("click", ()=>{
 addEventListener("keydown", e=>{
   if (e.key!=="Escape") return;
 
-  
+
   if (MMENU){ closeMMenu(true); return; }
   if (SHEET){ closeSheet(); return; }
 
