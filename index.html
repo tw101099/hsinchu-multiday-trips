@@ -260,6 +260,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 
   #qreset .lbl{display:none}
   #qreset{padding:3px 8px}
+
+  #qreset .gl{font-size:20px}
 }
 
 .main{flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden}
@@ -916,8 +918,8 @@ html.sheeton .panel{overflow:hidden}
   padding-bottom:12px; margin-bottom:8px; border-bottom:1px solid var(--line);
 }
 
-.qtrips{margin-bottom:0}
-.qtrips + .tripbox{margin-top:8px}
+.qtrips, .qbases{margin-bottom:0}
+.qtrips + .tripbox, .qbases + .rlist{margin-top:8px}
 
 .rrow .rbar.qbar{background:var(--accent)}
 
@@ -1174,7 +1176,7 @@ html.sheeton .panel{overflow:hidden}
 .alert .at{flex:1; min-width:0}
 .tpickmini .alert{margin-left:10px; padding:7px 9px}
 
-:root{--trowgap:6px}
+:root{--trowgap:10px}   
 .rtrips{display:flex; flex-direction:column; gap:var(--trowgap);
         margin:2px 0 6px 13px; padding-left:11px; border-left:1px solid var(--line)}
 
@@ -1633,7 +1635,8 @@ button.tnight:hover .chev{color:var(--accent)}
 
 #mcond{
   flex:0 0 100%; align-items:center; gap:10px; min-height:38px;
-  margin-top:2px; padding-top:7px; border-top:1px solid var(--line);
+
+  margin-top:0; padding-top:0; box-shadow:inset 0 1px 0 var(--line);
   font-size:12.5px; color:var(--ink3);
 }
 #mcond .mcn{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
