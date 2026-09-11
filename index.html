@@ -1404,6 +1404,98 @@ button.tnight:hover .chev{color:var(--accent)}
   margin:0; letter-spacing:.02em;
 }
 
+#msback, #msearch, #mmore, #mmenu, #mcond{display:none}
+@media (max-width:899px), (max-height:559px){
+
+  .bar .logo{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .bar .tally{margin-left:0}
+
+  #app:not([data-msearch]) #qwrap{display:none}
+  #qreset, #theme{display:none}
+  #app:not([data-msearch]) #msearch,
+  #app:not([data-msearch]) #mmore{display:inline-flex}
+
+  #app[data-msearch] .logo,
+  #app[data-msearch] .tally{display:none}
+  #app[data-msearch] #msback{display:inline-flex}
+  #app[data-msearch] #qwrap{display:flex; flex:1 1 auto; max-width:none; min-width:0}
+
+  #app[data-msearch] #mcond{display:flex}
+
+  #app[data-msearch] #mcond[hidden]{display:none}
+}
+
+#msback, #msearch, #mmore{
+  flex:none; position:relative;
+  align-items:center; justify-content:center;
+  min-width:40px; min-height:40px; padding:0;
+  border:0; background:none; color:var(--ink2); cursor:pointer; font-family:inherit;
+}
+#msback svg, #msearch svg, #mmore svg{
+  display:block; width:17px; height:17px;
+  stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round;
+}
+
+#mmore svg circle{fill:currentColor; stroke:none}
+#msback:hover, #msearch:hover, #mmore:hover{color:var(--accent)}
+#msback:focus-visible, #msearch:focus-visible, #mmore:focus-visible{
+  outline:2px solid var(--accent); outline-offset:-2px; border-radius:999px;
+}
+
+#msearch .mdot{
+  display:none; position:absolute; top:7px; right:7px;
+  width:6px; height:6px; border-radius:999px; background:var(--accent);
+}
+#msearch[data-on] .mdot{display:block}
+#msearch[data-on]{color:var(--accent)}
+
+@media (max-width:899px), (max-height:559px){
+  .bar{position:relative}
+  #mmenu{
+    display:flex; flex-direction:column; align-items:stretch;
+    position:absolute; top:100%; right:max(14px,env(safe-area-inset-right)); z-index:1100;
+    min-width:190px; padding:5px; border:1px solid var(--line); border-radius:12px;
+    background:var(--panel); box-shadow:0 8px 24px rgba(var(--sh),.18);
+  }
+  #mmenu[hidden]{display:none}
+}
+#mmenu button{
+  min-height:44px; padding:0 12px; text-align:left;
+  border:0; border-radius:8px; background:none; cursor:pointer;
+  font-family:inherit; font-size:13.5px; line-height:1.4; color:var(--ink2);
+}
+#mmenu button:hover{background:var(--hover-bg); color:var(--accent)}
+#mmenu button:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+#mmenu button[hidden]{display:none}
+
+#mcond{
+  flex:0 0 100%; align-items:center; gap:10px;
+  margin-top:2px; padding-top:7px; border-top:1px solid var(--line);
+  font-size:12.5px; color:var(--ink3);
+}
+#mcond .mcn{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+
+#mcreset{
+  flex:none; min-height:40px; padding:0 4px; border:0; background:none; cursor:pointer;
+  font-family:inherit; font-size:13px; color:var(--ink3); text-decoration:underline;
+  text-underline-offset:3px;
+}
+#mcreset:hover{color:var(--accent)}
+#mcreset:focus-visible{outline:2px solid var(--accent); outline-offset:-2px; border-radius:6px}
+
+.mnav button{position:relative}
+.mnav button::after{
+  content:""; position:absolute; top:8px; left:50%; margin-left:9px;
+  width:6px; height:6px; border-radius:999px; background:var(--accent);
+  opacity:0; transition:opacity .15s;
+}
+.mnav button[data-hit]::after{opacity:1}
+
+.ea .primary, .qga .primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+
+.empty .ea{flex-wrap:wrap; gap:8px}
+.qglobal .qga{flex-wrap:wrap; gap:8px}
+
 @media (max-width:899px){
 
   .sec, .tpickmini .sec.mini,
@@ -1460,6 +1552,10 @@ button.tnight:hover .chev{color:var(--accent)}
   <header class="bar">
 
     <div class="logo" id="logo">新竹出發多日遊</div>
+
+    <button id="msback" type="button" aria-label="退出搜尋" title="退出搜尋，回到原本的頁面（搜尋條件保留）">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 8H3.2M7.2 4 3.2 8l4 4"/></svg>
+    </button>
     <div class="seg" id="views">
       <button data-v="map" aria-pressed="true">地圖</button>
       <button data-v="list" aria-pressed="false">清單</button>
@@ -1469,7 +1565,26 @@ button.tnight:hover .chev{color:var(--accent)}
 
     <button id="qreset" class="btn-act" type="button" hidden aria-label="重置所有篩選與行程" title="重置所有篩選與行程"><span class="gl" aria-hidden="true">⟲</span><span class="lbl">重置</span></button>
     <button id="theme" class="btn-act" title="切換明暗" aria-label="切換明暗"></button>
+
+    <button id="msearch" type="button" aria-label="搜尋" title="搜尋景點、基地或主題">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3 13.8 13.8"/></svg>
+      <span class="mdot" aria-hidden="true"></span>
+    </button>
+    <button id="mmore" type="button" aria-label="更多操作" title="更多操作"
+            aria-haspopup="menu" aria-expanded="false">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.2" cy="8" r="1.35"/><circle cx="8" cy="8" r="1.35"/><circle cx="12.8" cy="8" r="1.35"/></svg>
+    </button>
+
+    <div id="mmenu" role="menu" aria-labelledby="mmore" hidden>
+      <button type="button" role="menuitem" id="mmtheme">切換明暗</button>
+      <button type="button" role="menuitem" id="mmreset" hidden>重置所有篩選與行程</button>
+    </div>
     <div class="tally" id="tally"></div>
+
+    <div id="mcond">
+      <span class="mcn"></span>
+      <button id="mcreset" type="button">重置全部</button>
+    </div>
   </header>
 
   <main class="main" id="main">
@@ -1667,6 +1782,9 @@ function applyTheme(){
     b.title = THEME==="auto" ? "跟著系統（點擊改成亮色）"
             : THEME==="light" ? "亮色（點擊改成暗色）" : "暗色（點擊改回跟著系統）";
   }
+
+  const mt=document.getElementById("mmtheme");
+  if (mt) mt.textContent = THEME==="auto" ? "外觀：跟著系統" : (THEME==="light" ? "外觀：亮色" : "外觀：暗色");
 }
 SYS.addEventListener("change", ()=>{ if (THEME==="auto"){ applyTheme(); render(); } });
 const BY_ID = Object.fromEntries(PLACES.map(p=>[p.id,p]));
@@ -1801,6 +1919,9 @@ function restore(){
 const HASH_KEYS = ["trip","base","place"];
 let HASH_APPLYING = true;
 let HASH_LAST = {trip:null, base:null, place:null};
+
+let MSEARCH = false;
+const searchState = () => MSEARCH ? {ms:1} : null;
 const hashNow = () => ({trip:S.trip||null, base:BASE_SEL||null, place:S.sel||null});
 const hashLevels = st => (st.trip?1:0)+(st.base?1:0)+(st.place?1:0);
 function hashString(st){
@@ -1834,7 +1955,7 @@ function syncHash(){
   if (s === (location.hash||"")){ HASH_LAST=st; return; }
   const deeper = hashLevels(st) > hashLevels(HASH_LAST);
   const url = s || (location.pathname + location.search);
-  history[deeper ? "pushState" : "replaceState"](null, "", url);
+  history[deeper ? "pushState" : "replaceState"](searchState(), "", url);
   HASH_LAST=st;
 }
 
@@ -1864,7 +1985,12 @@ function applyHash(initial){
   render();          // 上面三支各自 render 過，但「關掉景點」那一路沒有，補一次
   syncHash();        // 把網址正規化（例如指向已退場 id 的舊連結）；同層＝replace
 }
-addEventListener("popstate", ()=>applyHash(false));
+
+addEventListener("popstate", e=>{
+  const want = !!(e.state && e.state.ms);
+  if (want !== MSEARCH){ MSEARCH = want; syncMSearch(); }
+  applyHash(false);
+});
 
 const months = p => Array.isArray(p.season_months) ? p.season_months : [];
 
@@ -2931,6 +3057,69 @@ function anyCondition(){
 function syncReset(){
   const b=document.getElementById("qreset");
   if (b) b.hidden = !anyCondition();
+}
+
+function syncMSearch(){
+  const app=document.getElementById("app");
+  if (!app) return;
+  if (MSEARCH) app.setAttribute("data-msearch",""); else app.removeAttribute("data-msearch");
+  const on = qTerms().length>0;
+  const ms=document.getElementById("msearch");
+  if (ms){
+    if (on) ms.setAttribute("data-on",""); else ms.removeAttribute("data-on");
+    ms.setAttribute("aria-label", on ? "搜尋（目前有搜尋條件）" : "搜尋");
+    ms.title = on ? "搜尋景點、基地或主題（目前有搜尋條件）" : "搜尋景點、基地或主題";
+  }
+  const mc=document.getElementById("mcond");
+  if (mc){
+    const n=condBits().length;
+    mc.hidden = !n;
+    const t=mc.querySelector(".mcn");
+    if (t) t.textContent = `目前套用 ${n} 個條件`;
+  }
+  const mr=document.getElementById("mmreset");
+  if (mr) mr.hidden = !anyCondition();
+}
+
+function openSearchMode(){
+  if (MSEARCH || !hasMapCard()) return;
+
+  closeMMenu(false);
+  MSEARCH=true;
+  history.pushState({ms:1}, "", location.href);
+  syncMSearch();
+  const qi=document.getElementById("q");
+  if (qi) qi.focus({preventScroll:true});
+}
+function exitSearchMode(){
+  if (!MSEARCH) return;
+  history.back();
+}
+
+function syncNavDots(){
+  const on = qTerms().length>0;
+  const hit = { trip: on ? qTripHits().length : 0,
+                place: on ? (qBaseHits().length + shown().length) : 0,
+                map: 0 };
+  document.querySelectorAll("#mnav button").forEach(b=>{
+    const t=b.dataset.t;
+    if (on && t!==S.tab && hit[t]) b.setAttribute("data-hit","");
+    else b.removeAttribute("data-hit");
+  });
+}
+
+let MMENU=false;
+function syncMMenu(){
+  const m=document.getElementById("mmenu"), b=document.getElementById("mmore");
+  if (!m || !b) return;
+  m.hidden = !MMENU;
+  b.setAttribute("aria-expanded", MMENU);
+}
+function closeMMenu(refocus){
+  if (!MMENU) return;
+  MMENU=false;
+  syncMMenu();
+  if (refocus){ const b=document.getElementById("mmore"); if (b) b.focus({preventScroll:true}); }
 }
 
 function resetAll(){
@@ -4152,23 +4341,32 @@ function qTripSection(){
   return frag;
 }
 
-function qGlobalSection(list){
+function qGlobalHits(list){
   if (!qTerms().length || list.length) return null;
   const hits=PLACES.filter(matchQ);
-  if (!hits.length) return null;
-  const d=document.createElement("div"); d.className="qglobal";
-  const t=document.createElement("p"); t.className="qgt";
-  t.textContent=`目前條件內沒有結果，但全站另有 ${hits.length} 個符合項目。`;
-  d.appendChild(t);
-  const a=document.createElement("div"); a.className="qga";
+  return hits.length ? hits : null;
+}
+function qGlobalBtn(hits, primary){
   const b=document.createElement("button");
-  b.type="button"; b.className="qmore btn-act"; b.textContent="顯示全站結果";
+  b.type="button"; b.className="qmore btn-act" + (primary ? " primary" : "");
+  b.textContent="顯示全站結果";
   b.title=`放下擋住這 ${hits.length} 個項目的那幾組條件，用完整清單列出它們（搜尋字保留）`;
   b.onclick=e=>{
     e.stopPropagation();
     releaseForAll(hits); EXTRA=new Set(); save(); render();
   };
-  a.appendChild(b); d.appendChild(a);
+  return b;
+}
+function qGlobalNote(hits, withBtn){
+  const d=document.createElement("div"); d.className="qglobal";
+  const t=document.createElement("p"); t.className="qgt";
+  t.textContent=`目前條件內沒有結果，但全站另有 ${hits.length} 個符合項目。`;
+  d.appendChild(t);
+  if (withBtn){
+    const a=document.createElement("div"); a.className="qga";
+    a.appendChild(qGlobalBtn(hits, true));
+    d.appendChild(a);
+  }
   return d;
 }
 
@@ -4177,11 +4375,13 @@ function renderList(){
   const list=shown();
 
   
-  const qg=qGlobalSection(list);
+  const gHits = qGlobalHits(list);
+  const emptyOn = !list.length && !(BASE_SEL && BS[BASE_SEL]);
+  const qg = gHits ? qGlobalNote(gHits, !emptyOn) : null;
   if (qg) wrap.appendChild(qg);
 
   
-  if (!list.length && !(BASE_SEL && BS[BASE_SEL])){
+  if (emptyOn){
     const d=document.createElement("div"); d.className="empty";
 
     if (!qg){
@@ -4197,12 +4397,26 @@ function renderList(){
         `<span class="cb">＜${esc(k)}：${esc(v)}＞</span>`).join("、");
       d.appendChild(c);
     }
+
     const a=document.createElement("div"); a.className="ea";
-    const b=document.createElement("button");
-    b.type="button"; b.className="qmore btn-act"; b.textContent="重置全部條件";
-    b.title="清掉上面列出的全部條件，回到剛進站的樣子";
-    b.onclick=e=>{ e.stopPropagation(); resetAll(); };
-    a.appendChild(b); d.appendChild(a);
+    const resetBtn = primary => {
+      const b=document.createElement("button");
+      b.type="button"; b.className="qmore btn-act" + (primary ? " primary" : "");
+      b.textContent="重置全部條件";
+      b.title="清掉上面列出的全部條件，回到剛進站的樣子";
+      b.onclick=e=>{ e.stopPropagation(); resetAll(); };
+      return b;
+    };
+    a.appendChild(gHits ? qGlobalBtn(gHits, true) : resetBtn(true));
+    if (S.themes.size || S.diffs.size || S.inseason || S.base.size){
+      const c=document.createElement("button");
+      c.type="button"; c.className="qmore btn-act"; c.textContent="只清除景點篩選";
+      c.title="只放掉主題、費力、季節與基地選取；搜尋文字與行程那一側留著";
+      c.onclick=e=>{ e.stopPropagation(); clearPlaceFilters(); };
+      a.appendChild(c);
+    }
+    if (gHits) a.appendChild(resetBtn(false));
+    d.appendChild(a);
     wrap.appendChild(d); return wrap;
   }
   const cmp=(SORTS.find(s=>s.id===S.sort)||SORTS[0]).fn;
@@ -4847,6 +5061,8 @@ function render(){
 
   
   syncReset();
+
+  syncMSearch(); syncNavDots();
   draw(); renderPanel(); renderMapBtns(); renderMapCard(); updateTotop();
 
   renderSheet();
@@ -4889,6 +5105,22 @@ document.getElementById("qreset").onclick=e=>{
   e.stopPropagation();
   resetAll();
 };
+
+document.getElementById("msearch").onclick=e=>{ e.stopPropagation(); openSearchMode(); };
+document.getElementById("msback").onclick=e=>{ e.stopPropagation(); exitSearchMode(); };
+document.getElementById("mcreset").onclick=e=>{ e.stopPropagation(); resetAll(); };
+document.getElementById("mmore").onclick=e=>{
+  e.stopPropagation();
+  MMENU=!MMENU; syncMMenu();
+};
+
+document.getElementById("mmtheme").onclick=e=>{ e.stopPropagation(); closeMMenu(false); cycleTheme(); };
+document.getElementById("mmreset").onclick=e=>{ e.stopPropagation(); closeMMenu(false); resetAll(); };
+document.addEventListener("click", e=>{
+  if (!MMENU) return;
+  if (e.target.closest && e.target.closest("#mmenu, #mmore")) return;
+  closeMMenu(false);
+});
 document.getElementById("q").addEventListener("keydown", e=>{
   if (e.key==="Backspace" && !e.target.value && S.qtags.length){
     S.qtags.pop();
@@ -4902,17 +5134,23 @@ document.getElementById("qwrap").addEventListener("click", ()=>{
 addEventListener("keydown", e=>{
   if (e.key!=="Escape") return;
 
+  
+  if (MMENU){ closeMMenu(true); return; }
   if (SHEET){ closeSheet(); return; }
+
+  if (MSEARCH){ exitSearchMode(); return; }
   if (!S.sel && !INLINE && !NIGHT && !BASE_SEL) return;
   closePlace(); closeBaseDetail(); render();
 });
 
 restore();
 applyTheme();
-document.getElementById("theme").onclick=()=>{
+
+function cycleTheme(){
   THEME = THEME==="auto" ? "light" : (THEME==="light" ? "dark" : "auto");
   applyTheme(); save(); render();
-};
+}
+document.getElementById("theme").onclick=cycleTheme;
 syncViews();
 loadOSM("");
 render();
