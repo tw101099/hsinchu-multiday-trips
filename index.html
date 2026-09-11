@@ -189,7 +189,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .logo small{display:block; font-weight:400; font-size:11px; color:var(--ink3); letter-spacing:.06em}
 
 .seg{display:flex; align-items:stretch; gap:2px; padding:2px;
-  background:var(--sunk); border:1px solid var(--line); border-radius:999px}
+  background:var(--bg); border:1px solid var(--line); border-radius:999px}
 .seg button{
   border:0; border-radius:999px; padding:4px 13px; font-size:13px;
   background:var(--bg); color:var(--ink2);
@@ -431,16 +431,18 @@ button{font:inherit; color:inherit; cursor:pointer}
     padding:4px 14px; min-height:var(--l1h);
     border-bottom:0; box-shadow:0 1px 0 var(--line);
 
-    top:var(--l1h);
+    top:calc(var(--l1h) * 2);
   }
 
-  .panel.twolane .lane-explore > .stickysec > .sec.basesec,
-  .panel.twolane .lane-explore > .stickysec > .sec.seclist{
-    position:sticky; top:0; z-index:400; background:var(--panel);
+  .panel.twolane .lane-explore > .sec.basesec,
+  .panel.twolane .lane-explore > .sec.seclist{
+    position:sticky; z-index:400; background:var(--panel);
   }
+  .panel.twolane .lane-explore > .sec.basesec{top:0}
+  .panel.twolane .lane-explore > .sec.seclist{top:var(--l1h)}
 
-  .panel.twolane .lane-explore > .stickysec > .sec.basesec:hover,
-  .panel.twolane .lane-explore > .stickysec > .sec.seclist:hover{background:var(--hover-bg)}
+  .panel.twolane .lane-explore > .sec.basesec:hover,
+  .panel.twolane .lane-explore > .sec.seclist:hover{background:var(--hover-bg)}
 
   .panel.twolane.foldt{width:441px; flex:0 0 441px}
   .panel.twolane.folde{width:381px; flex:0 0 381px}
@@ -1198,6 +1200,9 @@ button.tnight:hover .chev{color:var(--accent)}
 :root .leaflet-tile{filter:var(--tile)}
 
 .bar, .panel, .fbar, .mapcard, .loctip, .leaflet-tooltip.tt,
+.lanefold,
+.panel.twolane .lane-explore > .sec.basesec,
+.panel.twolane .lane-explore > .sec.seclist,
 .panel.twolane .lane-trip > .sec.toplevel:first-child,
 .panel.twolane .lane-trip > .sechead.trhead:first-child{
   background-image:var(--paper-panel);
@@ -4241,14 +4246,7 @@ function renderPanel(){
 
   
 
-  const stickySec=()=>{
-    if (!two) return expHost;
-    const d=document.createElement("div"); d.className="stickysec";
-    expHost.appendChild(d);
-    return d;
-  };
-  const baseBox=stickySec();
-  baseBox.appendChild(section("基地",
+  expHost.appendChild(section("基地",
     S.base.size ? `${S.base.size}/${BASES.length} 個` : `${BASES.length} 個`, S.basesOpen,
     ()=>{ S.basesOpen=!S.basesOpen; accordion("bases"); save(); render(); }, "toplevel basesec",
     baseSub()));
@@ -4257,27 +4255,26 @@ function renderPanel(){
   if (qb){
     const qbw=document.createElement("div"); qbw.className="qbases";
     qbw.appendChild(qb);
-    baseBox.appendChild(qbw);
+    expHost.appendChild(qbw);
   }
-  if (S.basesOpen) baseBox.appendChild(renderBaseFinder());
+  if (S.basesOpen) expHost.appendChild(renderBaseFinder());
 
   
 
   const nShown=shown().length, filtered=anyFilter();
 
-  const listBox=stickySec();
-  listBox.appendChild(section("景點清單",
+  expHost.appendChild(section("景點清單",
     filtered ? `${nShown}/${PLACES.length} 個` : `${PLACES.length} 個`, S.listOpen,
     ()=>{ S.listOpen=!S.listOpen; save(); render(); }, "toplevel deskonly seclist",
     themeSub()));
   if (S.listOpen){
 
-    listBox.appendChild(renderListFilters());
-    listBox.appendChild(renderFilterBar());
-    listBox.appendChild(renderList());
+    expHost.appendChild(renderListFilters());
+    expHost.appendChild(renderFilterBar());
+    expHost.appendChild(renderList());
     const lg=document.createElement("div"); lg.className="legend";
     lg.innerHTML=THEMES.map(t=>`<span>${ico(t.id,t.color)}${t.name}</span>`).join("");
-    listBox.appendChild(lg);
+    expHost.appendChild(lg);
   }
 
   expHost.appendChild(section("ⓘ 距離與時間說明", null, S.footOpen,
@@ -4298,10 +4295,11 @@ function renderPanel(){
 
   
   const stickyH=el=>(el && getComputedStyle(el).position==="sticky") ? el.offsetHeight : 0;
+  const baseH=stickyH(box.querySelector(".sec.basesec"));
   const headH=stickyH(box.querySelector(".sec.seclist"));
   const fbH=stickyH(box.querySelector(".fbar"));
   const boxTop=box.getBoundingClientRect().top;
-  const stopAt=belowBar=>boxTop+(belowBar?headH+fbH:0)+10;
+  const stopAt=belowBar=>boxTop+(belowBar?baseH+headH+fbH:0)+10;
 
   const padEl=document.createElement("div");
   padEl.className="scrollpad"; padEl.setAttribute("aria-hidden","true");
@@ -4339,20 +4337,15 @@ function renderPanel(){
   
 
   
+
   if (SCROLL_LIST){
     const grp = two ? box.querySelector(".results .ghead.tripgrp") : null;
     if (grp) anchorTo(grp, stopAt(true));
+    else if (two) anchorTo(box.querySelector(".results"), stopAt(true));
     else {
-      const sec=(!two && (box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin")))
+      const sec=box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin")
                 || box.querySelector(".sec.seclist");
-      if (sec){
-        const hdr=two?tripHost.querySelector(":scope > .sec.toplevel"):null;
-        const secH=sec.getBoundingClientRect().height;
-        const want=hdr?(hdr.getBoundingClientRect().bottom-secH):stopAt(false);
-
-        const anc=sec.closest(".stickysec") || sec;
-        box.scrollTop += (anc.getBoundingClientRect().top - want);
-      }
+      if (sec) box.scrollTop += (sec.getBoundingClientRect().top - stopAt(false));
     }
     SCROLL_LIST=false;
   }
