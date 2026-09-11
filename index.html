@@ -476,14 +476,29 @@ button{font:inherit; color:inherit; cursor:pointer}
 
   #app[data-mtab=trip] .tpickmini,
   #app[data-mtab=place] .tpickmini{display:none}
+
+  .panel{--l1h:48px}
+  .sec.toplevel{min-height:var(--l1h)}
+
+  #app[data-mtab=trip] .sechead.trhead,
+  #app[data-mtab=trip] .sec.secitin,
+  #app[data-mtab=place] .sec.basesec,
+  #app[data-mtab=place] .sec.seclist{
+    position:sticky; background:var(--panel); background-image:var(--paper-panel);
+  }
+  #app[data-mtab=trip] .sechead.trhead{top:0; z-index:400}
   #app[data-mtab=trip] .sec.secitin{
-    position:sticky; top:0; z-index:401; background:var(--panel);
-    background-image:var(--paper-panel);
+    top:var(--l1h); z-index:399;
     color:var(--section-title-color, var(--ink));
     box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
   }
+
+  #app[data-mtab=trip] .qtrips + .sec.secitin{box-shadow:inset 0 -1px 0 var(--line)}
   #app[data-mtab=trip] .sec.secitin .nm,
   #app[data-mtab=trip] .sec.secitin .ssub{color:inherit}
+  #app[data-mtab=place] .sec.basesec{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--line)}
+  #app[data-mtab=place] .sec.seclist{top:var(--l1h); z-index:400; box-shadow:inset 0 -1px 0 var(--line)}
+  #app[data-mtab=place] .fbar{top:calc(var(--l1h) * 2)}
 
   #app[data-mtab=map] .panel{display:none; border-top:0}
 
@@ -658,6 +673,8 @@ html.sheeton .panel{overflow:hidden}
     color:var(--section-title-color, var(--ink));
     box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
   }
+
+  .panel.twolane .lane-trip > .qtrips + .sec.secitin{box-shadow:inset 0 -1px 0 var(--line)}
   .panel.twolane .lane-trip > .sec.secitin .nm,
   .panel.twolane .lane-trip > .sec.secitin .ssub{color:inherit}
 
@@ -730,6 +747,10 @@ html.sheeton .panel{overflow:hidden}
 .fbar{
   position:sticky; top:0; z-index:400; display:flex; align-items:center; gap:8px;
   padding:8px 14px; background:var(--panel); border-bottom:1px solid var(--line);
+}
+
+@media (max-width:899px), (max-height:559px){
+  .fbar{padding:4px 14px; min-height:var(--l1h); border-bottom:0; box-shadow:inset 0 -1px 0 var(--line)}
 }
 
 .chev{width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round;
@@ -828,7 +849,7 @@ html.sheeton .panel{overflow:hidden}
   background:var(--accent-soft);
 }
 
-.btrips{display:flex; flex-direction:column; gap:3px; margin:0 0 10px}
+.btrips{display:flex; flex-direction:column; gap:var(--trowgap); margin:0 0 10px}
 
 .rrow .rbar{flex:none; width:3px; height:17px; border-radius:2px}
 
@@ -877,7 +898,7 @@ html.sheeton .panel{overflow:hidden}
 
 .qtrips{padding:0 14px}
 .qtrips .trow{margin-left:4px; width:calc(100% - 4px)}
-.qtrips .trow + .trow{margin-top:3px}
+.qtrips .trow + .trow{margin-top:var(--trowgap)}
 .qtrips .qmorew{margin-top:10px; margin-bottom:10px}
 
 .qbases{padding:0 14px}
@@ -894,6 +915,9 @@ html.sheeton .panel{overflow:hidden}
 .qtrips, .qbases{
   padding-bottom:12px; margin-bottom:8px; border-bottom:1px solid var(--line);
 }
+
+.qtrips{margin-bottom:0}
+.qtrips + .tripbox{margin-top:8px}
 
 .rrow .rbar.qbar{background:var(--accent)}
 
@@ -1150,7 +1174,8 @@ html.sheeton .panel{overflow:hidden}
 .alert .at{flex:1; min-width:0}
 .tpickmini .alert{margin-left:10px; padding:7px 9px}
 
-.rtrips{display:flex; flex-direction:column; gap:3px;
+:root{--trowgap:6px}
+.rtrips{display:flex; flex-direction:column; gap:var(--trowgap);
         margin:2px 0 6px 13px; padding-left:11px; border-left:1px solid var(--line)}
 
 .trow{
@@ -1327,7 +1352,7 @@ button.tnight:hover .chev{color:var(--accent)}
 
 .lodgebox .zgrouplbl, .btrips .btlbl{font-size:11px; color:var(--ink3); letter-spacing:.04em}
 .lodgebox .zgrouplbl{margin:8px 0 0}
-.btrips .btlbl{margin:0 0 6px}
+.btrips .btlbl{margin:0 0 3px}
 
 .lodgebox .zbody{margin-left:16px; padding-left:8px; border-left:1px solid var(--line)}
 .lodgebox .row{padding:5px 6px}
@@ -2384,6 +2409,7 @@ const Z_LODGING_NORMAL = 0;
 const Z_PLACE_NORMAL = 2000;
 const Z_BASE_NORMAL  = 4000;
 const Z_QUERY_MATCH  = 8000;
+const Z_QUERY_BASE   = 10000;
 const Z_TRIP_STOP    = 12000;
 const Z_TRIP_BASE    = 14000;
 const Z_PLACE_ON     = 18000;
@@ -2532,6 +2558,11 @@ function draw(){
     list = list.filter(p=>VIS.has(p.base));
     ids = new Set(list.map(p=>p.id));
   }
+
+  if (qTerms().length){
+    list = list.filter(matchQ);
+    ids = new Set(list.map(p=>p.id));
+  }
   if (S.sel && BY_ID[S.sel] && !ids.has(S.sel)){ list.push(BY_ID[S.sel]); ids.add(S.sel); }
 
 
@@ -2638,16 +2669,20 @@ function drawBasePins(){
   const showLabel = zoom >= BASE_LABEL_ZOOM;
 
   const VIS = mapVisibleBases();
+
+  const qActive = qTerms().length > 0;
+  const qHit = qActive ? new Set(qBaseHits().map(x=>x.id)) : null;
   BASES.forEach(b=>{
     if (!b.anchor) return;
     if (VIS && !VIS.has(b.id)) return;
     const sel = S.base.has(b.id);
+    if (qActive && !qHit.has(b.id) && !(BASE_SEL===b.id || sel || (trip && TRIP_BASES.has(b.id)))) return;
     const isFtrip = ftripActive && TRIP_BASES.has(b.id);
 
     const dim = !!(trip && !TRIP_BASES.has(b.id) && !sel && BASE_SEL!==b.id);
 
     const big = !!(trip && TRIP_BASES.has(b.id) && zoom >= STOP_LABEL_ZOOM);
-    const query = qTerms().length && qBaseHits().some(x=>x.id===b.id);
+    const query = qActive && qHit.has(b.id);
     const cls = "basepin" + (BASE_SEL===b.id?" on":"") + (sel?" sel":"") + (isFtrip?" ftrip":"") +
                 (big?" big":"") + (dim?" dim":"") + (query?" query-match":"");
 
@@ -2659,7 +2694,7 @@ function drawBasePins(){
 
       zIndexOffset: (BASE_SEL===b.id || (sel && !S.tripAdded.has(b.id))) ? Z_PLACE_ON
         : (trip && TRIP_BASES.has(b.id) ? Z_TRIP_BASE
-        : (query ? Z_QUERY_MATCH : Z_BASE_NORMAL))});
+        : (query ? Z_QUERY_BASE : Z_BASE_NORMAL))});
 
     m.bindTooltip(`<b>${esc(b.name)}</b><i>${esc(b.town||"")}` +
                   (b.drive_min!=null?`　離新竹約 ${estT(b.drive_min)}`:"") + `</i>`,
@@ -5237,7 +5272,18 @@ function renderPanel(){
     else {
       const sec=box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin")
                 || box.querySelector(".sec.seclist");
-      if (sec) box.scrollTop += (sec.getBoundingClientRect().top - stopAt(false));
+
+      if (sec){
+        const pinned=[sec, sec.parentElement].find(e=>e && e!==box && getComputedStyle(e).position==="sticky");
+        let top;
+        if (pinned){
+          const prev=pinned.style.position;
+          pinned.style.position="static";
+          top=sec.getBoundingClientRect().top;
+          pinned.style.position=prev;
+        } else top=sec.getBoundingClientRect().top;
+        box.scrollTop += (top - stopAt(false));
+      }
     }
     SCROLL_LIST=false;
   }
