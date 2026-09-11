@@ -396,6 +396,58 @@ button{font:inherit; color:inherit; cursor:pointer}
   .main:not(.nomap) .panel{padding-bottom:0}
 }
 
+.mnav{display:none}
+@media (max-width:899px), (max-height:559px){
+
+  :root{--navh:54px}
+  .mnav{
+    display:flex; flex:none; align-items:stretch;
+    background:var(--panel); border-top:1px solid var(--line);
+
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+
+  .mnav button{
+    flex:1 1 0; min-width:0; height:var(--navh);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    border:0; background:none; padding:0;
+    font-family:inherit; font-size:11.5px; line-height:1; color:var(--ink3);
+    transition:color .15s;
+  }
+  .mnav svg{width:21px; height:21px; stroke:currentColor; fill:none; stroke-width:1.5;
+            stroke-linecap:round; stroke-linejoin:round}
+
+  .mnav button[aria-pressed=true]{color:var(--accent); font-weight:600}
+  .mnav button:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+
+  #views{display:none}
+
+  .panel{padding-bottom:0}
+
+  #app[data-mtab=place] .sechead.trhead,
+  #app[data-mtab=place] .sec.sectrips,
+  #app[data-mtab=place] .qtrips,
+  #app[data-mtab=place] .tripbox,
+  #app[data-mtab=place] .sec.secitin{display:none}
+  #app[data-mtab=trip] .sec.basesec,
+  #app[data-mtab=trip] .qbases,
+  #app[data-mtab=trip] .rlist,
+  #app[data-mtab=trip] .sec.seclist,
+  #app[data-mtab=trip] .lfilters,
+  #app[data-mtab=trip] .fbar,
+  #app[data-mtab=trip] .results,
+  #app[data-mtab=trip] .legend,
+  #app[data-mtab=trip] .sec.secfoot,
+  #app[data-mtab=trip] .foot{display:none}
+
+  #app[data-mtab=trip] .tpickmini,
+  #app[data-mtab=place] .tpickmini{display:none}
+
+  #app[data-mtab=map] .panel{display:none; border-top:0}
+
+  .totop{bottom:calc(16px + var(--navh) + env(safe-area-inset-bottom))}
+}
+
 @media (min-width:900px) and (min-height:560px){
   .main{flex-direction:row}
   .panel{width:410px; flex:0 0 410px; border-top:0; border-right:1px solid var(--line)}
@@ -1329,6 +1381,12 @@ button.tnight:hover .chev{color:var(--accent)}
       </div>
     </div>
   </main>
+
+  <nav class="mnav" id="mnav" aria-label="主要頁籤">
+    <button type="button" data-t="trip" aria-pressed="true"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.6" cy="4.2" r="1.4"/><circle cx="3.6" cy="11.8" r="1.4"/><path d="M3.6 5.6v4.8M7.4 4.2h6.2M7.4 11.8h6.2"/></svg>行程</button>
+    <button type="button" data-t="place" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14.4s4.7-5 4.7-8.1a4.7 4.7 0 10-9.4 0C3.3 9.4 8 14.4 8 14.4z"/><circle cx="8" cy="6.2" r="1.7"/></svg>景點</button>
+    <button type="button" data-t="map" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.9 4.1L6 2.5l4 1.6 4.1-1.6v9.4L10 13.5l-4-1.6-4.1 1.6z"/><path d="M6 2.5v9.4M10 4.1v9.4"/></svg>地圖</button>
+  </nav>
 </div>
 
 <button id="totop" class="totop btn-act" type="button" aria-label="回到清單頂端" title="回到清單頂端">
@@ -1360,7 +1418,7 @@ const ICON = {
   "lodging":        '<path d="M2.2 12.8V6M2.2 9.2h11.6v3.6M13.8 12.8V9.2M4.4 6.7h2.9v2.5H4.4z"/>',
 };
 
-const S = { view:"map", base:new Set(), themes:new Set(), diffs:new Set(),
+const S = { tab:"trip", view:"map", base:new Set(), themes:new Set(), diffs:new Set(),
             inseason:false, q:"", qtags:[], sel:null,
             basesOpen:false, listOpen:true, sort:"total", sortPicked:false, near:0, footOpen:false,
             trip:null, tripsOpen:true, itinOpen:true,
@@ -2224,8 +2282,9 @@ function panTo(p){
 }
 
 const hasMapCard = () => !matchMedia("(min-width:900px) and (min-height:560px)").matches;
-const isMapOnly = () => S.view==="map" && getComputedStyle(document.querySelector(".stage")).height!=="auto"
-  && hasMapCard();
+
+const isMapOnly = () => hasMapCard() && S.tab==="map"
+  && getComputedStyle(document.querySelector(".stage")).height!=="auto";
 function renderMapCard(){
   const box=document.getElementById("mapcard");
   if (!box) return;
@@ -2254,7 +2313,7 @@ function renderMapCard(){
         if (t.dataset.act==="closebase") closeBase();
         else if (t.dataset.act==="basedetail"){
 
-          S.view="list"; syncViews();
+          gotoTab("place");
           openBaseRow(BASE_SEL);
           SCROLL_BASE=BASE_SEL;
           save(); render();
@@ -2284,7 +2343,8 @@ function renderMapCard(){
     const act=b.dataset.act;
     if (act==="close"){ S.sel=null; render(); }
     else if (act==="tag"){ SCROLL_TO=b.dataset.pid||null; searchFor(b.dataset.tag); }
-    else if (act==="detail"){ S.view="list"; syncViews(); S.listOpen=true; SCROLL_TO=p.id; save(); render(); }
+
+    else if (act==="detail"){ gotoTab("place"); S.listOpen=true; SCROLL_TO=p.id; save(); render(); }
   };
 }
 
@@ -2305,9 +2365,10 @@ function renderMapBtns(){
     const ib=document.createElement("button");
     ib.className="btn-act";
     ib.textContent="看詳細行程";
-    ib.title="切到清單模式，看這一趟的逐日行程";
+
+    ib.title="切到「行程」頁，看這一趟的逐日行程";
     ib.onclick=()=>{
-      S.view="list"; syncViews(); openItin(); SCROLL_ITIN=true; save(); render();
+      gotoTab("trip"); openItin(); SCROLL_ITIN=true; save(); render();
     };
     box.appendChild(ib);
   }
@@ -2762,6 +2823,8 @@ function resetAll(){
   EXTRA=new Set();
   resetQ();
   SCROLL_RESET=true;
+
+  MSCROLL.trip=MSCROLL.itin=MSCROLL.place=0;
   save(); render();
 }
 
@@ -3192,6 +3255,8 @@ function tripStopIds(){
 function selectTrip(id){
 
   unfoldLane("trip");
+
+  gotoTab("trip");
   S.trip = (S.trip===id) ? null : id;   // 再點一次同一條＝關掉（連帶收掉地圖上的路線）
 
   NIGHT = null;
@@ -3753,6 +3818,8 @@ function selectBase(id, inPlace){
 
   if (!isMapOnly()){
     unfoldLane("exp");
+
+    gotoTab("place");
     openBaseRow(id);
     if (inPlace) SCROLL_NEAR=`.ghead[data-bid="${id}"]`;
     else SCROLL_BASE=id;
@@ -3763,7 +3830,8 @@ function closeBase(){ BASE_SEL=null; ZONE_SEL=null; render(); }
 
 function selectZone(name, bid){
 
-  if (!isMapOnly()) unfoldLane("exp");
+  
+  if (!isMapOnly()){ unfoldLane("exp"); gotoTab("place"); }
   ZONE_SEL = (ZONE_SEL===name) ? null : name;
   const z=zonesOf(BS[bid||BASE_SEL]).find(x=>x.name===ZONE_SEL);
   if (z && ready) map.setView([z.anchor.lat, z.anchor.lng], Math.max(map.getZoom(),13), {animate:false});
@@ -4155,6 +4223,26 @@ function unfoldLane(which){
   S[k]=false;
   resizeMap();      // 寬度變了（見 setLaneFold 那段的理由）
 }
+
+function gotoTab(t){
+  if (!hasMapCard() || HASH_APPLYING || S.tab===t) return;
+  mpageSave();      // 趁舊的那一族還看得見，先把它的捲動位置收起來（見下面那段）
+  S.tab=t;
+  syncViews();
+}
+
+const MSCROLL = {trip:0, itin:0, place:0};
+const mpageKey = () => !hasMapCard() ? null
+  : (S.tab==="trip" ? (S.trip ? "itin" : "trip") : S.tab);
+let MPAGE=null;        // 上一次渲出來的是哪一頁（null＝桌機，或這一次已經存過了）
+let MJUMP=null;        // 下一次 renderPanel 要把面板捲回哪（見上面）
+function mpageSave(){
+  if (MPAGE && MPAGE!=="map"){
+    const b=scrollBox();
+    if (b) MSCROLL[MPAGE]=b.scrollTop;
+  }
+  MPAGE=null;
+}
 function renderPanel(){
   const panel=document.getElementById("panel");
   const two=isTwoLane();
@@ -4165,6 +4253,13 @@ function renderPanel(){
   const oldTrip=panel.querySelector(":scope > .lane-trip");
   if (oldTrip && !isRail(oldTrip)) LANE_KEEP.trip=oldTrip.scrollTop;
   const keepTrip=LANE_KEEP.trip;
+
+  const pkey=mpageKey();
+  if (pkey!==MPAGE){
+    mpageSave();
+    MPAGE=pkey;
+    if (pkey && pkey!=="map" && MJUMP==null) MJUMP=MSCROLL[pkey]||0;
+  }
   panel.innerHTML="";
   panel.classList.toggle("twolane", two);
   LANE_STATE=two;   // 讓 syncLanes 知道現在畫的是哪一種，不用再自己去比 DOM
@@ -4277,8 +4372,9 @@ function renderPanel(){
     expHost.appendChild(lg);
   }
 
+  
   expHost.appendChild(section("ⓘ 距離與時間說明", null, S.footOpen,
-    ()=>{ S.footOpen=!S.footOpen; save(); render(); }, "toplevel deskonly"));
+    ()=>{ S.footOpen=!S.footOpen; save(); render(); }, "toplevel deskonly secfoot"));
   if (S.footOpen){
     const f=document.createElement("p"); f.className="foot";
     f.innerHTML =
@@ -4317,6 +4413,12 @@ function renderPanel(){
   if (SCROLL_RESET){
     box.scrollTop = 0;
     SCROLL_RESET = false;
+
+    MJUMP = null;
+  } else if (MJUMP != null){
+
+    box.scrollTop = MJUMP;
+    MJUMP = null;
   } else {
     box.scrollTop = keep;
   }
@@ -4359,10 +4461,11 @@ function renderPanel(){
     SCROLL_TO=null;
   }
 
+  
   if (PIN && !ANCHORED){
     const list=panel.querySelectorAll(PIN.sel);
     const el=list[PIN.idx] || list[0];
-    if (el && box.contains(el)) box.scrollTop += (el.getBoundingClientRect().top - PIN.top);
+    if (el && el.offsetParent && box.contains(el)) box.scrollTop += (el.getBoundingClientRect().top - PIN.top);
   }
   PIN=null;
 
@@ -4430,6 +4533,8 @@ function select(id, keepBase, inPlace){
   if (!isMapOnly()){
 
     unfoldLane("exp");
+
+    gotoTab("place");
     S.listOpen=true;
     if (inPlace) SCROLL_NEAR=`.results > .row[data-id="${id}"]`;
     else SCROLL_TO=id;
@@ -4438,9 +4543,33 @@ function select(id, keepBase, inPlace){
 }
 
 function syncViews(){
+  MOBILE_STATE = hasMapCard();
   document.querySelectorAll("#views button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===S.view));
-  document.getElementById("main").classList.toggle("nomap", S.view!=="map");
+  document.querySelectorAll("#mnav button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.t===S.tab));
+  document.getElementById("app").dataset.mtab = S.tab;
+  document.getElementById("main").classList.toggle("nomap", MOBILE_STATE ? S.tab!=="map" : S.view!=="map");
 }
+
+document.querySelectorAll("#mnav button").forEach(b=>{
+  b.onclick=()=>{
+    if (b.dataset.t===S.tab) return;
+    gotoTab(b.dataset.t);
+    render();
+    if (S.tab==="map") resizeMap();
+  };
+});
+
+let MOBILE_STATE=null;
+function syncMobile(){
+  const mob=hasMapCard();
+  if (mob===MOBILE_STATE) return;
+  syncViews();      // 它自己會把 MOBILE_STATE 設成新值
+  render();
+  resizeMap();
+}
+DESK_MQ.addEventListener("change", syncMobile);
+addEventListener("resize", syncMobile);
+new ResizeObserver(syncMobile).observe(document.getElementById("main"));
 
 function updateTotop(){
   const btn=document.getElementById("totop");
@@ -4547,6 +4676,12 @@ loadOSM("");
 render();
 
 applyHash(true);
+
+if (S.sel || BASE_SEL){
+  const before=S.tab;
+  gotoTab("place");
+  if (S.tab!==before) render();
+}
 save();
 
 (function(){
