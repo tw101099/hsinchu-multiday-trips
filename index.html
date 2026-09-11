@@ -297,6 +297,29 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .mapbtns button[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
+.mcondsum{
+  position:absolute; top:10px; left:54px; right:10px; z-index:500; display:none;
+  align-items:center; gap:4px; max-width:calc(100% - 64px);
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+  padding:0 2px 0 10px; font-size:11.5px; line-height:1.5; color:var(--ink2);
+  box-shadow:0 1px 6px rgba(var(--sh),.13);
+}
+.mcondsum .mcsv{
+  flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  padding:6px 0;
+}
+.mcondsum .mcsk{color:var(--ink3); margin-right:3px}
+
+.mcondsum .mcsg + .mcsg{margin-left:10px}
+
+.mcsx{
+  flex:none; min-height:36px; padding:0 10px; border:0; background:none; cursor:pointer;
+  font-family:inherit; font-size:12px; line-height:1.4; color:var(--ink3);
+  border-radius:999px; white-space:nowrap;
+}
+.mcsx:hover{color:var(--accent); background:var(--hover-bg)}
+.mcsx:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+
 .leaflet-bar a.locbtn{display:flex; align-items:center; justify-content:center; cursor:pointer}
 
 .locbtn svg{display:block; width:16px; height:16px; fill:none; stroke:currentColor;
@@ -455,12 +478,15 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 }
 
-.sheetwrap{display:none; position:fixed; inset:0; z-index:1200}
-.sheetmask{position:absolute; inset:0; background:rgba(var(--sh),.42)}
+.sheetwrap{display:none; position:fixed; inset:0; z-index:1200; pointer-events:none}
+.sheetmask{position:absolute; inset:0; background:rgba(var(--sh),.42); pointer-events:auto;
+           transition:opacity .2s ease-out}
+
+.sheetwrap[data-kind=map][data-st=peek] .sheetmask{opacity:0; pointer-events:none}
 
 html.sheeton .panel{overflow:hidden}
 .sheet{
-  position:absolute; left:0; right:0; bottom:0;
+  position:absolute; left:0; right:0; bottom:0; pointer-events:auto;
   display:flex; flex-direction:column;
 
   max-height:82vh; max-height:82dvh;
@@ -470,6 +496,13 @@ html.sheeton .panel{overflow:hidden}
 
   padding-bottom:env(safe-area-inset-bottom);
 }
+
+.sheetwrap[data-kind=map] .sheet{max-height:none; height:var(--sheeth)}
+.sheetwrap[data-kind=map][data-st=peek] .sheet{--sheeth:46vh; --sheeth:46dvh}
+.sheetwrap[data-kind=map][data-st=full] .sheet{--sheeth:92vh; --sheeth:92dvh}
+.sheet{transition:height .22s cubic-bezier(.22,.61,.36,1)}
+.sheet.dragging{transition:none}
+.sheet.dragging, .sheetwrap.dragging .sheetmask{transition:none}
 @keyframes sheetup{from{transform:translateY(100%)} to{transform:none}}
 @keyframes sheetfade{from{opacity:0} to{opacity:1}}
 .sheetwrap[data-open] .sheet{animation:sheetup .24s cubic-bezier(.22,.61,.36,1)}
@@ -477,11 +510,15 @@ html.sheeton .panel{overflow:hidden}
 
 @media (prefers-reduced-motion:reduce){
   .sheetwrap[data-open] .sheet{animation:none}
+  .sheet{transition:none}
+  .sheetmask{transition:none}
 }
 
 .sheetgrab{
   flex:none; height:40px; border:0; background:none; padding:0; width:100%;
   display:flex; align-items:center; justify-content:center; cursor:pointer;
+
+  touch-action:none;
 }
 .sheetgrab span{display:block; width:38px; height:4px; border-radius:999px; background:var(--line)}
 .sheetgrab:hover span{background:var(--accent)}
@@ -502,6 +539,15 @@ html.sheeton .panel{overflow:hidden}
 .sheetbody .tfilters, .sheetbody .lfilters{padding:0; margin:0; border-bottom:0}
 
 .sheetbody .tfclear{display:none}
+
+.sheetwrap[data-kind=map] .sheetbody .detail{
+  margin:0 0 10px; border-top:1px solid var(--accent); border-radius:var(--r);
+}
+.sheetwrap[data-kind=map] .sheetbody .tripbox{padding:0}
+.sheetwrap[data-kind=map] .sheetbody .gintro,
+.sheetwrap[data-kind=map] .sheetbody .blodge{margin-left:0; width:auto}
+
+.sheetfoot:empty{display:none}
 
 .sheetfoot{
   flex:none; display:flex; align-items:center; gap:10px;
@@ -550,6 +596,8 @@ html.sheeton .panel{overflow:hidden}
 @media (max-width:899px), (max-height:559px){
   .mfbar{display:flex}
   .sheetwrap[data-open]{display:block}
+
+  #app[data-mtab=map] .mcondsum.on{display:flex}
 }
 
 @media (min-width:900px) and (min-height:560px){
@@ -952,6 +1000,25 @@ html.sheeton .panel{overflow:hidden}
 .hgic{width:5.5px; height:9px; flex:none; stroke:currentColor; fill:none; stroke-width:1.3;
       stroke-linecap:round; stroke-linejoin:round}
 
+.tdback{
+  position:sticky; top:0; z-index:400;
+  display:flex; align-items:center; gap:2px;
+  padding:4px 14px 4px 6px; background:var(--panel);
+  border-bottom:1px solid var(--line);
+}
+.tdbk{
+  flex:none; width:44px; height:44px; border:0; background:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; color:var(--ink2);
+  border-radius:999px;
+}
+.tdbk svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6;
+          stroke-linecap:round; stroke-linejoin:round}
+.tdbk:hover{color:var(--accent); background:var(--hover-bg)}
+.tdbk:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+.tdbt{
+  flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-size:15px; font-weight:700; color:var(--ink);
+}
 .tripbox{padding:0 14px 14px}
 
 .tpick{display:flex; flex-direction:column; gap:2px; padding:6px 0 2px}
@@ -1356,7 +1423,7 @@ button.tnight:hover .chev{color:var(--accent)}
 :root .leaflet-tile{filter:var(--tile)}
 
 .bar, .panel, .fbar, .mapcard, .loctip, .leaflet-tooltip.tt,
-.lanefold,
+.lanefold, .tdback,
 .panel.twolane .lane-explore > .sec.basesec,
 .panel.twolane .lane-explore > .sec.seclist,
 .panel.twolane .lane-trip > .sec.toplevel:first-child,
@@ -1594,8 +1661,11 @@ button.tnight:hover .chev{color:var(--accent)}
       <div id="map"></div>
       <div class="mapnote" id="mapnote"></div>
       <div class="mapmsg" id="mapmsg"></div>
+
+      <div class="mcondsum" id="mcondsum"></div>
       <div class="mapoverlay">
         <div class="mapbtns" id="mapbtns"></div>
+
         <div class="mapcard" id="mapcard"></div>
       </div>
     </div>
@@ -1921,7 +1991,15 @@ let HASH_APPLYING = true;
 let HASH_LAST = {trip:null, base:null, place:null};
 
 let MSEARCH = false;
-const searchState = () => MSEARCH ? {ms:1} : null;
+
+let HSTEP = 0;
+const navState = () => {
+  const st = {hs:HSTEP};
+  if (MSEARCH) st.ms = 1;
+
+  if (SHEET && SHEET_PUSHED) st.sh = 1;
+  return st;
+};
 const hashNow = () => ({trip:S.trip||null, base:BASE_SEL||null, place:S.sel||null});
 const hashLevels = st => (st.trip?1:0)+(st.base?1:0)+(st.place?1:0);
 function hashString(st){
@@ -1955,7 +2033,8 @@ function syncHash(){
   if (s === (location.hash||"")){ HASH_LAST=st; return; }
   const deeper = hashLevels(st) > hashLevels(HASH_LAST);
   const url = s || (location.pathname + location.search);
-  history[deeper ? "pushState" : "replaceState"](searchState(), "", url);
+  if (deeper) HSTEP++;
+  history[deeper ? "pushState" : "replaceState"](navState(), "", url);
   HASH_LAST=st;
 }
 
@@ -1987,9 +2066,16 @@ function applyHash(initial){
 }
 
 addEventListener("popstate", e=>{
+  HSTEP = (e.state && e.state.hs) || 0;
   const want = !!(e.state && e.state.ms);
   if (want !== MSEARCH){ MSEARCH = want; syncMSearch(); }
+
+  const wantSheet = !!(e.state && e.state.sh);
+  const droppedSheet = !wantSheet && !!SHEET;
+  if (!wantSheet){ SHEET = null; SHEET_PUSHED = false; SHEET_WANT_PUSH = false; }
   applyHash(false);
+
+  if (droppedSheet){ const b=document.querySelector(".mfbtn"); if (b) b.focus({preventScroll:true}); }
 });
 
 const months = p => Array.isArray(p.season_months) ? p.season_months : [];
@@ -2298,7 +2384,11 @@ function initOSM(why){
     .bindTooltip(HOME.name,{direction:"top",offset:[0,-11],className:"tt",opacity:1})
     .addTo(map);
   addLocateControl();
-  map.on("click", ()=>{ if (S.sel){ S.sel=null; render(); } });
+
+  map.on("click", ()=>{
+    if (SHEET && SHEETS[SHEET] && SHEETS[SHEET].kind==="map"){ closeSheet(); return; }
+    if (S.sel){ S.sel=null; render(); }
+  });
   map.on("zoomend", ()=>{
     const z=map.getZoom();
     const crossed = ((z>=ICON_ZOOM) !== (zoom>=ICON_ZOOM)) ||
@@ -2447,12 +2537,15 @@ function drawLegs(){
       const dash = m ? {dashArray:"7 6"} : {};
       L.polyline(lg.coords, Object.assign({color:casing, weight:8, opacity:.5, lineJoin:"round",
                              lineCap:"round", interactive:false}, dash)).addTo(lines);
+
       L.polyline(lg.coords, Object.assign({color:c, weight:4.5, opacity:.95,
-                             lineJoin:"round", lineCap:"round"}, dash))
+                             lineJoin:"round", lineCap:"round", bubblingMouseEvents:false}, dash))
         .bindTooltip(`<b>Day ${i+1}</b><i>${esc(lg.from_name)} → ${esc(lg.to_name)}　` +
                      (m ? `${m.label}${lg.km!=null?`（直線 ${kmT(lg.km)}）`:""}`
                         : `${estT(lg.min)} · ${kmT(lg.km)}`) + `</i>`,
                      {sticky:true, className:"tt", opacity:1})
+
+        .on("click", ()=>{ if (isMapOnly()) openSheet("mtrip"); })
         .addTo(lines);
     });
   });
@@ -2521,68 +2614,6 @@ const hasMapCard = () => !matchMedia("(min-width:900px) and (min-height:560px)")
 
 const isMapOnly = () => hasMapCard() && S.tab==="map"
   && getComputedStyle(document.querySelector(".stage")).height!=="auto";
-function renderMapCard(){
-  const box=document.getElementById("mapcard");
-  if (!box) return;
-
-  if (isMapOnly() && BASE_SEL && !S.sel){
-    const b=BS[BASE_SEL];
-    if (b){
-      const nz=zonesOf(b).length, nl=lodgingOf(b.id).length;
-      box.className="mapcard on";
-      box.innerHTML =
-        `<div class="ttl"><b>${esc(b.name)}</b>` +
-          `<button class="x" data-act="closebase" aria-label="關閉">×</button></div>` +
-        `<p class="sub">${esc(b.town||"")}　基地</p>` +
-        `<p class="m">` +
-
-          (b.drive_min!=null ? `<span class="mi" title="從新竹市區開到這個基地（實算 ${rawT(b.drive_min)}）">` +
-            `${CAR_SVG}${est(b.drive_min)}</span>` : "") +
-          `<span class="mi">住宿 <span class="num">${nl}</span> 家` +
-            (nz?`／<span class="num">${nz}</span> 條住宿帶`:"") + `</span></p>` +
-
-        `<div class="acts">` +
-          `<button class="primary btn-act" data-act="basedetail">看基地</button>` +
-        `</div>`;
-      box.onclick=e=>{
-        const t=e.target.closest("[data-act]"); if (!t) return;
-        if (t.dataset.act==="closebase") closeBase();
-        else if (t.dataset.act==="basedetail"){
-
-          gotoTab("place");
-          openBaseRow(BASE_SEL);
-          SCROLL_BASE=BASE_SEL;
-          save(); render();
-        }
-      };
-      return;
-    }
-  }
-  const p = (isMapOnly() && S.sel) ? BY_ID[S.sel] : null;
-  box.className = "mapcard" + (p ? " on" : "");
-  if (!p){ box.innerHTML=""; return; }
-  const legHTML = driveBit(p);
-  box.innerHTML =
-    `<div class="ttl"><b>${esc(p.name)}</b>` +
-      `<button class="x" data-act="close" aria-label="關閉">×</button></div>` +
-    `<p class="sub">${esc(p.town)}　${esc((TH[p.theme]||{}).name||"")}　${EFFORT[p.diff]||p.diff}</p>` +
-    `<p class="m">${legHTML}` +
-      `<span class="mi" title="停留（原值 ${rawHT(p.stay_h)}）">${HOURGLASS_SVG}${estH(p.stay_h)}</span></p>` +
-    tagsHTML(p) +
-    `<div class="acts">` +
-      `<button class="primary btn-act" data-act="detail">看詳細</button>` +
-      `<a class="btn-act" href="https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HOME.name)}&destination=${encodeURIComponent(gnav(p))}" target="_blank" rel="noopener">導航</a>` +
-      `<a class="btn-act" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gview(p))}" target="_blank" rel="noopener">看 Google 地圖</a>` +
-    `</div>`;
-  box.onclick=e=>{
-    const b=e.target.closest("[data-act]"); if (!b) return;
-    const act=b.dataset.act;
-    if (act==="close"){ S.sel=null; render(); }
-    else if (act==="tag"){ SCROLL_TO=b.dataset.pid||null; searchFor(b.dataset.tag); }
-
-    else if (act==="detail"){ gotoTab("place"); S.listOpen=true; SCROLL_TO=p.id; save(); render(); }
-  };
-}
 
 function renderMapBtns(){
   const box=document.getElementById("mapbtns");
@@ -2609,6 +2640,37 @@ function renderMapBtns(){
     box.appendChild(ib);
   }
 
+}
+
+function renderMapCond(){
+  const box=document.getElementById("mcondsum");
+  if (!box) return;
+  box.innerHTML="";
+  const bits = hasMapCard() && S.tab==="map"
+    ? condBits().filter(([k,,g]) => g==="trip" || g==="base" || (g==="placef" && k==="主題"))
+    : [];
+  if (!bits.length){ box.className="mcondsum"; return; }
+  box.className="mcondsum on";
+  const v=document.createElement("div"); v.className="mcsv";
+
+  v.innerHTML = bits.map(([k,val]) =>
+    `<span class="mcsg"><span class="mcsk">${esc(k)}</span>${esc(val)}</span>`).join("");
+  v.title = bits.map(([k,val]) => `${k} ${val}`).join("　");
+  box.appendChild(v);
+  if (S.trip){
+    const x=document.createElement("button");
+    x.type="button"; x.className="mcsx";
+
+    x.textContent="解除行程";
+    x.title="解除行程，回到沒有選中行程的地圖";
+
+    x.onclick=()=>{
+      const from=S.tab;
+      selectTrip(S.trip);
+      if (S.tab!==from){ gotoTab(from); render(); resizeMap(); }
+    };
+    box.appendChild(x);
+  }
 }
 function resizeMap(){
   if (!ready) return;
@@ -2929,7 +2991,8 @@ function section(label, count, open, fn, cls, sub){
 function shareBtn(){
   const b=document.createElement("button");
   b.type="button"; b.className="shbtn btn-act";
-  const nativeShare = !!navigator.share && matchMedia("(pointer:coarse)").matches;
+
+  const nativeShare = !!navigator.share;
 
   const label = "分享這趟行程";
   b.textContent=label;
@@ -3086,7 +3149,8 @@ function openSearchMode(){
 
   closeMMenu(false);
   MSEARCH=true;
-  history.pushState({ms:1}, "", location.href);
+  HSTEP++;
+  history.pushState(navState(), "", location.href);
   syncMSearch();
   const qi=document.getElementById("q");
   if (qi) qi.focus({preventScroll:true});
@@ -4118,12 +4182,16 @@ function openBaseRow(id){
 }
 
 function selectBase(id, inPlace){
-  if (BASE_SEL===id){ closeBase(); return; }
+  if (BASE_SEL===id){
+    if (SHEET==="mbase"){ closeSheet(); return; }
+    closeBase(); return;
+  }
   closeBaseDetail(); closePlace();
   BASE_SEL=id; ZONE_SEL=null;
   const b=BS[id];
   if (b && b.anchor && ready) map.setView(b.anchor, Math.max(map.getZoom(),12), {animate:false});
 
+  if (isMapOnly()) setSheet("mbase");
   if (!isMapOnly()){
     unfoldLane("exp");
 
@@ -4247,6 +4315,22 @@ function baseTripsBlock(b){
     box.appendChild(el);
   });
   return box;
+}
+
+function baseIntro(r){
+  const rd=document.createElement("div");
+  rd.className="gintro";
+
+  rd.dataset.bid=r.id;
+  const nLodge=lodgingOf(r.id).length;
+  rd.innerHTML =
+    `<span class="gdesc">${esc(r.town||"")}` +
+    (r.drive_min!=null
+      ? `　離新竹約 <span title="實算 ${rawT(r.drive_min)}">${est(r.drive_min)}</span>` : "") +
+    (nLodge ? `　住宿 <span class="num">${nLodge}</span> 家` : "") +
+    (zonesOf(r).length ? `　住宿帶 <span class="num">${zonesOf(r).length}</span> 條` : "") +
+    `</span>`;
+  return rd;
 }
 function baseLodgeBox(b){
   if (!b) return null;
@@ -4464,21 +4548,8 @@ function renderList(){
     hoverWire(h, "base", r.id);
     wrap.appendChild(h);
 
-    if (open){
-      const rd=document.createElement("div");
-      rd.className="gintro";
-
-      rd.dataset.bid=r.id;
-      const nLodge=lodgingOf(r.id).length;
-      rd.innerHTML =
-        `<span class="gdesc">${esc(r.town||"")}` +
-        (r.drive_min!=null
-          ? `　離新竹約 <span title="實算 ${rawT(r.drive_min)}">${est(r.drive_min)}</span>` : "") +
-        (nLodge ? `　住宿 <span class="num">${nLodge}</span> 家` : "") +
-        (zonesOf(r).length ? `　住宿帶 <span class="num">${zonesOf(r).length}</span> 條` : "") +
-        `</span>`;
-      wrap.appendChild(rd);
-    }
+    
+    if (open) wrap.appendChild(baseIntro(r));
 
     if (BASE_SEL===r.id){
       const bx=baseLodgeBox(r);
@@ -4577,35 +4648,87 @@ function mpageSave(){
   MPAGE=null;
 }
 
-let SHEET = null;          // null／"trip"／"place"＝現在開著哪一張
+let SHEET = null;          // null／"trip"／"place"／"mplace"／"mbase"／"mtrip"＝現在開著哪一張
+
+let SHEET_ST = "peek";
 
 const circled = n => (n>=1 && n<=20) ? "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳"[n-1] : String(n);
 
 const SHEETS = {
   trip: {
-    tab:"trip",
+    tab:"trip", kind:"filter", title:()=>"篩選",
+
+    ok: () => mpageKey()!=="itin",
     count: () => S.fDays.size + S.fDrive.size + S.fStam.size + S.fFeel.size,
     body: () => tripFilterRows(false),
     clear: clearTripFilters,
     go: () => `顯示 ${tripCount()} 條行程`,
   },
   place: {
-    tab:"place",
+    tab:"place", kind:"filter", title:()=>"篩選",
+    ok: () => true,
     count: () => S.themes.size + S.diffs.size + (S.inseason?1:0),
     body: renderListFilters,
     clear: clearPlaceFilters,
     go: () => `顯示 ${shown().length} 個景點`,
   },
+
+  mplace: {
+    tab:"map", kind:"map",
+    ok: () => !!(S.sel && BY_ID[S.sel]),
+    title: () => `景點｜${(BY_ID[S.sel]||{}).name||""}`,
+    body: () => renderDetail(BY_ID[S.sel]),
+  },
+  mbase: {
+    tab:"map", kind:"map",
+    ok: () => !!(BASE_SEL && BS[BASE_SEL]),
+    title: () => `基地｜${(BS[BASE_SEL]||{}).name||""}`,
+
+    body: () => {
+      const b=BS[BASE_SEL];
+      const w=document.createElement("div");
+      w.appendChild(baseIntro(b));
+      const lx=baseLodgeBox(b);
+      if (lx) w.appendChild(lx);
+      return w;
+    },
+  },
+  mtrip: {
+    tab:"map", kind:"map",
+    ok: () => !!(S.trip && TRIP_BY_ID[S.trip]),
+    title: () => `行程｜${(TRIP_BY_ID[S.trip]||{}).name||""}`,
+
+    body: renderItinerary,
+  },
 };
-function openSheet(kind){
-  if (!hasMapCard() || !SHEETS[kind] || SHEET===kind) return;
+
+let SHEET_PUSHED = false, SHEET_WANT_PUSH = false;
+function setSheet(kind){
+  const spec=SHEETS[kind];
+  if (!hasMapCard() || HASH_APPLYING || !spec || SHEET===kind || !spec.ok()) return false;
   SHEET=kind;
-  render();
+  SHEET_ST="peek";           // 每一張都從摘要態開始（規格 §11.2 的預設落點）
+  if (!SHEET_PUSHED) SHEET_WANT_PUSH = true;
+  return true;
+}
+
+function flushSheetPush(){
+  if (!SHEET_WANT_PUSH) return;
+  SHEET_WANT_PUSH=false;
+  if (!SHEET) return;                  // 這一輪又被守衛收掉了（桌機／換頁籤／主體不在）
+  SHEET_PUSHED=true;
+  HSTEP++;
+  history.pushState(navState(), "", location.href);
+}
+function openSheet(kind){
+  if (!setSheet(kind)) return;
+  render();                            // 它的最後一行會把上面掛的號推成一格歷史
   const g=document.getElementById("sheetgrab"); if (g) g.focus();
 }
 
 function closeSheet(){
   if (!SHEET) return;
+  if (SHEET_PUSHED && HSTEP>0){ history.back(); return; }
   SHEET=null;
   render();
   const b=document.querySelector(".mfbtn");
@@ -4626,10 +4749,12 @@ function renderSheet(){
   const wrap=document.getElementById("sheetwrap");
   if (!wrap) return;
   const spec = SHEET && SHEETS[SHEET];
-  const on = !!(spec && hasMapCard() && S.tab===spec.tab);
+  const on = !!(spec && hasMapCard() && S.tab===spec.tab && spec.ok());
   if (!on){
     if (SHEET) SHEET=null;
     wrap.removeAttribute("data-open");
+    wrap.removeAttribute("data-kind");
+    wrap.removeAttribute("data-st");
     document.documentElement.classList.remove("sheeton");
     document.getElementById("sheetbody").innerHTML="";
     document.getElementById("sheetfoot").innerHTML="";
@@ -4645,12 +4770,23 @@ function renderSheet(){
     const now=body.querySelectorAll("button");
     if (now[fi]) now[fi].focus({preventScroll:true});
   }
+
   const foot=document.getElementById("sheetfoot");
-  foot.replaceWith(sheetFoot(spec));
+  if (spec.go) foot.replaceWith(sheetFoot(spec));
+  else { foot.innerHTML=""; foot.className="sheetfoot"; }
 
   const rs=document.getElementById("sheetreset");
-  rs.hidden = !spec.count();
-  rs.onclick = spec.clear;
+  rs.hidden = !(spec.count && spec.count());
+  rs.onclick = spec.clear || null;
+
+  document.getElementById("sheettitle").textContent = spec.title();
+
+  wrap.setAttribute("data-kind", spec.kind);
+  wrap.setAttribute("data-st", SHEET_ST);
+  syncGrab();
+
+  const sh=wrap.querySelector(".sheet");
+  if (sh) sh.setAttribute("aria-modal", spec.kind!=="map" || SHEET_ST==="full");
   wrap.setAttribute("data-open","");
 
   document.documentElement.classList.add("sheeton");
@@ -4690,7 +4826,129 @@ function mFilterBar(kind){
 }
 
 document.getElementById("sheetmask").onclick=closeSheet;
-document.getElementById("sheetgrab").onclick=closeSheet;
+
+let SHEET_DRAGGED = false;
+document.getElementById("sheetgrab").onclick=()=>{
+  if (SHEET_DRAGGED){ SHEET_DRAGGED=false; return; }
+  const spec = SHEET && SHEETS[SHEET];
+  if (spec && spec.kind==="map"){ setSheetState(SHEET_ST==="full" ? "peek" : "full"); return; }
+  closeSheet();
+};
+
+const SHEET_H = {peek:0, full:0};          // 兩態的像素高（每次按下去現量，見下面）
+function sheetEl(){ return document.querySelector("#sheetwrap .sheet"); }
+function setSheetState(st){
+  if (!SHEET || SHEET_ST===st) return;
+  SHEET_ST=st;
+  const wrap=document.getElementById("sheetwrap");
+  if (wrap) wrap.setAttribute("data-st", st);
+  const sh=sheetEl();
+  const spec=SHEETS[SHEET];
+  if (sh && spec) sh.setAttribute("aria-modal", spec.kind!=="map" || st==="full");
+  syncGrab();
+}
+
+function syncGrab(){
+  const g=document.getElementById("sheetgrab");
+  const spec = SHEET && SHEETS[SHEET];
+  if (!g || !spec) return;
+  if (spec.kind==="map"){
+    const full = SHEET_ST==="full";
+    g.setAttribute("aria-label", full ? "收合到摘要" : "展開完整內容");
+    g.setAttribute("aria-expanded", full);
+    g.title = full ? "收合到摘要（也可以往下拖）" : "展開完整內容（也可以往上拖）";
+  } else {
+    g.setAttribute("aria-label","收合篩選");
+    g.removeAttribute("aria-expanded");
+    g.title = "收合篩選（也可以往下拖）";
+  }
+}
+
+function measureSheet(){
+  const wrap=document.getElementById("sheetwrap"), sh=sheetEl();
+  if (!wrap || !sh) return;
+
+  const had=sh.classList.contains("dragging");
+  sh.classList.add("dragging");
+  const was=wrap.getAttribute("data-st") || SHEET_ST;
+  wrap.setAttribute("data-st","peek"); SHEET_H.peek=sh.offsetHeight;
+  wrap.setAttribute("data-st","full"); SHEET_H.full=sh.offsetHeight;
+  wrap.setAttribute("data-st", was);
+  void sh.offsetHeight;                       // 讓還原後的高度在拿掉 class 之前先定住
+  if (!had) sh.classList.remove("dragging");
+}
+(()=>{
+  const grab=document.getElementById("sheetgrab");
+  if (!grab) return;
+  let y0=0, base=0, moved=false, kind=null;
+  const wrap=()=>document.getElementById("sheetwrap");
+  grab.addEventListener("touchstart", e=>{
+    if (!SHEET || e.touches.length!==1) return;
+    const spec=SHEETS[SHEET]; if (!spec) return;
+    kind=spec.kind;
+    y0=e.touches[0].clientY; moved=false;
+    const sh=sheetEl(); if (!sh) return;
+    sh.classList.add("dragging");
+    const w=wrap(); if (w) w.classList.add("dragging");
+    if (kind==="map"){ measureSheet(); base=sh.offsetHeight; }
+  }, {passive:true});
+  grab.addEventListener("touchmove", e=>{
+    if (!SHEET || !kind || e.touches.length!==1) return;
+    const sh=sheetEl(); if (!sh) return;
+    const dy=e.touches[0].clientY - y0;
+    if (Math.abs(dy)>3){ moved=true; SHEET_DRAGGED=true; }
+    if (e.cancelable) e.preventDefault();
+    if (kind==="map"){
+      const h=Math.max(40, Math.min(SHEET_H.full, base - dy));
+      sh.style.height = h+"px";
+    } else {
+      sh.style.transform = `translateY(${Math.max(0, dy)}px)`;
+    }
+  }, {passive:false});
+  const end=()=>{
+    if (!SHEET || !kind) return;
+    const sh=sheetEl();
+    const w=wrap();
+    if (sh){ sh.classList.remove("dragging"); }
+    if (w) w.classList.remove("dragging");
+    if (!sh || !moved){ kind=null; return; }
+    if (kind==="map"){
+      const h=sh.offsetHeight;
+      sh.style.height="";                       // 交還給 CSS 的 `--sheeth`
+      kind=null;
+      if (h < SHEET_H.peek*0.55){ closeSheet(); return; }
+      setSheetState(h > (SHEET_H.peek + SHEET_H.full)/2 ? "full" : "peek");
+    } else {
+      const dy=parseFloat((sh.style.transform.match(/-?[\d.]+/)||[0])[0]) || 0;
+      sh.style.transform="";
+      kind=null;
+      if (dy > sh.offsetHeight/3) closeSheet();
+    }
+  };
+  grab.addEventListener("touchend", end, {passive:true});
+  grab.addEventListener("touchcancel", end, {passive:true});
+})();
+
+function tripBackBar(t){
+  const bar=document.createElement("div"); bar.className="tdback";
+  const b=document.createElement("button");
+  b.type="button"; b.className="tdbk";
+  b.title="返回行程清單";
+  b.setAttribute("aria-label","返回行程清單");
+  b.innerHTML='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.5 8h-9M7 3.5 2.5 8 7 12.5"/></svg>';
+  b.onclick=backToTripList;
+  const n=document.createElement("div"); n.className="tdbt";
+  n.textContent=(t&&t.name)||"";
+  n.title=(t&&t.name)||"";
+  bar.append(b,n);
+  return bar;
+}
+
+function backToTripList(){
+  if (!S.trip) return;
+  if (HSTEP>0){ history.back(); return; }
+  selectTrip(S.trip);
+}
 function renderPanel(){
   const panel=document.getElementById("panel");
   const two=isTwoLane();
@@ -4741,6 +4999,11 @@ function renderPanel(){
 
   if (TRIPS.length){
 
+    if (mpageKey()==="itin"){
+      tripHost.appendChild(tripBackBar(TRIP_BY_ID[S.trip]));
+      tripHost.appendChild(renderItinerary());
+    } else {
+
     
 
     const t = S.trip && TRIP_BY_ID[S.trip];
@@ -4785,6 +5048,7 @@ function renderPanel(){
         itinSub(t)));
       if (S.itinOpen) tripHost.appendChild(renderItinerary());
     }
+    }   // ← 手機全頁詳細行程那一支的 else 收在這裡（見這一段開頭）
   }
 
   if (TRIPS.length) expHost.appendChild(renderTripsMini());
@@ -4968,7 +5232,11 @@ document.getElementById("panel").addEventListener("click", e=>{
 }, true);
 
 function select(id, keepBase, inPlace){
-  if (S.sel===id){ S.sel=null; S.near=0; render(); return; }
+  if (S.sel===id){
+
+    if (SHEET==="mplace"){ closeSheet(); return; }
+    S.sel=null; S.near=0; render(); return;
+  }
 
   INLINE=null;
   if (!keepBase) closeBaseDetail();
@@ -4982,6 +5250,8 @@ function select(id, keepBase, inPlace){
       panTo(p);
     }
   }
+
+  if (isMapOnly()) setSheet("mplace");
   if (!isMapOnly()){
 
     unfoldLane("exp");
@@ -5063,10 +5333,13 @@ function render(){
   syncReset();
 
   syncMSearch(); syncNavDots();
-  draw(); renderPanel(); renderMapBtns(); renderMapCard(); updateTotop();
+
+  draw(); renderPanel(); renderMapBtns(); renderMapCond(); updateTotop();
 
   renderSheet();
   syncHash();
+
+  flushSheetPush();
 }
 
 document.querySelectorAll("#views button").forEach(b=>{
