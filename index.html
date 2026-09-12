@@ -283,7 +283,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .panel{
 
-  --l1h:38px; --l2h:30px;
+  --l1h:38px;
   background:var(--panel); border-top:1px solid var(--line);
   flex:0 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
@@ -961,6 +961,10 @@ html.sheeton .panel{overflow:hidden}
 
 .ghead .rbar{flex:none; width:3px; height:17px; border-radius:2px; background:var(--dc,var(--ink3))}
 
+.ghead.stuck::before{
+  content:""; position:absolute; left:-2px; top:50%; margin-top:-4px; width:8px; height:8px;
+  border-radius:2px; background:var(--dc,var(--ink3));
+}
 .ghead .gnm{
   flex:1; min-width:0; font-size:14px; font-weight:600; color:var(--ink);
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
@@ -971,25 +975,21 @@ html.sheeton .panel{overflow:hidden}
 .ghead[aria-expanded=true]{margin-bottom:0; box-shadow:none}
 
 .ghead{
-  position:sticky; top:calc(var(--l1h) * 2 + var(--l2h)); z-index:398; min-height:var(--l1h);
+  position:sticky; top:calc(var(--l1h) * 2); z-index:399; min-height:var(--l1h);
   border-bottom:0; box-shadow:inset 0 -1px 0 var(--line2);
   background:var(--panel); background-image:var(--paper-panel);
 }
 
-.ghead.tripgrp{top:calc(var(--l1h) * 2)}
-
 .ghead.stuck{border-radius:0}
 
 .results > .corr > .tcath{
-  position:sticky; top:calc(var(--l1h) * 2); z-index:399; min-height:var(--l2h);
+  position:sticky; top:calc(var(--l1h) * 2); z-index:398; min-height:30px;
   background:var(--panel); background-image:var(--paper-panel);
   box-shadow:inset 0 -1px 0 var(--line2);
 }
 
 @media (min-width:900px) and (max-width:1279px) and (min-height:560px){
-  .results > .corr > .tcath{top:var(--l1h)}
-  .ghead{top:calc(var(--l1h) + var(--l2h))}
-  .ghead.tripgrp{top:var(--l1h)}
+  .results > .corr > .tcath, .ghead{top:var(--l1h)}
 }
 
 .gintro{
@@ -5357,15 +5357,12 @@ function renderPanel(){
   const stickyH=el=>(el && getComputedStyle(el).position==="sticky") ? el.offsetHeight : 0;
   const boxTop=box.getBoundingClientRect().top + box.clientTop;
   const layersH=[...box.children].reduce((a,el)=>a+stickyH(el), 0);
+
   const stopAt=el=>{
     let h=boxTop+layersH;
     if (!el || !el.classList) return h;
-    const isGhead=el.classList.contains("ghead"), isTcath=el.classList.contains("tcath"),
-          isRow=!isGhead && !isTcath && !el.classList.contains("results");
-    if (!isTcath){
-      const corr=el.closest(".corr");
-      if (corr) h+=stickyH(corr.querySelector(":scope > .tcath"));
-    }
+    const isRow=!el.classList.contains("ghead") && !el.classList.contains("tcath")
+             && !el.classList.contains("results");
     if (isRow){
       const bg=el.closest(".bgroup");
       if (bg) h+=stickyH(bg.querySelector(":scope > .ghead"));
