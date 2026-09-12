@@ -163,8 +163,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 #qreset, .qmore,
 
 .mfbtn,
-.mapbtns button,
-.tags .tag{
+.mapbtns button{
   font-size:12.5px; line-height:1.5; padding:3px 10px; border-radius:999px;
   background:var(--chip-bg); border:1px solid var(--line); color:var(--ink2);
 }
@@ -1074,7 +1073,8 @@ html.sheeton .panel{overflow:hidden}
 .tags{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 9px}
 
 .tags .tag{
-  white-space:nowrap;
+  white-space:nowrap; font-size:12px; padding:2px 7px; line-height:1.5; border-radius:999px;
+  background:var(--chip-bg); border:1px solid var(--line); color:var(--ink2);
 }
 
 .mapcard .tags{margin:8px 0 0}
@@ -1280,10 +1280,13 @@ html.sheeton .panel{overflow:hidden}
   margin:0 0 10px 5px; padding-top:14px;
 }
 .tdfeel .fpill{
-  display:inline-flex; align-items:center;
+  display:inline-flex; align-items:center; cursor:pointer; font-family:inherit;
   border:1px solid var(--line); background:var(--chip-bg); border-radius:999px;
-  padding:2px 7px; font-size:12px; line-height:1.5; color:var(--ink2);
+  padding:2px 7px; font-size:12px; line-height:1.5; color:var(--ink2); position:relative;
 }
+
+.tdfeel .fpill[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:600}
+.tdfeel .fpill::after{content:""; position:absolute; left:0; right:0; top:50%; transform:translateY(-50%); height:40px}
 .tdfeel .fx{font-size:11px; color:var(--ink3)}
 
 .tleg{
@@ -1709,8 +1712,9 @@ button.tnight:hover .chev{color:var(--accent)}
 
 
 
+
   .clear, .ghost, #sort, .sortlbl, .wider, .mapbtns button,
-  .shfoot .shbtn, .qmore{min-height:32px; position:relative}
+  .shfoot .shbtn, .qmore, .acts a, .acts button, .tdhead .tdnav{min-height:32px; position:relative}
   .clear::after, .ghost::after, .wider::after, .mapbtns button::after,
   .shfoot .shbtn::after, .qmore::after{
     content:""; position:absolute; left:0; right:0; top:50%;
@@ -1724,7 +1728,7 @@ button.tnight:hover .chev{color:var(--accent)}
   .mapcard .acts a::after, .mapcard .acts button::after,
   .tdhead .tdnav::after{
     content:""; position:absolute; left:0; right:0; top:50%;
-    transform:translateY(-50%); height:40px;
+    transform:translateY(-50%); height:44px;
   }
 
   .tdhead .tdnav.off{display:inline; min-height:0}
@@ -4282,8 +4286,12 @@ function renderItinerary(){
         const x = document.createElement("span"); x.className = "fx";
         x.textContent = "×"; fw.appendChild(x);
       }
-      const s = document.createElement("span"); s.className = "fpill";
-      s.textContent = w; fw.appendChild(s);
+
+      const s = document.createElement("button"); s.type = "button"; s.className = "fpill btn-act";
+      s.textContent = w; s.setAttribute("aria-pressed", S.fFeel.has(w));
+      s.title = S.fFeel.has(w) ? "從行程篩選移除「"+w+"」" : "把「"+w+"」加進行程篩選";
+      s.onclick = e => { e.stopPropagation(); toggleTripFilter(S.fFeel, w); };
+      fw.appendChild(s);
     });
     box.appendChild(fw);
   }
