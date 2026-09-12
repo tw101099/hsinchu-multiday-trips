@@ -942,6 +942,8 @@ html.sheeton .panel{overflow:hidden}
   background:var(--panel); background-image:var(--paper-panel);
 }
 
+.ghead.stuck{border-radius:0}
+
 @media (min-width:900px) and (max-width:1279px) and (min-height:560px){
   .ghead{top:var(--l1h)}
 }
@@ -4043,7 +4045,7 @@ function alertBlock(susp, text){
 function tripHintRow(){
   const h=document.createElement("div"); h.className="tfhint";
   const t=document.createElement("span"); t.className="ht";
-  t.textContent="選擇天數，再加車程或體力，篩選剩符合的行程。";
+  t.textContent="按「篩選」挑天數、車程、體力或風格，再從清單挑一趟。";
   const x=document.createElement("button");
   x.type="button"; x.className="hx"; x.textContent="×";
   x.title="不再顯示這則提示";
@@ -5273,7 +5275,7 @@ function renderPanel(){
   const stickyH=el=>(el && getComputedStyle(el).position==="sticky") ? el.offsetHeight : 0;
   const boxTop=box.getBoundingClientRect().top + box.clientTop;
   const layersH=[...box.children].reduce((a,el)=>a+stickyH(el), 0);
-  const stopAt=withGroup=>boxTop+layersH+(withGroup ? stickyH(box.querySelector(".results .ghead")) : 0)+10;
+  const stopAt=withGroup=>boxTop+layersH+(withGroup ? stickyH(box.querySelector(".results .ghead"))+10 : 0);
 
   const padEl=document.createElement("div");
   padEl.className="scrollpad"; padEl.setAttribute("aria-hidden","true");
@@ -5495,11 +5497,12 @@ function syncStuck(box){
 
   const bt=box.getBoundingClientRect().top + box.clientTop; let last=null;
 
+
   [...box.children, ...box.querySelectorAll(".results .ghead")].forEach(el=>{
-    el.classList.remove("stuck-last");
+    el.classList.remove("stuck-last", "stuck");
     const cs=getComputedStyle(el); if (cs.position!=="sticky") return;
     const top=parseFloat(cs.top)||0; const r=el.getBoundingClientRect();
-    if (r.top <= bt+top+0.5 && r.height>0) last=el;
+    if (r.top <= bt+top+0.5 && r.height>0){ el.classList.add("stuck"); last=el; }
   });
   if (last) last.classList.add("stuck-last");
 }
@@ -5666,6 +5669,13 @@ save();
       if (t && typeof t.click === "function") t.click();
     }
   }, {passive:false});
+})();
+
+(function(){
+  ["app", "sheetwrap"].forEach(function(id){
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("click", function(){}, {passive:true});
+  });
 })();
 </script>
 <script>
