@@ -5506,11 +5506,12 @@ document.getElementById("panel").addEventListener("scroll", ()=>syncStuck(docume
 
 function syncStuck(box){
   if (!box) return;
-  const bt=box.getBoundingClientRect().top; let last=null;
+
+  const bt=box.getBoundingClientRect().top + box.clientTop; let last=null;
   [...box.children].forEach(el=>{
+    el.classList.remove("stuck-last");
     const cs=getComputedStyle(el); if (cs.position!=="sticky") return;
     const top=parseFloat(cs.top)||0; const r=el.getBoundingClientRect();
-    el.classList.remove("stuck-last");
     if (r.top <= bt+top+0.5 && r.height>0) last=el;
   });
   if (last) last.classList.add("stuck-last");
