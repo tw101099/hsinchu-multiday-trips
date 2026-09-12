@@ -25,6 +25,8 @@
 
   --chip-bg:#fdfbf6;
 
+  --card-bg:#ffffff;
+
   --hover-bg:#f6f2e9;
   --ink:#2a241e; --ink2:#665b4f; --ink3:#736a5d;
   --section-title-color:var(--ink2);
@@ -67,6 +69,7 @@
     --bg:#1c1a17; --panel:#252220; --sunk:#2d2926;
 
     --chip-bg:#3a352f;
+    --card-bg:#3a352f;   
     --hover-bg:#2d2926;
     --ink:#ede4d3; --ink2:#b3a794; --ink3:#978c79;
     --line:#514840; --line2:#65594e;   
@@ -92,6 +95,7 @@
 :root[data-theme="dark"]{
     --bg:#1c1a17; --panel:#252220; --sunk:#2d2926;
     --chip-bg:#3a352f;   
+    --card-bg:#3a352f;   
     --hover-bg:#2d2926;
     --ink:#ede4d3; --ink2:#b3a794; --ink3:#978c79;
     --line:#514840; --line2:#65594e;   
@@ -276,7 +280,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .panel{
 
-  --l1h:38px;
+  --l1h:38px; --l2h:30px;
   background:var(--panel); border-top:1px solid var(--line);
   flex:0 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
@@ -495,18 +499,19 @@ button{font:inherit; color:inherit; cursor:pointer}
   #app[data-mtab=place] .sec.basesec{
     position:sticky; background:var(--panel); background-image:var(--paper-panel);
   }
-  #app[data-mtab=trip] .sec.sectrips{top:0; z-index:400}
+
+  #app[data-mtab=trip] .sec.sectrips{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--line2)}
 
   #app[data-mtab=trip] .sec.secitin{
     top:calc(var(--l1h) * 2); z-index:399;
     color:var(--section-title-color, var(--ink));
-    box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
+    box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line2);
   }
 
-  #app[data-mtab=trip] .qtrips + .sec.secitin{box-shadow:inset 0 -1px 0 var(--line)}
+  #app[data-mtab=trip] .qtrips + .sec.secitin{box-shadow:inset 0 -1px 0 var(--line2)}
   #app[data-mtab=trip] .sec.secitin .nm,
   #app[data-mtab=trip] .sec.secitin .ssub{color:inherit}
-  #app[data-mtab=place] .sec.basesec{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--line)}
+  #app[data-mtab=place] .sec.basesec{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--line2)}
 
 
   #app[data-mtab=map] .panel{display:none; border-top:0}
@@ -678,16 +683,18 @@ html.sheeton .panel{overflow:hidden}
   .panel.twolane .lane-explore{flex:1 1 auto; min-width:0}
 
 
+
   .panel.twolane .lane-trip > .sec.toplevel:first-child{
     position:sticky; top:0; z-index:400; background:var(--panel);
+    box-shadow:inset 0 -1px 0 var(--line2);
   }
   .panel.twolane .lane-trip > .sec.secitin{
     position:sticky; top:calc(var(--l1h) * 2); z-index:399; background:var(--panel);
     color:var(--section-title-color, var(--ink));
-    box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
+    box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line2);
   }
 
-  .panel.twolane .lane-trip > .qtrips + .sec.secitin{box-shadow:inset 0 -1px 0 var(--line)}
+  .panel.twolane .lane-trip > .qtrips + .sec.secitin{box-shadow:inset 0 -1px 0 var(--line2)}
   .panel.twolane .lane-trip > .sec.secitin .nm,
   .panel.twolane .lane-trip > .sec.secitin .ssub{color:inherit}
 
@@ -697,7 +704,7 @@ html.sheeton .panel{overflow:hidden}
 
   .panel.twolane .lane-explore > .sec.basesec{
     position:sticky; top:0; z-index:400; background:var(--panel);
-    box-shadow:inset 0 -1px 0 var(--line);
+    box-shadow:inset 0 -1px 0 var(--line2);   
   }
 
 
@@ -749,7 +756,7 @@ html.sheeton .panel{overflow:hidden}
 .fbar{
   position:sticky; top:var(--l1h); z-index:400; display:flex; align-items:center; gap:8px;
   padding:4px 14px; min-height:var(--l1h); background:var(--panel);
-  background-image:var(--paper-panel); box-shadow:inset 0 -1px 0 var(--line);
+  background-image:var(--paper-panel); box-shadow:inset 0 -1px 0 var(--line2);
 }
 
 .fsum{
@@ -759,6 +766,8 @@ html.sheeton .panel{overflow:hidden}
 .fsum .ssico{display:inline-flex; align-items:center; gap:3px}
 .fsum .ic{width:15px; height:15px; margin-right:0}
 .fsum .ftxt{overflow:hidden; text-overflow:ellipsis}
+
+.fnum{flex:none; font-size:12.5px; color:var(--ink3); white-space:nowrap}
 
 @media (min-width:900px) and (max-width:1279px) and (min-height:560px){
   .fbar{top:0}
@@ -818,7 +827,7 @@ html.sheeton .panel{overflow:hidden}
 
 .sec.toplevel{position:relative}
 
-.stuck-last{box-shadow:inset 0 -1px 0 var(--line), 0 2px 4px rgb(60 45 30 / 6%) !important}
+.stuck-last{box-shadow:inset 0 -1px 0 var(--line2), 0 2px 4px rgb(60 45 30 / 6%) !important}
 .sec.toplevel::after{content:""; position:absolute; left:0; right:0; bottom:-1px;
                      height:1px; background:var(--line); z-index:1; pointer-events:none}
 .sec .chev{margin-left:auto}
@@ -881,13 +890,18 @@ html.sheeton .panel{overflow:hidden}
 .scrollpad{height:0; flex:none}
 
 .results .tcath{margin:16px 0 2px; padding:5px 2px}
-.results .tcath:first-child{margin-top:4px}
 
-.results > .ghead, .results > .gintro, .results > .blodge{margin-left:4px}
+.results > .corr:first-child > .tcath{margin-top:4px}
 
-.results > .ghead, .results > .gintro, .results > .blodge{width:calc(100% - 4px)}
+.results > .corr > .bgroup > .ghead,
+.results > .corr > .bgroup > .gintro,
+.results > .corr > .bgroup > .blodge{margin-left:4px}
 
-.results > .grp{margin:0 0 0 17px; padding-left:11px; border-left:1px solid var(--line)}
+.results > .corr > .bgroup > .ghead,
+.results > .corr > .bgroup > .gintro,
+.results > .corr > .bgroup > .blodge{width:calc(100% - 4px)}
+
+.results > .corr > .bgroup > .grp{margin:0 0 0 17px; padding-left:11px; border-left:1px solid var(--line)}
 
 .qbh{display:flex; align-items:center; gap:6px; margin:4px 0 5px; padding:5px 2px;
      font-size:12.5px; font-weight:600; color:var(--ink2); letter-spacing:.04em}
@@ -926,7 +940,7 @@ html.sheeton .panel{overflow:hidden}
 
 .rrow .rbar.qbar{background:var(--accent)}
 
-.results > .grp > .row{content-visibility:auto; contain-intrinsic-size:auto 43.4px}
+.results > .corr > .bgroup > .grp > .row{content-visibility:auto; contain-intrinsic-size:auto 43.4px}
 .results > .detail{margin-left:17px}
 
 .ghead.tripgrp{cursor:default}
@@ -943,10 +957,6 @@ html.sheeton .panel{overflow:hidden}
 
 .ghead .rbar{flex:none; width:3px; height:17px; border-radius:2px; background:var(--dc,var(--ink3))}
 
-.ghead.stuck::before{
-  content:""; position:absolute; left:-2px; top:50%; margin-top:-4px; width:8px; height:8px;
-  border-radius:2px; background:var(--dc,var(--ink3));
-}
 .ghead .gnm{
   flex:1; min-width:0; font-size:14px; font-weight:600; color:var(--ink);
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
@@ -957,15 +967,25 @@ html.sheeton .panel{overflow:hidden}
 .ghead[aria-expanded=true]{margin-bottom:0; box-shadow:none}
 
 .ghead{
-  position:sticky; top:calc(var(--l1h) * 2); z-index:398; min-height:var(--l1h);
-  border-bottom:0; box-shadow:inset 0 -1px 0 var(--line);
+  position:sticky; top:calc(var(--l1h) * 2 + var(--l2h)); z-index:398; min-height:var(--l1h);
+  border-bottom:0; box-shadow:inset 0 -1px 0 var(--line2);
   background:var(--panel); background-image:var(--paper-panel);
 }
 
+.ghead.tripgrp{top:calc(var(--l1h) * 2)}
+
 .ghead.stuck{border-radius:0}
 
+.results > .corr > .tcath{
+  position:sticky; top:calc(var(--l1h) * 2); z-index:399; min-height:var(--l2h);
+  background:var(--panel); background-image:var(--paper-panel);
+  box-shadow:inset 0 -1px 0 var(--line2);
+}
+
 @media (min-width:900px) and (max-width:1279px) and (min-height:560px){
-  .ghead{top:var(--l1h)}
+  .results > .corr > .tcath{top:var(--l1h)}
+  .ghead{top:calc(var(--l1h) + var(--l2h))}
+  .ghead.tripgrp{top:var(--l1h)}
 }
 
 .gintro{
@@ -1031,10 +1051,10 @@ html.sheeton .panel{overflow:hidden}
 .main.nomap .results > .blodge,
 
 .main.nomap .results > .empty, .main.nomap .results > .qglobal,
-.main.nomap .results .tcath{grid-column:1/-1}
+.main.nomap .results > .corr{grid-column:1/-1}
 
-.main.nomap .results > .grp{
-  grid-column:1/-1; display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+.main.nomap .results > .corr > .bgroup > .grp{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
   gap:0 14px; align-items:start;
 }
 
@@ -1052,8 +1072,8 @@ html.sheeton .panel{overflow:hidden}
 }
 .place-card.timeline{width:calc(100% - 5px); margin-left:5px}
 
-.results > .grp > .place-card{margin-left:0; width:100%}
-.results > .grp > .place-card > .row{margin-left:0; width:100%}
+.results > .corr > .bgroup > .grp > .place-card{margin-left:-12px; width:calc(100% + 12px)}
+.results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%}
 .place-card > .place-summary{
   width:100%; margin:0; border:0; border-radius:0; background:transparent;
 }
@@ -1301,7 +1321,8 @@ html.sheeton .panel{overflow:hidden}
 .tstop{
   display:flex; width:100%; align-items:flex-start; gap:8px; text-align:left;
   margin-left:5px; padding:7px 9px; border:1px solid var(--line); border-radius:var(--r);
-  background:var(--chip-bg); transition:border-color .12s, background .12s;
+  background:var(--card-bg); background-image:var(--paper-panel);
+  transition:border-color .12s, background .12s;
 }
 .tstop:hover{border-color:var(--line2)}   
 
@@ -1314,8 +1335,9 @@ html.sheeton .panel{overflow:hidden}
 
 .tnight{
   display:flex; align-items:center; gap:7px; width:100%; text-align:left;
-  margin:9px 0 0 5px; padding:6px 10px; border:1px solid var(--line); border-radius:8px;
-  background:var(--chip-bg); font:inherit; font-size:12.5px; color:var(--ink2);
+  margin:0 0 0 5px; padding:6px 10px; border:1px solid var(--line); border-radius:8px;
+  background:var(--card-bg); background-image:var(--paper-panel);
+  font:inherit; font-size:12.5px; color:var(--ink2);
 }
 .tnight b{color:var(--ink); font-weight:600}
 
@@ -3126,7 +3148,7 @@ function tripSub(t){
   if (!t) return null;
   const r = CR[t.code];
   const s = `${t.code||""} ${r ? r.name : ""}`.trim();
-  return s ? {text:s, title:s, afterCount:true} : null;
+  return s ? {text:s, title:s} : null;
 }
 function itinSub(t){
   const s = (t && t.one_line) || "";
@@ -3142,8 +3164,7 @@ function section(label, count, open, fn, cls, sub){
                   `${subInner}</span>`;
   const nHtml = count!=null ? `<span class="n">${count}</span>` : "";
 
-  b.innerHTML=`${label}` +
-              ((sub && sub.afterCount) ? nHtml+subHtml : subHtml+nHtml) +
+  b.innerHTML=`${label}` + subHtml + nHtml +
               `<svg class="chev" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>`;
   b.onclick=fn; return b;
 }
@@ -3381,12 +3402,9 @@ function renderFilterBar(){
   const sum=document.createElement("div"); sum.className="fsum";
   const ts=themeSub();
   if (ts){ sum.innerHTML=ts.html; sum.title=`主題：${ts.title}`; }
-  else {
-    const n=shown().length;
-    sum.innerHTML=`<span class="num">${anyFilter() ? `${n}/${PLACES.length}` : PLACES.length}</span> 個`;
-    sum.title=`顯示 ${n}／${PLACES.length} 個點`;
-  }
   bar.appendChild(sum);
+  const n=shown().length;
+  bar.appendChild(barNum(n, PLACES.length, anyFilter(), "個", `顯示 ${n}／${PLACES.length} 個點`));
 
   bar.appendChild(renderSort());
   if (anyFilter()){
@@ -3397,6 +3415,12 @@ function renderFilterBar(){
   return bar;
 }
 
+function barNum(n, total, filtered, unit, title){
+  const el=document.createElement("span"); el.className="fnum";
+  el.innerHTML=`<span class="num">${filtered ? `${n}/${total}` : total}</span> ${unit}`;
+  el.title=title; return el;
+}
+
 function renderTripBar(){
   const bar=document.createElement("div"); bar.className="fbar tbar";
   const sum=document.createElement("div"); sum.className="fsum";
@@ -3405,12 +3429,10 @@ function renderTripBar(){
     const txt = (t.name||"").trim();
     sum.innerHTML=`<span class="ftxt">${esc(txt)}</span>`;
     sum.title = txt;
-  } else {
-    const n=tripCount();
-    sum.innerHTML=`<span class="num">${anyTripFilter() ? `${n}/${TRIPS.length}` : TRIPS.length}</span> 條`;
-    sum.title=`顯示 ${n}／${TRIPS.length} 條行程`;
   }
   bar.appendChild(sum);
+  const n=tripCount();
+  bar.appendChild(barNum(n, TRIPS.length, anyTripFilter(), "條", `顯示 ${n}／${TRIPS.length} 條行程`));
   if (anyTripFilter() || S.trip){
     const c=document.createElement("button"); c.type="button"; c.className="clear btn-act"; c.textContent="清除";
     c.title = S.trip ? "清除行程篩選並關閉行程，返回行程全覽" : "清除行程篩選";
@@ -4723,6 +4745,9 @@ function renderList(){
 
   const grpBox = () => { const d=document.createElement("div"); d.className="grp"; return d; };
 
+  const corrBox = () => { const d=document.createElement("div"); d.className="corr"; return d; };
+  const bgroupBox = () => { const d=document.createElement("div"); d.className="bgroup"; return d; };
+
   const dupKey = p => tripIds.has(p.id) ? `g:${S.trip}:${p.id}` : null;
   if (tripRows.length){
     const t=TRIP_BY_ID[S.trip]||{};
@@ -4734,7 +4759,8 @@ function renderList(){
       `<span class="gnm">這趟行程</span>` +
       `<span class="num">${tripRows.length}</span>`;
     h.title = `${t.code||""} ${t.name||""}`.trim();
-    wrap.appendChild(h);
+    const tc=corrBox(), tb=bgroupBox();
+    tb.appendChild(h);
     const tg=grpBox();
     tripRows.sort(cmp).forEach(p=>{
       const summary=rowFor(p);
@@ -4742,14 +4768,16 @@ function renderList(){
         ? placeCard(summary, renderDetail(p))
         : summary);
     });
-    wrap.appendChild(tg);
+    tb.appendChild(tg); tc.appendChild(tb); wrap.appendChild(tc);
   }
   const g={}; rest.forEach(p=>(g[p.base]=g[p.base]||[]).push(p));
 
   if (BASE_SEL && BS[BASE_SEL] && !g[BASE_SEL]) g[BASE_SEL]=[];
 
-  const baseGroup = r => {
+
+  const baseGroup = (r, host) => {
     const open=BASE_SEL===r.id;
+    const bg=bgroupBox(); host.appendChild(bg);
     const h=document.createElement("button");
     h.className="ghead row-toggle"; h.setAttribute("aria-expanded", open);
 
@@ -4765,14 +4793,14 @@ function renderList(){
     h.onclick=()=>selectBase(r.id, true);
 
     hoverWire(h, "base", r.id);
-    wrap.appendChild(h);
+    bg.appendChild(h);
 
 
-    if (open) wrap.appendChild(baseIntro(r));
+    if (open) bg.appendChild(baseIntro(r));
 
     if (BASE_SEL===r.id){
       const bx=baseLodgeBox(r);
-      if (bx) wrap.appendChild(bx);
+      if (bx) bg.appendChild(bx);
     }
     if (!g[r.id].length) return;
     const gb=grpBox();
@@ -4784,17 +4812,19 @@ function renderList(){
         ? placeCard(summary, renderDetail(p))
         : summary);
     });
-    wrap.appendChild(gb);
+    bg.appendChild(gb);
   };
 
   const catGroup = (label, color, rows) => {
     if (!rows.length) return;
+    const cw=corrBox();
     const h=document.createElement("div"); h.className="tcath";
     h.style.setProperty("--cc", color);
     h.innerHTML=`<span class="nm">${esc(label)}</span>` +
                 `<span class="n">${rows.reduce((n,r)=>n+g[r.id].length,0)}</span>`;
-    wrap.appendChild(h);
-    rows.forEach(baseGroup);
+    cw.appendChild(h);
+    rows.forEach(r=>baseGroup(r, cw));
+    wrap.appendChild(cw);
   };
   CATS.forEach(c=>catGroup(c.name, catColor(c), BASES.filter(b=>b.cat===c.id && g[b.id])));
   catGroup("未分類", catColor(null), BASES.filter(b=>!CT[b.cat] && g[b.id]));
@@ -5244,8 +5274,7 @@ function renderPanel(){
     const t = S.trip && TRIP_BY_ID[S.trip];
 
 
-    tripHost.appendChild(section("推薦行程",
-      `${tripCount()}${anyTripFilter() ? `/${TRIPS.length}` : ""} 條`, S.tripsOpen,
+    tripHost.appendChild(section("推薦行程", null, S.tripsOpen,
       ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel deskonly sectrips",
       tripSub(t)));
 
@@ -5316,10 +5345,26 @@ function renderPanel(){
 
 
 
+
   const stickyH=el=>(el && getComputedStyle(el).position==="sticky") ? el.offsetHeight : 0;
   const boxTop=box.getBoundingClientRect().top + box.clientTop;
   const layersH=[...box.children].reduce((a,el)=>a+stickyH(el), 0);
-  const stopAt=withGroup=>boxTop+layersH+(withGroup ? stickyH(box.querySelector(".results .ghead"))+10 : 0);
+  const stopAt=el=>{
+    let h=boxTop+layersH;
+    if (!el || !el.classList) return h;
+    const isGhead=el.classList.contains("ghead"), isTcath=el.classList.contains("tcath"),
+          isRow=!isGhead && !isTcath && !el.classList.contains("results");
+    if (!isTcath){
+      const corr=el.closest(".corr");
+      if (corr) h+=stickyH(corr.querySelector(":scope > .tcath"));
+    }
+    if (isRow){
+      const bg=el.closest(".bgroup");
+      if (bg) h+=stickyH(bg.querySelector(":scope > .ghead"));
+      h+=10;
+    }
+    return h;
+  };
 
   const padEl=document.createElement("div");
   padEl.className="scrollpad"; padEl.setAttribute("aria-hidden","true");
@@ -5357,7 +5402,8 @@ function renderPanel(){
   SCROLL_TRIPTOP=false;
 
   if (SCROLL_BASE){
-    anchorTo(box.querySelector(`.ghead[data-bid="${SCROLL_BASE}"]`), stopAt(false));
+    const gh=box.querySelector(`.ghead[data-bid="${SCROLL_BASE}"]`);
+    anchorTo(gh, stopAt(gh));
     SCROLL_BASE=null;
   }
 
@@ -5372,8 +5418,8 @@ function renderPanel(){
 
   if (SCROLL_LIST){
     const grp = two ? box.querySelector(".results .ghead.tripgrp") : null;
-    if (grp) anchorTo(grp, stopAt(false));
-    else if (two) anchorTo(box.querySelector(".results"), stopAt(false));
+    if (grp) anchorTo(grp, stopAt(grp));
+    else if (two){ const rs=box.querySelector(".results"); anchorTo(rs, stopAt(rs)); }
     else {
       const sec=box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin");
 
@@ -5397,9 +5443,9 @@ function renderPanel(){
 
 
 
-    const el=box.querySelector(`.results > .grp > .place-card > .row[data-id="${SCROLL_TO}"]`)
-          || box.querySelector(`.results > .grp > .row[data-id="${SCROLL_TO}"]`);
-    if (el) anchorTo(el, stopAt(true));
+    const el=box.querySelector(`.results > .corr > .bgroup > .grp > .place-card > .row[data-id="${SCROLL_TO}"]`)
+          || box.querySelector(`.results > .corr > .bgroup > .grp > .row[data-id="${SCROLL_TO}"]`);
+    if (el) anchorTo(el, stopAt(el));
     else { box.scrollTop=0; ANCHORED=true; }
     SCROLL_TO=null;
   }
@@ -5415,7 +5461,7 @@ function renderPanel(){
   if (SCROLL_NEAR){
     const el=box.querySelector(SCROLL_NEAR);
     if (el){
-      const floorY=stopAt(!el.classList.contains("ghead")), ceilY=box.getBoundingClientRect().bottom;
+      const floorY=stopAt(el), ceilY=box.getBoundingClientRect().bottom;
       const r=el.getBoundingClientRect();
 
       const nx=el.nextElementSibling;
@@ -5486,7 +5532,7 @@ function select(id, keepBase, inPlace){
 
     gotoTab("place");
 
-    if (inPlace) SCROLL_NEAR=`.results > .grp > .place-card > .row[data-id="${id}"], .results > .grp > .row[data-id="${id}"]`;
+    if (inPlace) SCROLL_NEAR=`.results > .corr > .bgroup > .grp > .place-card > .row[data-id="${id}"], .results > .corr > .bgroup > .grp > .row[data-id="${id}"]`;
     else SCROLL_TO=id;
   }
   render();
@@ -5543,11 +5589,16 @@ function syncStuck(box){
   const bt=box.getBoundingClientRect().top + box.clientTop; let last=null;
 
 
-  [...box.children, ...box.querySelectorAll(".results .ghead")].forEach(el=>{
+
+  let lastB=-Infinity;
+  [...box.children, ...box.querySelectorAll(".results .tcath, .results .ghead")].forEach(el=>{
     el.classList.remove("stuck-last", "stuck");
     const cs=getComputedStyle(el); if (cs.position!=="sticky") return;
     const top=parseFloat(cs.top)||0; const r=el.getBoundingClientRect();
-    if (r.top <= bt+top+0.5 && r.height>0){ el.classList.add("stuck"); last=el; }
+    if (r.top <= bt+top+0.5 && r.height>0){
+      el.classList.add("stuck");
+      if (r.top >= bt+top-0.5 && r.bottom >= lastB){ last=el; lastB=r.bottom; }
+    }
   });
   if (last) last.classList.add("stuck-last");
 }
