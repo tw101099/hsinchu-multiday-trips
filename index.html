@@ -275,6 +275,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 .main{flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden}
 
 .panel{
+
+  --l1h:38px;
   background:var(--panel); border-top:1px solid var(--line);
   flex:0 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
@@ -426,7 +428,6 @@ button{font:inherit; color:inherit; cursor:pointer}
 
   .main:not(.nomap) .sec.deskonly{display:none}
 
-  .main:not(.nomap) .sechead{display:none}
   .main:not(.nomap) .tpickmini{display:block}
   .main:not(.nomap) .stage{min-height:280px}
 
@@ -465,21 +466,19 @@ button{font:inherit; color:inherit; cursor:pointer}
 
   .panel{padding-bottom:0}
 
-  #app[data-mtab=place] .sechead.trhead,
   #app[data-mtab=place] .sec.sectrips,
-  #app[data-mtab=place] .qtrips,
 
-  #app[data-mtab=place] .mf-trip,
+  #app[data-mtab=place] .fbar.tbar,
+  #app[data-mtab=place] .qtrips,
   #app[data-mtab=place] .tripbox,
   #app[data-mtab=place] .sec.secitin{display:none}
   #app[data-mtab=trip] .sec.basesec,
   #app[data-mtab=trip] .qbases,
   #app[data-mtab=trip] .rlist,
-  #app[data-mtab=trip] .sec.seclist,
 
-  #app[data-mtab=trip] .mf-place,
   #app[data-mtab=trip] .lfilters,
-  #app[data-mtab=trip] .fbar,
+
+  #app[data-mtab=trip] .fbar:not(.tbar),
   #app[data-mtab=trip] .results,
   #app[data-mtab=trip] .legend,
   #app[data-mtab=trip] .sec.secfoot,
@@ -491,15 +490,15 @@ button{font:inherit; color:inherit; cursor:pointer}
   .panel{--l1h:48px}
   .sec.toplevel{min-height:var(--l1h)}
 
-  #app[data-mtab=trip] .sechead.trhead,
+  #app[data-mtab=trip] .sec.sectrips,
   #app[data-mtab=trip] .sec.secitin,
-  #app[data-mtab=place] .sec.basesec,
-  #app[data-mtab=place] .sec.seclist{
+  #app[data-mtab=place] .sec.basesec{
     position:sticky; background:var(--panel); background-image:var(--paper-panel);
   }
-  #app[data-mtab=trip] .sechead.trhead{top:0; z-index:400}
+  #app[data-mtab=trip] .sec.sectrips{top:0; z-index:400}
+
   #app[data-mtab=trip] .sec.secitin{
-    top:var(--l1h); z-index:399;
+    top:calc(var(--l1h) * 2); z-index:399;
     color:var(--section-title-color, var(--ink));
     box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
   }
@@ -508,8 +507,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   #app[data-mtab=trip] .sec.secitin .nm,
   #app[data-mtab=trip] .sec.secitin .ssub{color:inherit}
   #app[data-mtab=place] .sec.basesec{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--line)}
-  #app[data-mtab=place] .sec.seclist{top:var(--l1h); z-index:400; box-shadow:inset 0 -1px 0 var(--line)}
-  #app[data-mtab=place] .fbar{top:calc(var(--l1h) * 2)}
+
 
   #app[data-mtab=map] .panel{display:none; border-top:0}
 
@@ -579,8 +577,6 @@ html.sheeton .panel{overflow:hidden}
 .sheetbody .fkey{width:auto; padding-top:0; font-size:12px}
 .sheetbody .tfilters, .sheetbody .lfilters{padding:0; margin:0; border-bottom:0}
 
-.sheetbody .tfclear{display:none}
-
 .sheetwrap[data-kind=map] .sheetbody{padding-top:12px}
 .sheetwrap[data-kind=map] .sheetbody .detail{
   margin:0 0 10px; border-top:1px solid var(--accent); border-radius:var(--r);
@@ -616,20 +612,13 @@ html.sheeton .panel{overflow:hidden}
 .sheetreset:hover{color:var(--accent)}
 .sheetreset:focus-visible{outline:2px solid var(--accent); outline-offset:-2px; border-radius:6px}
 
-.mfbar{display:none; align-items:center; justify-content:flex-end; gap:8px; padding:3px 14px; min-height:38px; flex-wrap:nowrap}
 .mfbtn{
-  flex:none; min-height:32px; cursor:pointer; position:relative;
-  display:inline-flex; align-items:center; gap:6px; font-family:inherit; white-space:nowrap;
-
+  flex:none; cursor:pointer; position:relative;
+  display:inline-flex; align-items:center; gap:5px; font-family:inherit; white-space:nowrap;
 }
-.mfbtn::after{content:""; position:absolute; inset:-6px 0}
-.mf-place .mfbtn{margin-left:auto}
-@media (max-width:899px), (max-height:559px){
-  .sechead > .mf-trip{display:flex; flex:none; width:auto; min-height:0; padding:3px 8px 3px 0}
-  .fbar > .mf-place{display:flex; padding:0; min-height:0; margin-left:auto}
-}
-.mfbtn[aria-expanded=true]{background:var(--accent-soft); border-color:var(--accent); font-weight:600}
+.mfbtn[aria-expanded=true]{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:600}
 .mfbtn .mfn{font-size:12.5px; line-height:1; color:var(--accent)}
+.mfbtn[aria-expanded=true] .mfn{color:inherit}
 
 .mfsum{display:flex; flex-wrap:wrap; gap:6px; align-items:center; flex:1 1 auto; min-width:0}
 .mfsum .mfv{
@@ -645,7 +634,6 @@ html.sheeton .panel{overflow:hidden}
 .mfx:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
 
 @media (max-width:899px), (max-height:559px){
-  .mfbar{display:flex}
   .sheetwrap[data-open]{display:block}
 
   #app[data-mtab=map] .mcondsum.on{display:flex}
@@ -675,12 +663,11 @@ html.sheeton .panel{overflow:hidden}
   .panel.twolane .lane-explore{flex:1 1 auto; min-width:0}
 
 
-  .panel.twolane .lane-trip > .sec.toplevel:first-child,
-  .panel.twolane .lane-trip > .sechead.trhead:first-child{
+  .panel.twolane .lane-trip > .sec.toplevel:first-child{
     position:sticky; top:0; z-index:400; background:var(--panel);
   }
   .panel.twolane .lane-trip > .sec.secitin{
-    position:sticky; top:var(--l1h); z-index:399; background:var(--panel);
+    position:sticky; top:calc(var(--l1h) * 2); z-index:399; background:var(--panel);
     color:var(--section-title-color, var(--ink));
     box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
   }
@@ -691,25 +678,15 @@ html.sheeton .panel{overflow:hidden}
 
   .panel.twolane .lane-trip > .sec.toplevel:first-child:hover{background:var(--hover-bg)}
 
-  .panel.twolane .fbar{
-    padding:4px 14px; min-height:var(--l1h);
-    border-bottom:0; box-shadow:0 1px 0 var(--line);
 
-    top:calc(var(--l1h) * 2);
-  }
 
-  .panel.twolane .lane-explore > .sec.basesec,
-  .panel.twolane .lane-explore > .sec.seclist{
-    position:sticky; z-index:400; background:var(--panel);
+  .panel.twolane .lane-explore > .sec.basesec{
+    position:sticky; top:0; z-index:400; background:var(--panel);
     box-shadow:inset 0 -1px 0 var(--line);
   }
-  .panel.twolane .lane-explore > .sec.basesec{top:0}
-  .panel.twolane .lane-explore > .sec.seclist{top:var(--l1h)}
 
-  .panel.twolane .lane-explore > .fbar{box-shadow:inset 0 -1px 0 var(--line)}
 
-  .panel.twolane .lane-explore > .sec.basesec:hover,
-  .panel.twolane .lane-explore > .sec.seclist:hover{background:var(--hover-bg)}
+  .panel.twolane .lane-explore > .sec.basesec:hover{background:var(--hover-bg)}
 
   .panel.twolane.foldt{width:441px; flex:0 0 441px}
   .panel.twolane.folde{width:381px; flex:0 0 381px}
@@ -755,19 +732,26 @@ html.sheeton .panel{overflow:hidden}
 }
 
 .fbar{
-  position:sticky; top:0; z-index:400; display:flex; align-items:center; gap:8px;
-  padding:8px 14px; background:var(--panel); border-bottom:1px solid var(--line);
+  position:sticky; top:var(--l1h); z-index:400; display:flex; align-items:center; gap:8px;
+  padding:4px 14px; min-height:var(--l1h); background:var(--panel);
+  background-image:var(--paper-panel); box-shadow:inset 0 -1px 0 var(--line);
 }
 
-@media (max-width:899px), (max-height:559px){
-  .fbar{padding:4px 14px; min-height:var(--l1h); border-bottom:0; box-shadow:inset 0 -1px 0 var(--line)}
+.fsum{
+  flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:6px;
+  font-size:12.5px; color:var(--ink3); white-space:nowrap; overflow:hidden;
+}
+.fsum .ssico{display:inline-flex; align-items:center; gap:3px}
+.fsum .ic{width:15px; height:15px; margin-right:0}
+.fsum .ftxt{overflow:hidden; text-overflow:ellipsis}
+
+@media (min-width:900px) and (max-width:1279px) and (min-height:560px){
+  .fbar{top:0}
+  .fbar.tbar{position:static}
 }
 
 .chev{width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round;
       stroke-linejoin:round; margin-left:4px; transition:transform .15s}
-
-.sec .ssub .ssico{display:inline-flex; align-items:center; gap:3px; vertical-align:-2px}
-.sec .ssub .ssico .ic{width:13px; height:13px; margin-right:0}
 
 .clear, .ghost{
   white-space:nowrap; text-decoration:none; font-family:inherit;
@@ -775,6 +759,8 @@ html.sheeton .panel{overflow:hidden}
 
 #sort{
   flex:none; font-family:inherit; max-width:120px;
+
+  height:calc(12.5px * 1.5 + 8px);
 }
 
 .sortwrap{flex:none; position:relative; display:inline-flex}
@@ -783,7 +769,7 @@ html.sheeton .panel{overflow:hidden}
 
 #sort:focus-visible + .sortlbl{outline:2px solid var(--accent); outline-offset:2px}
 
-.lfilters{padding:8px 14px 10px}
+.lfilters{padding:8px 14px 10px; border-bottom:1px solid var(--line)}
 .frow{display:flex; align-items:flex-start; gap:9px; padding:4px 0}
 .fkey{flex:none; width:52px; padding-top:4px; font-size:11.5px; color:var(--ink3); letter-spacing:.06em}
 .chips{display:flex; flex-wrap:wrap; gap:5px; flex:1; min-width:0}
@@ -827,21 +813,6 @@ html.sheeton .panel{overflow:hidden}
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .sec:hover .ssub{color:var(--ink)}
-
-.sechead{display:flex; align-items:center; position:relative}
-.sechead::after{content:""; position:absolute; left:0; right:0; bottom:-1px;
-                height:1px; background:var(--line); z-index:1; pointer-events:none}
-.sechead > .sec{flex:1; min-width:0}
-.sechead > .sec.toplevel::after{display:none}
-
-.sechead > .sec.toplevel{padding-right:8px}
-
-.sechead > .trclose{
-  flex:none; display:flex; align-items:center; justify-content:center;
-  margin-right:14px; padding:0 2px; border:0; background:none;
-  color:var(--ink3); font-size:16px; line-height:1; font-family:inherit;
-}
-.sechead > .trclose:hover{color:var(--accent)}
 
 .shfoot{display:flex; justify-content:flex-end; padding:12px 0 2px}
 .shfoot .shbtn{
@@ -942,7 +913,7 @@ html.sheeton .panel{overflow:hidden}
 .results > .row{content-visibility:auto; contain-intrinsic-size:auto 43.4px}
 .results > .detail{margin-left:17px}
 
-.ghead.tripgrp{cursor:default; background:none}
+.ghead.tripgrp{cursor:default}
 .ghead.tripgrp::before{background:var(--accent)}
 
 .ghead{
@@ -963,7 +934,17 @@ html.sheeton .panel{overflow:hidden}
 .ghead .num{flex:none}
 .ghead .chev{flex:none; width:12px; height:12px; color:var(--ink3); transition:transform .15s}
 
-.ghead[aria-expanded=true]{margin-bottom:0; border-bottom-color:transparent}
+.ghead[aria-expanded=true]{margin-bottom:0; box-shadow:none}
+
+.ghead{
+  position:sticky; top:calc(var(--l1h) * 2); z-index:398; min-height:var(--l1h);
+  border-bottom:0; box-shadow:inset 0 -1px 0 var(--line);
+  background:var(--panel); background-image:var(--paper-panel);
+}
+
+@media (min-width:900px) and (max-width:1279px) and (min-height:560px){
+  .ghead{top:var(--l1h)}
+}
 
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
@@ -1114,14 +1095,14 @@ html.sheeton .panel{overflow:hidden}
 .tpick{display:flex; flex-direction:column; gap:2px; padding:6px 0 2px}
 
 .tfilters{padding:2px 0 7px; margin-bottom:5px; border-bottom:1px solid var(--line)}
+
+.lane-trip > .tfilters, .panel > .tfilters{padding:6px 14px 8px; margin-bottom:0}
 .tfilters .frow{padding:3px 0}
 .tfilters .fkey{width:38px}
 
 .tfilters .chip, .lfilters .chip{padding:2px 7px; font-size:12px}
 .tfilters .chips, .lfilters .chips{gap:4px}
 .tfilters .chip .ic, .lfilters .chip .ic{margin-right:3px}
-
-.tfclear{display:flex; justify-content:flex-end; padding:4px 0 0}
 
 .tfhint{
   display:flex; align-items:flex-start; gap:8px; margin:2px 0 7px; padding:6px 9px;
@@ -1140,8 +1121,6 @@ html.sheeton .panel{overflow:hidden}
 
 .tpick .nonear{margin:6px 2px 2px; font-size:12px; color:var(--ink3); line-height:1.6}
 
-.tpickmini .tfilters{padding:2px 0 6px; margin-bottom:4px}
-.tpickmini .tfilters .frow{padding:2px 0}
 .tpickmini .tfhint{margin:0 0 6px; padding:5px 8px; font-size:11.5px}
 
 .tpickmini .sec.mini{
@@ -1544,11 +1523,10 @@ button.tnight:hover .chev{color:var(--accent)}
 
 .bar, .panel, .fbar, .mapcard, .loctip, .leaflet-tooltip.tt,
 .lanefold,
+
 .panel.twolane .lane-explore > .sec.basesec,
-.panel.twolane .lane-explore > .sec.seclist,
 .panel.twolane .lane-trip > .sec.toplevel:first-child,
-.panel.twolane .lane-trip > .sec.secitin,
-.panel.twolane .lane-trip > .sechead.trhead:first-child{
+.panel.twolane .lane-trip > .sec.secitin{
   background-image:var(--paper-panel);
 }
 
@@ -1704,8 +1682,9 @@ button.tnight:hover .chev{color:var(--accent)}
 
 @media (max-width:899px){
 
+
   .sec, .tpickmini .sec.mini,
-  .tcath.tog, .rthead, .ghead,
+  .tcath.tog, .rthead,
   .rrow, .trow, .row, .tstop, .tnight,
   .lodgebox button.zhead{min-height:40px}
 
@@ -1716,9 +1695,10 @@ button.tnight:hover .chev{color:var(--accent)}
 
 
 
-  .clear, .ghost, #sort, .sortlbl, .wider, .mapbtns button,
+
+  .clear, .ghost, #sort, .sortlbl, .wider, .mapbtns button, .mfbtn,
   .shfoot .shbtn, .qmore, .acts a, .acts button, .tdhead .tdnav{min-height:32px; position:relative}
-  .clear::after, .ghost::after, .wider::after, .mapbtns button::after,
+  .clear::after, .ghost::after, .wider::after, .mapbtns button::after, .mfbtn::after,
   .shfoot .shbtn::after, .qmore::after{
     content:""; position:absolute; left:0; right:0; top:50%;
     transform:translateY(-50%); height:44px;
@@ -1746,7 +1726,6 @@ button.tnight:hover .chev{color:var(--accent)}
 
   #qx{min-width:40px; min-height:40px; margin:-4px -9px -4px 0}
 
-  .sechead > .trclose{min-width:40px; min-height:40px}
 }
 
 @media (max-width:699px), (pointer:coarse){
@@ -1878,7 +1857,9 @@ const ICON = {
 
 const S = { tab:"trip", view:"map", base:new Set(), themes:new Set(), diffs:new Set(),
             inseason:false, q:"", qtags:[], sel:null,
-            basesOpen:false, listOpen:true, sort:"total", sortPicked:false, near:0, footOpen:false,
+            basesOpen:false, sort:"total", sortPicked:false, near:0, footOpen:false,
+
+            lfOpen:false, tfOpen:false,
             trip:null, tripsOpen:true, itinOpen:true,
             fDays:new Set(), fDrive:new Set(), fStam:new Set(), fFeel:new Set(), tipSeen:false,
             foldTrip:false, foldExp:false,
@@ -1935,7 +1916,7 @@ function toggleInline(key, p){
     panTo(p);
 
     if (!String(key).startsWith("g:") && isTwoLane() &&
-        S.listOpen && (pass(p) || EXTRA.has(p.id))) SCROLL_TO = p.id;
+        (pass(p) || EXTRA.has(p.id))) SCROLL_TO = p.id;
   }
   render();
 }
@@ -2094,7 +2075,7 @@ function save(){
     localStorage.setItem(LSKEY, JSON.stringify({
       base:[...S.base], themes:[...S.themes], diffs:[...S.diffs],
       inseason:S.inseason, view:S.view, sort:S.sort, sortPicked:S.sortPicked, theme:THEME,
-      seen:true, basesOpen:S.basesOpen, listOpen:S.listOpen,
+      seen:true, basesOpen:S.basesOpen, lfOpen:S.lfOpen, tfOpen:S.tfOpen,
       footOpen:S.footOpen,
       trip:S.trip, tripsOpen:S.tripsOpen, itinOpen:S.itinOpen,
       fDays:[...S.fDays], fDrive:[...S.fDrive], fStam:[...S.fStam], fFeel:[...S.fFeel],
@@ -2118,7 +2099,8 @@ function restore(){
     if (d.sortPicked) S.sortPicked=true;   // 只往 true 走，沒有回頭（見 S 的說明）
     if (["auto","light","dark"].includes(d.theme)) THEME=d.theme;
     if (d.basesOpen) S.basesOpen=true;
-    if (d.listOpen===false) S.listOpen=false;   // 預設是展開，只有明確存過收合才收
+    if (d.lfOpen===true) S.lfOpen=true;
+    if (d.tfOpen===true) S.tfOpen=true;
     if (d.trip && TRIP_BY_ID[d.trip]) S.trip=d.trip;
     if (typeof d.tripsOpen==="boolean") S.tripsOpen=d.tripsOpen;
 
@@ -2236,7 +2218,7 @@ addEventListener("popstate", e=>{
   if (!wantSheet){ SHEET = null; SHEET_PUSHED = false; SHEET_WANT_PUSH = false; }
   applyHash(false);
 
-  if (droppedSheet){ const b=document.querySelector(".mfbtn"); if (b) b.focus({preventScroll:true}); }
+  if (droppedSheet){ const b=visibleFilterBtn(); if (b) b.focus({preventScroll:true}); }
 });
 
 const months = p => Array.isArray(p.season_months) ? p.season_months : [];
@@ -3383,13 +3365,51 @@ function themeSub(){
 
 function renderFilterBar(){
   const bar=document.createElement("div"); bar.className="fbar";
+  const sum=document.createElement("div"); sum.className="fsum";
+  const ts=themeSub();
+  if (ts){ sum.innerHTML=ts.html; sum.title=`主題：${ts.title}`; }
+  else {
+    const n=shown().length;
+    sum.innerHTML=`<span class="num">${anyFilter() ? `${n}/${PLACES.length}` : PLACES.length}</span> 個`;
+    sum.title=`顯示 ${n}／${PLACES.length} 個點`;
+  }
+  bar.appendChild(sum);
 
   bar.appendChild(renderSort());
   if (anyFilter()){
     const c=document.createElement("button"); c.className="clear btn-act"; c.textContent="清除";
     c.onclick=e=>{ e.stopPropagation(); clearAll(); }; bar.appendChild(c);
   }
-  if (hasMapCard()) bar.appendChild(mFilterBar("place"));
+  bar.appendChild(mFilterBtn("place"));
+  return bar;
+}
+
+function renderTripBar(){
+  const bar=document.createElement("div"); bar.className="fbar tbar";
+  const sum=document.createElement("div"); sum.className="fsum";
+  const t = S.trip && TRIP_BY_ID[S.trip];
+  if (t){
+    const r = CR[t.code];
+    const txt = `${t.code||""} ${t.name||""}`.trim();
+    sum.innerHTML=`<span class="ftxt">${esc(txt)}</span>`;
+    sum.title = r ? `${txt}（${r.name}）` : txt;
+  } else {
+    const n=tripCount();
+    sum.innerHTML=`<span class="num">${anyTripFilter() ? `${n}/${TRIPS.length}` : TRIPS.length}</span> 條`;
+    sum.title=`顯示 ${n}／${TRIPS.length} 條行程`;
+  }
+  bar.appendChild(sum);
+  if (anyTripFilter() || S.trip){
+    const c=document.createElement("button"); c.type="button"; c.className="clear btn-act"; c.textContent="清除";
+    c.title = S.trip ? "清除行程篩選並關閉行程，返回行程全覽" : "清除行程篩選";
+    c.onclick=e=>{
+      e.stopPropagation();
+      S.fDays=new Set(); S.fDrive=new Set(); S.fStam=new Set(); S.fFeel=new Set();
+      if (S.trip) selectTrip(S.trip); else { save(); render(); }
+    };
+    bar.appendChild(c);
+  }
+  bar.appendChild(mFilterBtn("trip"));
   return bar;
 }
 
@@ -3837,7 +3857,6 @@ function selectTrip(id){
 
 
     if (isTwoLane()) S.basesOpen=true;
-    S.listOpen=true;
 
     if (!HASH_APPLYING && !isMapOnly()) SCROLL_LIST=true;
 
@@ -4056,20 +4075,14 @@ function tripFilterRows(mini){
     tchipLabel(w, tripChipCount("fFeel", w)),
     S.fFeel.has(w), ()=>toggleTripFilter(S.fFeel,w))),
     "這趟行程的風格（本人逐條裁定，每條 1–2 個）含任一選中的詞就算命中"));
-  if (anyTripFilter()){
-    const w=document.createElement("div"); w.className="tfclear";
-    const c=document.createElement("button");
-    c.type="button"; c.className="clear btn-act"; c.textContent="清除";
-    c.onclick=()=>clearTripFilters();
-    w.appendChild(c); f.appendChild(w);
-  }
+
   return f;
 }
 function tripPicker(mini){
   const pick=document.createElement("div"); pick.className="tpick";
 
   if (!S.tipSeen && !S.trip) pick.appendChild(tripHintRow());
-  pick.appendChild(tripFilterRows(mini));
+
 
   const selTrip = S.trip ? TRIP_BY_ID[S.trip] : null;
   const selCat = selTrip ? ((selTrip.cat && CT[selTrip.cat]) ? selTrip.cat : null) : null;
@@ -4360,11 +4373,6 @@ function renderItinerary(){
   return box;
 }
 
-function openBaseRow(id){
-  if (!BS[id]) return;
-  S.listOpen=true;
-}
-
 function selectBase(id, inPlace){
   if (BASE_SEL===id){
     if (SHEET==="mbase"){ closeSheet(); return; }
@@ -4380,7 +4388,6 @@ function selectBase(id, inPlace){
     unfoldLane("exp");
 
     gotoTab("place");
-    openBaseRow(id);
     if (inPlace) SCROLL_NEAR=`.ghead[data-bid="${id}"]`;
     else SCROLL_BASE=id;
   }
@@ -4854,6 +4861,7 @@ function zoneSheetBody(){
   return w;
 }
 
+const placeFilterCount = () => S.themes.size + S.diffs.size + (S.inseason?1:0) + S.base.size;
 const SHEETS = {
   trip: {
     tab:"trip", kind:"filter", title:()=>"篩選",
@@ -4867,7 +4875,7 @@ const SHEETS = {
   place: {
     tab:"place", kind:"filter", title:()=>"篩選",
     ok: () => true,
-    count: () => S.themes.size + S.diffs.size + (S.inseason?1:0),
+    count: placeFilterCount,
     body: renderListFilters,
     clear: clearPlaceFilters,
     go: () => `顯示 ${shown().length} 個景點`,
@@ -4875,7 +4883,7 @@ const SHEETS = {
   mapplace: {
     tab:"map", kind:"filter", title:()=>"景點篩選",
     ok: () => true,
-    count: () => S.themes.size + S.diffs.size + (S.inseason?1:0),
+    count: placeFilterCount,
     body: renderListFilters,
     clear: clearPlaceFilters,
     go: () => `顯示 ${shown().length} 個景點`,
@@ -4946,7 +4954,7 @@ function closeSheet(){
   if (SHEET_PUSHED && HSTEP>0){ history.back(); return; }
   SHEET=null;
   render();
-  const b=document.querySelector(".mfbtn");
+  const b=visibleFilterBtn();
   if (b) b.focus({preventScroll:true});
 }
 function sheetFoot(spec){
@@ -5009,23 +5017,27 @@ function renderSheet(){
   document.documentElement.classList.add("sheeton");
 }
 
-function mFilterBar(kind){
+function mFilterBtn(kind){
   const spec=SHEETS[kind];
   const n=spec.count();
-
-  const bar=document.createElement("div");
-  bar.className="mfbar " + (kind==="trip" ? "mf-trip" : "mf-place");
+  const mob=hasMapCard();
   const b=document.createElement("button");
   b.type="button"; b.className="mfbtn";
   b.innerHTML = "篩選" + (n ? `<span class="mfn">${circled(n)}</span>` : "");
 
-  b.setAttribute("aria-haspopup","dialog");
-  b.setAttribute("aria-expanded", SHEET===kind);
+  if (mob) b.setAttribute("aria-haspopup","dialog");
+  b.setAttribute("aria-expanded", mob ? SHEET===kind : (kind==="trip" ? S.tfOpen : S.lfOpen));
   b.setAttribute("aria-label", n ? `篩選，目前 ${n} 個條件` : "篩選");
-  b.onclick=()=>openSheet(kind);
-  bar.appendChild(b);
-  return bar;
+  b.onclick=e=>{
+    e.stopPropagation();
+    if (mob){ openSheet(kind); return; }
+    if (kind==="trip") S.tfOpen=!S.tfOpen; else S.lfOpen=!S.lfOpen;
+    save(); render();
+  };
+  return b;
 }
+
+const visibleFilterBtn = () => [...document.querySelectorAll(".mfbtn")].find(b=>b.offsetParent) || null;
 
 document.getElementById("sheetmask").onclick=closeSheet;
 
@@ -5184,33 +5196,15 @@ function renderPanel(){
 
 
 
-
     const t = S.trip && TRIP_BY_ID[S.trip];
 
-    const trsec = section("推薦行程",
-      S.trip ? null : `${tripCount()} 條`, S.tripsOpen,
-      ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel deskonly sectrips",
-      tripSub(t));
 
+    tripHost.appendChild(section("推薦行程",
+      `${tripCount()}${anyTripFilter() ? `/${TRIPS.length}` : ""} 條`, S.tripsOpen,
+      ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel deskonly sectrips"));
 
-    const tripFilter = hasMapCard() ? mFilterBar("trip") : null;
-    if (S.trip || tripFilter){
-      const head=document.createElement("div"); head.className="sechead trhead";
-      head.appendChild(trsec);
-      if (tripFilter) head.appendChild(tripFilter);
-      if (S.trip){
-      const x=document.createElement("button");
-      x.type="button"; x.className="trclose";
-      x.textContent="×";
-      x.title="關閉行程，返回行程全覽";
-      x.setAttribute("aria-label","關閉行程，返回行程全覽");
-      x.onclick=e=>{ e.stopPropagation(); selectTrip(S.trip); };
-      head.appendChild(x);
-      }
-      tripHost.appendChild(head);
-    } else {
-      tripHost.appendChild(trsec);
-    }
+    tripHost.appendChild(renderTripBar());
+    if (S.tfOpen && !hasMapCard()) tripHost.appendChild(tripFilterRows(false));
 
     const qt=qTripSection();
     if (qt){
@@ -5250,23 +5244,12 @@ function renderPanel(){
   if (S.basesOpen) expHost.appendChild(renderBaseFinder());
 
 
-
-  const nShown=shown().length, filtered=anyFilter();
-
-  expHost.appendChild(section("景點清單",
-    filtered ? `${nShown}/${PLACES.length} 個` : `${PLACES.length} 個`, S.listOpen,
-    ()=>{ S.listOpen=!S.listOpen; save(); render(); }, "toplevel deskonly seclist",
-    themeSub()));
-  if (S.listOpen){
-
-
-    expHost.appendChild(renderListFilters());
-    expHost.appendChild(renderFilterBar());
-    expHost.appendChild(renderList());
-    const lg=document.createElement("div"); lg.className="legend";
-    lg.innerHTML=THEMES.map(t=>`<span>${ico(t.id,t.color)}${t.name}</span>`).join("");
-    expHost.appendChild(lg);
-  }
+  expHost.appendChild(renderFilterBar());
+  if (S.lfOpen && !hasMapCard()) expHost.appendChild(renderListFilters());
+  expHost.appendChild(renderList());
+  const lg=document.createElement("div"); lg.className="legend";
+  lg.innerHTML=THEMES.map(t=>`<span>${ico(t.id,t.color)}${t.name}</span>`).join("");
+  expHost.appendChild(lg);
 
 
   expHost.appendChild(section("ⓘ 距離與時間說明", null, S.footOpen,
@@ -5286,20 +5269,25 @@ function renderPanel(){
   const box=two?expHost:panel;
 
 
+
   const stickyH=el=>(el && getComputedStyle(el).position==="sticky") ? el.offsetHeight : 0;
-  const baseH=stickyH(box.querySelector(".sec.basesec"));
-  const headH=stickyH(box.querySelector(".sec.seclist"));
-  const fbH=stickyH(box.querySelector(".fbar"));
-  const boxTop=box.getBoundingClientRect().top;
-  const stopAt=belowBar=>boxTop+(belowBar?baseH+headH+fbH:0)+10;
+  const boxTop=box.getBoundingClientRect().top + box.clientTop;
+  const layersH=[...box.children].reduce((a,el)=>a+stickyH(el), 0);
+  const stopAt=withGroup=>boxTop+layersH+(withGroup ? stickyH(box.querySelector(".results .ghead")) : 0)+10;
 
   const padEl=document.createElement("div");
   padEl.className="scrollpad"; padEl.setAttribute("aria-hidden","true");
   box.appendChild(padEl);
   let ANCHORED=false;
+
+  const flowTop=el=>{
+    if (getComputedStyle(el).position!=="sticky") return el.getBoundingClientRect().top;
+    const prev=el.style.position; el.style.position="static";
+    const t=el.getBoundingClientRect().top; el.style.position=prev; return t;
+  };
   const anchorTo=(el, want)=>{
     if (!el) return false;
-    const desired=box.scrollTop + (el.getBoundingClientRect().top - Math.max(want, boxTop));
+    const desired=box.scrollTop + (flowTop(el) - Math.max(want, boxTop));
     const max=box.scrollHeight-box.clientHeight;
     if (desired>max) padEl.style.height=Math.ceil(desired-max)+"px";
     box.scrollTop=Math.max(0, desired);
@@ -5323,7 +5311,7 @@ function renderPanel(){
   SCROLL_TRIPTOP=false;
 
   if (SCROLL_BASE){
-    anchorTo(box.querySelector(`.ghead[data-bid="${SCROLL_BASE}"]`), stopAt(true));
+    anchorTo(box.querySelector(`.ghead[data-bid="${SCROLL_BASE}"]`), stopAt(false));
     SCROLL_BASE=null;
   }
 
@@ -5338,11 +5326,10 @@ function renderPanel(){
 
   if (SCROLL_LIST){
     const grp = two ? box.querySelector(".results .ghead.tripgrp") : null;
-    if (grp) anchorTo(grp, stopAt(true));
-    else if (two) anchorTo(box.querySelector(".results"), stopAt(true));
+    if (grp) anchorTo(grp, stopAt(false));
+    else if (two) anchorTo(box.querySelector(".results"), stopAt(false));
     else {
-      const sec=box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin")
-                || box.querySelector(".sec.seclist");
+      const sec=box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin");
 
       if (sec){
         const pinned=[sec, sec.parentElement].find(e=>e && e!==box && getComputedStyle(e).position==="sticky");
@@ -5353,7 +5340,7 @@ function renderPanel(){
           top=sec.getBoundingClientRect().top;
           pinned.style.position=prev;
         } else top=sec.getBoundingClientRect().top;
-        box.scrollTop += (top - stopAt(false));
+        box.scrollTop += (top - (boxTop+10));
       }
     }
     SCROLL_LIST=false;
@@ -5381,7 +5368,7 @@ function renderPanel(){
   if (SCROLL_NEAR){
     const el=box.querySelector(SCROLL_NEAR);
     if (el){
-      const floorY=stopAt(true), ceilY=box.getBoundingClientRect().bottom;
+      const floorY=stopAt(!el.classList.contains("ghead")), ceilY=box.getBoundingClientRect().bottom;
       const r=el.getBoundingClientRect();
 
       const nx=el.nextElementSibling;
@@ -5451,7 +5438,6 @@ function select(id, keepBase, inPlace){
     unfoldLane("exp");
 
     gotoTab("place");
-    S.listOpen=true;
 
     if (inPlace) SCROLL_NEAR=`.results .row[data-id="${id}"]`;
     else SCROLL_TO=id;
@@ -5508,7 +5494,8 @@ function syncStuck(box){
   if (!box) return;
 
   const bt=box.getBoundingClientRect().top + box.clientTop; let last=null;
-  [...box.children].forEach(el=>{
+
+  [...box.children, ...box.querySelectorAll(".results .ghead")].forEach(el=>{
     el.classList.remove("stuck-last");
     const cs=getComputedStyle(el); if (cs.position!=="sticky") return;
     const top=parseFloat(cs.top)||0; const r=el.getBoundingClientRect();
@@ -5560,7 +5547,7 @@ document.querySelectorAll("#views button").forEach(b=>{
     }
     S.view=b.dataset.v; syncViews();
     if (S.sel){
-      if (S.view==="list"){ S.listOpen=true; SCROLL_TO=S.sel; }
+      if (S.view==="list"){ SCROLL_TO=S.sel; }
       else if (BY_ID[S.sel] && ready){
         const q=BY_ID[S.sel];
         map.setView([q.lat,q.lng], Math.max(map.getZoom(),13), {animate:false});
