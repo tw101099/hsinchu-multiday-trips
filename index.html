@@ -963,6 +963,9 @@ html.sheeton .panel{overflow:hidden}
 .ghead .num{flex:none}
 .ghead .chev{flex:none; width:12px; height:12px; color:var(--ink3); transition:transform .15s}
 
+.ghead[aria-expanded=true]{margin-bottom:0; border-radius:8px 8px 0 0; border-bottom-color:transparent}
+.ghead[aria-expanded=true] + .gintro{border-radius:0 0 0 0}
+
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
   margin:0; padding:10px 13px 11px;
