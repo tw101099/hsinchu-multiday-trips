@@ -4823,6 +4823,7 @@ function mpageSave(){
 let SHEET = null;          // null／"trip"／"place"／"mplace"／"mbase"／"mzone"／"mtrip"＝現在開著哪一張
 
 let SHEET_ST = "peek";
+let SHEET_SUBJ = null;      // 上一次 renderSheet() 填的主體鍵（種類＋主體 id），換人才把正文捲回頂
 
 const circled = n => (n>=1 && n<=20) ? "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳"[n-1] : String(n);
 
@@ -4984,6 +4985,11 @@ function renderSheet(){
     const now=body.querySelectorAll("button");
     if (now[fi]) now[fi].focus({preventScroll:true});
   }
+
+  const subj = spec.kind==="map"
+    ? `${SHEET}:${S.sel||""}:${BASE_SEL||""}:${ZONE_VIEW?ZONE_VIEW.bid:""}:${S.trip||""}`
+    : SHEET;
+  if (subj!==SHEET_SUBJ){ body.scrollTop=0; SHEET_SUBJ=subj; }
 
   const foot=document.getElementById("sheetfoot");
   if (spec.go) foot.replaceWith(sheetFoot(spec));
@@ -5356,7 +5362,9 @@ function renderPanel(){
 
   if (SCROLL_TO){
 
-    const el=box.querySelector(`.results > .row[data-id="${SCROLL_TO}"]`);
+
+    const el=box.querySelector(`.results > .place-card > .row[data-id="${SCROLL_TO}"]`)
+          || box.querySelector(`.results > .row[data-id="${SCROLL_TO}"]`);
     if (el) anchorTo(el, stopAt(true));
     else { box.scrollTop=0; ANCHORED=true; }
     SCROLL_TO=null;
