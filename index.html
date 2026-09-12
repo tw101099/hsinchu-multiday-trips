@@ -513,7 +513,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 
   .totop{bottom:calc(16px + var(--navh) + env(safe-area-inset-bottom))}
 
-  .panel .tfilters, .panel .tfhint, .panel .lfilters{display:none}
+  .panel .tfilters, .panel .lfilters{display:none}
 
 }
 
@@ -619,6 +619,21 @@ html.sheeton .panel{overflow:hidden}
 .mfbtn[aria-expanded=true]{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:600}
 .mfbtn .mfn{font-size:12.5px; line-height:1; color:var(--accent)}
 .mfbtn[aria-expanded=true] .mfn{color:inherit}
+
+.mfhost{position:relative; flex:none; display:inline-flex}
+.fbhint{
+  position:absolute; top:calc(100% + 7px); right:0; z-index:401;
+  padding:5px 10px; border-radius:8px; white-space:nowrap; pointer-events:none;
+  background:var(--panel); border:1px solid var(--line); color:var(--ink2);
+  font-size:12.5px; line-height:1.5; box-shadow:0 2px 6px rgba(60,45,30,.10);
+  opacity:1; transition:opacity .35s ease;
+}
+.fbhint::before{
+  content:""; position:absolute; top:-5px; right:14px; width:8px; height:8px;
+  background:var(--panel); border-left:1px solid var(--line); border-top:1px solid var(--line);
+  transform:rotate(45deg);
+}
+.fbhint.out{opacity:0}
 
 .mfsum{display:flex; flex-wrap:wrap; gap:6px; align-items:center; flex:1 1 auto; min-width:0}
 .mfsum .mfv{
@@ -1106,24 +1121,7 @@ html.sheeton .panel{overflow:hidden}
 .tfilters .chips, .lfilters .chips{gap:4px}
 .tfilters .chip .ic, .lfilters .chip .ic{margin-right:3px}
 
-.tfhint{
-  display:flex; align-items:flex-start; gap:8px; margin:2px 0 7px; padding:6px 9px;
-  border:1px solid var(--line); border-radius:8px; background:var(--chip-bg);
-  font-size:12px; line-height:1.55; color:var(--ink2);
-}
-.tfhint .ht{flex:1; min-width:0}
-
-.tfhint .hx{
-  flex:none; display:inline-flex; align-items:center; justify-content:center;
-  width:24px; height:24px; margin:-3px -4px -3px 0;
-  border:0; background:none; padding:0; cursor:pointer;
-  font-family:inherit; font-size:14px; line-height:1; color:var(--ink3);
-}
-.tfhint .hx:hover{color:var(--ink)}
-
 .tpick .nonear{margin:6px 2px 2px; font-size:12px; color:var(--ink3); line-height:1.6}
-
-.tpickmini .tfhint{margin:0 0 6px; padding:5px 8px; font-size:11.5px}
 
 .tpickmini .sec.mini{
   min-height:30px; margin-top:0; padding:2px 14px 4px; border-top:0;
@@ -3117,7 +3115,7 @@ function tripSub(t){
   if (!t) return null;
   const r = CR[t.code];
   const s = `${t.code||""} ${r ? r.name : ""}`.trim();
-  return s ? {text:s, title:s} : null;
+  return s ? {text:s, title:s, afterCount:true} : null;
 }
 function itinSub(t){
   const s = (t && t.one_line) || "";
@@ -3129,10 +3127,12 @@ function section(label, count, open, fn, cls, sub){
 
   const subInner = (sub && sub.html) ? "· "+sub.html
                  : (sub && sub.text) ? "· "+esc(sub.text) : "";
+  const subHtml = `<span class="ssub"${(sub&&sub.title)?` title="${esc(sub.title)}"`:""}>` +
+                  `${subInner}</span>`;
+  const nHtml = count!=null ? `<span class="n">${count}</span>` : "";
+
   b.innerHTML=`${label}` +
-              `<span class="ssub"${(sub&&sub.title)?` title="${esc(sub.title)}"`:""}>` +
-              `${subInner}</span>` +
-              `${count!=null?`<span class="n">${count}</span>`:""}` +
+              ((sub && sub.afterCount) ? nHtml+subHtml : subHtml+nHtml) +
               `<svg class="chev" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>`;
   b.onclick=fn; return b;
 }
@@ -3391,10 +3391,9 @@ function renderTripBar(){
   const sum=document.createElement("div"); sum.className="fsum";
   const t = S.trip && TRIP_BY_ID[S.trip];
   if (t){
-    const r = CR[t.code];
-    const txt = `${t.code||""} ${t.name||""}`.trim();
+    const txt = (t.name||"").trim();
     sum.innerHTML=`<span class="ftxt">${esc(txt)}</span>`;
-    sum.title = r ? `${txt}（${r.name}）` : txt;
+    sum.title = txt;
   } else {
     const n=tripCount();
     sum.innerHTML=`<span class="num">${anyTripFilter() ? `${n}/${TRIPS.length}` : TRIPS.length}</span> 條`;
@@ -3411,7 +3410,12 @@ function renderTripBar(){
     };
     bar.appendChild(c);
   }
-  bar.appendChild(mFilterBtn("trip"));
+
+  const host=document.createElement("span"); host.className="mfhost";
+  host.appendChild(mFilterBtn("trip"));
+  const hint=tripHint();
+  if (hint) host.appendChild(hint);
+  bar.appendChild(host);
   return bar;
 }
 
@@ -4042,17 +4046,34 @@ function alertBlock(susp, text){
   return a;
 }
 
-function tripHintRow(){
-  const h=document.createElement("div"); h.className="tfhint";
-  const t=document.createElement("span"); t.className="ht";
-  t.textContent="按「篩選」挑天數、車程、體力或風格，再從清單挑一趟。";
-  const x=document.createElement("button");
-  x.type="button"; x.className="hx"; x.textContent="×";
-  x.title="不再顯示這則提示";
-  x.setAttribute("aria-label","關閉提示");
-  x.onclick=()=>{ S.tipSeen=true; save(); render(); };
-  h.append(t,x);
+const HINT_TEXT = "依天數或風格選擇行程";
+const HINT_MS = 8000;
+let HINT_TIMER = null;
+function tripHint(){
+  if (S.tipSeen) return null;
+  const h=document.createElement("span"); h.className="fbhint";
+  h.textContent=HINT_TEXT;
+
+  if (!HINT_TIMER){
+    setTimeout(()=>{
+      if (HINT_TIMER || S.tipSeen) return;
+      if (!h.isConnected || !h.offsetParent) return;   // 看不見：下一次 render 再試
+      HINT_TIMER = setTimeout(()=>dismissTripHint(true), HINT_MS);
+    }, 0);
+  }
   return h;
+}
+function dismissTripHint(fade){
+  if (HINT_TIMER){ clearTimeout(HINT_TIMER); HINT_TIMER=null; }
+  const seen = S.tipSeen;
+  S.tipSeen=true;
+  if (!seen) save();
+  const h=document.querySelector(".fbhint");
+  if (!h) return;
+  if (fade && !RM.matches){
+    h.classList.add("out");
+    setTimeout(()=>h.remove(), 400);
+  } else h.remove();
 }
 
 const tchipLabel = (text, n) => `${esc(text)}<span class="cnt num">${n}</span>`;
@@ -4083,7 +4104,6 @@ function tripFilterRows(mini){
 function tripPicker(mini){
   const pick=document.createElement("div"); pick.className="tpick";
 
-  if (!S.tipSeen && !S.trip) pick.appendChild(tripHintRow());
 
 
   const selTrip = S.trip ? TRIP_BY_ID[S.trip] : null;
@@ -5032,6 +5052,7 @@ function mFilterBtn(kind){
   b.setAttribute("aria-label", n ? `篩選，目前 ${n} 個條件` : "篩選");
   b.onclick=e=>{
     e.stopPropagation();
+    if (kind==="trip" && !S.tipSeen) dismissTripHint(false);
     if (mob){ openSheet(kind); return; }
     if (kind==="trip") S.tfOpen=!S.tfOpen; else S.lfOpen=!S.lfOpen;
     save(); render();
@@ -5203,7 +5224,8 @@ function renderPanel(){
 
     tripHost.appendChild(section("推薦行程",
       `${tripCount()}${anyTripFilter() ? `/${TRIPS.length}` : ""} 條`, S.tripsOpen,
-      ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel deskonly sectrips"));
+      ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel deskonly sectrips",
+      tripSub(t)));
 
     tripHost.appendChild(renderTripBar());
     if (S.tfOpen && !hasMapCard()) tripHost.appendChild(tripFilterRows(false));
