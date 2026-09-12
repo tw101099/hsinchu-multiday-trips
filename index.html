@@ -748,6 +748,14 @@ html.sheeton .panel{overflow:hidden}
   background-image:var(--paper-panel); box-shadow:inset 0 -1px 0 var(--line2);
 }
 
+.fpop{
+  position:absolute; top:100%; left:0; right:0; z-index:410;
+  padding:14px; border-radius:0 0 8px 8px;
+  background-color:var(--panel); background-image:var(--paper-panel);
+  box-shadow:0 6px 16px rgb(60 45 30 / 10%);
+}
+.fpop .lfilters, .fpop .tfilters{padding:0; margin:0; border-bottom:0}
+
 .fsum{
   flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:6px;
   white-space:nowrap; overflow:hidden;
@@ -760,7 +768,8 @@ html.sheeton .panel{overflow:hidden}
 
 @media (min-width:900px) and (max-width:1279px) and (min-height:560px){
   .fbar{top:0}
-  .fbar.tbar{position:static}
+
+  .fbar.tbar{position:relative; top:auto}
 }
 
 .chev{width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round;
@@ -857,7 +866,7 @@ html.sheeton .panel{overflow:hidden}
 .rrow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
 .blodge{
-  margin:0 0 10px; padding:8px 10px 8px;
+  margin:0 0 10px; padding:8px 11px 9px;   
   border-radius:0 0 8px 8px;
 }
 
@@ -895,10 +904,10 @@ html.sheeton .panel{overflow:hidden}
 
 .results > .corr > .bgroup > .ghead{margin-left:-14px; width:calc(100% + 28px)}
 .results > .corr > .bgroup > .gintro,
-.results > .corr > .bgroup > .blodge{margin-left:4px}
+.results > .corr > .bgroup > .blodge{margin-left:13px}
 
 .results > .corr > .bgroup > .gintro,
-.results > .corr > .bgroup > .blodge{width:calc(100% - 4px)}
+.results > .corr > .bgroup > .blodge{width:calc(100% - 13px)}
 
 .results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:0; border-left:3px solid var(--line);
   border-left-color:color-mix(in srgb, var(--dc, var(--line)) 30%, transparent)}
@@ -990,7 +999,7 @@ html.sheeton .panel{overflow:hidden}
 
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
-  margin:0; padding:8px 11px 9px;
+  margin:0; padding:9px 12px 10px;   
   border-radius:8px 8px 0 0;
 }
 .gintro .gstyle{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 8px}
@@ -1072,21 +1081,23 @@ html.sheeton .panel{overflow:hidden}
 }
 .place-card.timeline{width:calc(100% - 5px); margin-left:5px}
 
-.results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%}
+.results > .corr > .bgroup > .grp > .place-card{margin-left:-3px; width:calc(100% + 3px)}
+.results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%; padding-left:11px}
+.results > .corr > .bgroup > .grp > .place-card > .place-detail{padding-left:11px}
 
 .place-card > .place-summary{
   width:100%; margin:0; border:0; border-radius:0;
 }
 
-.place-card > .row, .place-card > .tstop{padding:5px 7px}
-.place-card > .gintro{padding:8px 11px 9px}
+.place-card > .row, .place-card > .tstop{padding:6px 8px}
+.place-card > .gintro{padding:9px 12px 10px}
 
 .place-card > .place-detail{
   margin:0; border:0; border-top:1px solid var(--line); border-radius:0;
-  padding-left:7px; padding-right:7px;
+  padding-left:8px; padding-right:8px;
 }
 
-.place-card.is-expanded > .place-summary{border:0; transition:none}
+.place-card.is-expanded > .place-summary{border:0; box-shadow:none; transition:none}   
 @media (pointer:coarse){
   .place-card.is-expanded{transform:translateZ(0)}
 }
@@ -1147,7 +1158,6 @@ html.sheeton .panel{overflow:hidden}
 
 .tfilters{padding:2px 0 7px; margin-bottom:5px; border-bottom:1px solid var(--line)}
 
-.lane-trip > .tfilters, .panel > .tfilters{padding:6px 14px 8px; margin-bottom:0}
 .tfilters .frow{padding:3px 0}
 .tfilters .fkey{width:38px}
 
@@ -1236,8 +1246,11 @@ html.sheeton .panel{overflow:hidden}
 }
 @media (hover:hover){.trow:hover{border-color:var(--line2); color:var(--ink)}}   
 
-.trow[aria-pressed=true]{padding:4px 7px; color:var(--ink); font-weight:600}
-.tpickmini .trow[aria-pressed=true]{padding:3px 6px}   
+.trow[aria-pressed=true]{padding:5px 8px; color:var(--ink); font-weight:600}
+.tpickmini .trow[aria-pressed=true]{padding:4px 7px}   
+
+.rtrips > .trow[aria-pressed=true]{margin-left:-11px; width:calc(100% + 11px); padding-left:19px}
+.tpickmini .rtrips > .trow[aria-pressed=true]{padding-left:18px}
 
 .trow .tl{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 
@@ -1327,13 +1340,13 @@ html.sheeton .panel{overflow:hidden}
 .trow, .tstop, .tnight, .flag{
   background-color:var(--card-bg); background-image:var(--card-lift), var(--paper-panel);
 }
-.place-card > .place-detail, .place-card > .place-summary, .gintro, .nlodge,
+.place-card > .place-detail, .place-card > .place-summary, .gintro, .blodge, .nlodge,
 .trow[aria-pressed=true], .tstop.open, .tstop[aria-pressed=true],
 .tnight.open, .tnight[aria-pressed=true],
 .row[aria-pressed=true], .row[aria-expanded=true]{
   background-color:var(--sunk); background-image:var(--paper-panel);
 }
-.blodge{background-color:var(--panel); background-image:var(--paper-panel)}
+
 .tstop{
   display:flex; width:100%; align-items:flex-start; gap:8px; text-align:left;
   margin-left:5px; padding:7px 9px; border:1px solid var(--line); border-radius:var(--r);
@@ -1341,7 +1354,7 @@ html.sheeton .panel{overflow:hidden}
 }
 @media (hover:hover){.tstop:hover{border-color:var(--line2)}}   
 
-.tstop.open, .tstop[aria-pressed="true"]{padding:5px 7px}
+.tstop.open, .tstop[aria-pressed="true"]{padding:6px 8px}   
 
 .tstop.open{border-bottom-left-radius:0; border-bottom-right-radius:0}
 .tstop .tb{flex:1; min-width:0}
@@ -1360,24 +1373,27 @@ html.sheeton .panel{overflow:hidden}
 @media (hover:hover){button.tnight:hover .chev{color:var(--accent)}}
 
 .tnight.open{
-  padding:4px 8px; color:var(--ink);
+  padding:5px 9px; color:var(--ink);   
   border-bottom-left-radius:0; border-bottom-right-radius:0;
 }
 
 .tnight.open .chev{color:var(--accent)}
 
-.tnight[aria-pressed=true]{padding:4px 8px; color:var(--ink)}   
+.tnight[aria-pressed=true]{padding:5px 9px; color:var(--ink)}   
 
 .place-card, .gintro, .blodge, .nlodge,
 .trow[aria-pressed=true], .tstop.open, .tstop[aria-pressed=true],
 .tnight.open, .tnight[aria-pressed=true]{
-  border-width:3px; border-style:solid; border-color:var(--line2);
-  border-color:color-mix(in srgb, var(--accent) 30%, transparent);
+  border-width:2px; border-style:solid; border-color:var(--line2);
+  border-color:color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent),
+             0 1px 6px color-mix(in srgb, var(--accent) 12%, transparent);
 }
-.blodge, .nlodge{border-top-width:0}
+
+.blodge, .nlodge{border-top-width:0; clip-path:inset(0 -8px -8px -8px)}
 
 .nlodge{
-  width:100%; margin:0 0 4px 5px; padding:2px 8px 7px;   
+  width:100%; margin:0 0 4px 5px; padding:2px 9px 8px;   
   border-radius:0 0 8px 8px;
 }
 
@@ -1916,7 +1932,6 @@ const S = { tab:"trip", view:"map", base:new Set(), themes:new Set(), diffs:new 
             inseason:false, q:"", qtags:[], sel:null,
             basesOpen:false, sort:"total", sortPicked:false, near:0, footOpen:false,
 
-            lfOpen:false, tfOpen:false,
             trip:null, tripsOpen:true,
             fDays:new Set(), fDrive:new Set(), fStam:new Set(), fFeel:new Set(), tipSeen:false,
             foldTrip:false, foldExp:false,
@@ -2129,7 +2144,7 @@ function save(){
     localStorage.setItem(LSKEY, JSON.stringify({
       base:[...S.base], themes:[...S.themes], diffs:[...S.diffs],
       inseason:S.inseason, view:S.view, sort:S.sort, sortPicked:S.sortPicked, theme:THEME,
-      seen:true, basesOpen:S.basesOpen, lfOpen:S.lfOpen, tfOpen:S.tfOpen,
+      seen:true, basesOpen:S.basesOpen,
       footOpen:S.footOpen,
       trip:S.trip, tripsOpen:S.tripsOpen,
       fDays:[...S.fDays], fDrive:[...S.fDrive], fStam:[...S.fStam], fFeel:[...S.fFeel],
@@ -2153,8 +2168,6 @@ function restore(){
     if (d.sortPicked) S.sortPicked=true;   // 只往 true 走，沒有回頭（見 S 的說明）
     if (["auto","light","dark"].includes(d.theme)) THEME=d.theme;
     if (d.basesOpen) S.basesOpen=true;
-    if (d.lfOpen===true) S.lfOpen=true;
-    if (d.tfOpen===true) S.tfOpen=true;
     if (d.trip && TRIP_BY_ID[d.trip]) S.trip=d.trip;
     if (typeof d.tripsOpen==="boolean") S.tripsOpen=d.tripsOpen;
 
@@ -3432,6 +3445,7 @@ function renderFilterBar(){
     c.onclick=e=>{ e.stopPropagation(); clearAll(); }; bar.appendChild(c);
   }
   bar.appendChild(mFilterBtn("place"));
+  if (LF_POP && !hasMapCard()) bar.appendChild(renderFpop("place"));
   return bar;
 }
 
@@ -3469,9 +3483,10 @@ function renderTripBar(){
 
   const host=document.createElement("span"); host.className="mfhost";
   host.appendChild(mFilterBtn("trip"));
-  const hint=tripHint();
+  const hint = TF_POP ? null : tripHint();
   if (hint) host.appendChild(hint);
   bar.appendChild(host);
+  if (TF_POP && !hasMapCard()) bar.appendChild(renderFpop("trip"));
   return bar;
 }
 
@@ -5116,6 +5131,38 @@ function renderSheet(){
   document.documentElement.classList.add("sheeton");
 }
 
+let LF_POP=false, TF_POP=false;
+const fpopOpen = kind => kind==="trip" ? TF_POP : LF_POP;
+function setFpop(kind, on){ if (kind==="trip") TF_POP=!!on; else LF_POP=!!on; }
+function renderFpop(kind){
+  const pop=document.createElement("div"); pop.className="fpop"; pop.dataset.kind=kind;
+  pop.setAttribute("role","group");
+  pop.setAttribute("aria-label", kind==="trip" ? "行程篩選條件" : "景點篩選條件");
+  pop.appendChild(kind==="trip" ? tripFilterRows(false) : renderListFilters());
+  return pop;
+}
+
+function syncFpop(bar, kind){
+  if (!bar) return;
+  const has=bar.querySelector(":scope > .fpop");
+  const want=fpopOpen(kind) && !hasMapCard();
+  if (want && !has) bar.appendChild(renderFpop(kind));
+  else if (!want && has) has.remove();
+  bar.querySelectorAll(":scope .mfbtn").forEach(b=>b.setAttribute("aria-expanded", want));
+}
+function closeFpops(refocus){
+  if (!LF_POP && !TF_POP) return;
+  const open = TF_POP ? "trip" : "place";
+  LF_POP=false; TF_POP=false;
+  document.querySelectorAll(".fbar").forEach(bar=>{
+    syncFpop(bar, bar.classList.contains("tbar") ? "trip" : "place");
+  });
+  if (refocus){
+    const bar=document.querySelector(open==="trip" ? ".fbar.tbar" : ".fbar:not(.tbar)");
+    const b=bar && bar.querySelector(".mfbtn");
+    if (b && b.offsetParent) b.focus({preventScroll:true});
+  }
+}
 function mFilterBtn(kind){
   const spec=SHEETS[kind];
   const n=spec.count();
@@ -5125,14 +5172,14 @@ function mFilterBtn(kind){
   b.innerHTML = "篩選" + (n ? `<span class="mfn">${circled(n)}</span>` : "");
 
   if (mob) b.setAttribute("aria-haspopup","dialog");
-  b.setAttribute("aria-expanded", mob ? SHEET===kind : (kind==="trip" ? S.tfOpen : S.lfOpen));
+  b.setAttribute("aria-expanded", mob ? SHEET===kind : fpopOpen(kind));
   b.setAttribute("aria-label", n ? `篩選，目前 ${n} 個條件` : "篩選");
   b.onclick=e=>{
     e.stopPropagation();
     if (kind==="trip" && !S.tipSeen) dismissTripHint(false);
     if (mob){ openSheet(kind); return; }
-    if (kind==="trip") S.tfOpen=!S.tfOpen; else S.lfOpen=!S.lfOpen;
-    save(); render();
+    setFpop(kind, !fpopOpen(kind));
+    syncFpop(b.closest(".fbar"), kind);
   };
   return b;
 }
@@ -5304,7 +5351,6 @@ function renderPanel(){
       tripSub(t)));
 
     tripHost.appendChild(renderTripBar());
-    if (S.tfOpen && !hasMapCard()) tripHost.appendChild(tripFilterRows(false));
 
     const qt=qTripSection();
     if (qt){
@@ -5349,7 +5395,6 @@ function renderPanel(){
 
 
   expHost.appendChild(renderFilterBar());
-  if (S.lfOpen && !hasMapCard()) expHost.appendChild(renderListFilters());
   expHost.appendChild(renderList());
   const lg=document.createElement("div"); lg.className="legend";
   lg.innerHTML=THEMES.map(t=>`<span>${ico(t.id,t.color)}${t.name}</span>`).join("");
@@ -5725,6 +5770,16 @@ document.addEventListener("click", e=>{
   if (e.target.closest && e.target.closest("#mmenu, #mmore")) return;
   closeMMenu(false);
 });
+
+document.addEventListener("pointerdown", e=>{
+  if (!LF_POP && !TF_POP) return;
+  const t=e.target;
+  if (t && t.closest){
+    const bar=t.closest(".fbar");
+    if (bar && bar.querySelector(":scope > .fpop")) return;
+  }
+  closeFpops(false);
+}, true);
 document.getElementById("q").addEventListener("keydown", e=>{
   if (e.key==="Backspace" && !e.target.value && S.qtags.length){
     S.qtags.pop();
@@ -5740,6 +5795,8 @@ addEventListener("keydown", e=>{
 
 
   if (MMENU){ closeMMenu(true); return; }
+
+  if (LF_POP || TF_POP){ closeFpops(true); return; }
   if (SHEET){ closeSheet(); return; }
 
   if (MSEARCH){ exitSearchMode(); return; }
