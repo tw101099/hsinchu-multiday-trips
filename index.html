@@ -123,7 +123,8 @@
 ::-webkit-scrollbar-thumb:hover{background:var(--sb-hover); background-clip:content-box}
 ::-webkit-scrollbar-corner{background:transparent}
 
-html{height:100%; overflow:hidden; overscroll-behavior:none; touch-action:manipulation}
+html{height:100%; overflow:hidden; overscroll-behavior:none; touch-action:manipulation;
+     background:var(--bg); background-image:var(--paper-bg)}
 body{
   margin:0; height:100dvh; overflow:hidden; overscroll-behavior:none;
   background:var(--bg); color:var(--ink); font-size:15px; line-height:1.6;
@@ -156,7 +157,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 .tdhead .tdnav,
 
 .shfoot .shbtn,
-.clear, .ghost, #sort,
+
+.clear, .ghost, #sort, .sortlbl,
 
 #qreset, .qmore,
 .mapbtns button,
@@ -241,7 +243,12 @@ button{font:inherit; color:inherit; cursor:pointer}
   white-space:nowrap; font-family:inherit;
 }
 #qreset[hidden]{display:none}
-#qreset .gl{font-size:13px; line-height:1}
+
+#qreset .gl{display:inline-flex; line-height:1}
+#qreset .gl svg{
+  display:block; width:14px; height:14px;
+  stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round;
+}
 
 #theme{
   flex:none; display:flex; align-items:center; justify-content:center;
@@ -261,7 +268,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   #qreset .lbl{display:none}
   #qreset{padding:3px 8px}
 
-  #qreset .gl{font-size:20px}
+  #qreset .gl svg{width:20px; height:20px}
 }
 
 .main{flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden}
@@ -431,7 +438,8 @@ button{font:inherit; color:inherit; cursor:pointer}
   :root{--navh:54px}
   .mnav{
     display:flex; flex:none; align-items:stretch;
-    background:var(--panel); border-top:1px solid var(--line);
+
+    background:var(--panel); background-image:var(--paper-panel); border-top:1px solid var(--line);
 
     padding-bottom:env(safe-area-inset-bottom);
 
@@ -572,6 +580,7 @@ html.sheeton .panel{overflow:hidden}
 
 .sheetbody .tfclear{display:none}
 
+.sheetwrap[data-kind=map] .sheetbody{padding-top:12px}
 .sheetwrap[data-kind=map] .sheetbody .detail{
   margin:0 0 10px; border-top:1px solid var(--accent); border-radius:var(--r);
 }
@@ -768,6 +777,12 @@ html.sheeton .panel{overflow:hidden}
 #sort{
   flex:none; font-family:inherit; max-width:120px;
 }
+
+.sortwrap{flex:none; position:relative; display:inline-flex}
+.sortlbl{display:none; align-items:center; white-space:nowrap}
+.sortlbl .chev{margin-left:3px}
+
+#sort:focus-visible + .sortlbl{outline:2px solid var(--accent); outline-offset:2px}
 
 .lfilters{padding:8px 14px 10px}
 .frow{display:flex; align-items:flex-start; gap:9px; padding:4px 0}
@@ -1032,6 +1047,13 @@ html.sheeton .panel{overflow:hidden}
   margin:0; border:0; border-top:1px solid var(--line); border-radius:0;
   background:transparent;
 }
+
+.place-card.is-expanded > .place-summary{
+  background:var(--accent-soft); border-color:var(--accent); transition:none;
+}
+@media (pointer:coarse){
+  .place-card.is-expanded{transform:translateZ(0)}
+}
 .sheetbody .place-detail{border-top:1px solid var(--accent); border-radius:var(--r); margin:0}
 .sheetbody .place-card > .place-detail{border-top:1px solid var(--line); border-radius:0}
 .detail h3{margin:0 0 8px; font-size:12px; color:var(--ink3); font-weight:600; letter-spacing:.06em}
@@ -1062,6 +1084,9 @@ html.sheeton .panel{overflow:hidden}
 .nearby{margin-top:11px; border-top:1px solid var(--line); padding-top:8px}
 .nearby .row{padding:5px 6px}
 .nearby .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
+
+.zone-sheet .zbody .row{padding:5px 6px}
+.zone-sheet .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
 .wider{border:0; background:none; color:var(--ink3); font-size:12px; text-decoration:underline; padding:4px 6px 0}
 .wider:hover{color:var(--accent)}
 
@@ -1176,7 +1201,7 @@ html.sheeton .panel{overflow:hidden}
 .alert .at{flex:1; min-width:0}
 .tpickmini .alert{margin-left:10px; padding:7px 9px}
 
-:root{--trowgap:10px}   
+:root{--trowgap:8px}   
 .rtrips{display:flex; flex-direction:column; gap:var(--trowgap);
         margin:2px 0 6px 13px; padding-left:11px; border-left:1px solid var(--line)}
 
@@ -1573,6 +1598,8 @@ button.tnight:hover .chev{color:var(--accent)}
   #app:not([data-msearch]) #qreset{
     min-width:40px; min-height:40px; padding:0; border:0; background:none;
   }
+
+  #app:not([data-msearch]) #qreset .gl svg{width:20px; height:20px}
   #mmore, #mmenu{display:none!important}
   .bar .logo{order:1}
   #msearch{order:2}
@@ -1600,6 +1627,9 @@ button.tnight:hover .chev{color:var(--accent)}
   display:block; width:17px; height:17px;
   stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round;
 }
+
+#msback{min-width:44px; min-height:44px; margin:-2px}
+#msback svg{width:20px; height:20px}
 
 #mmore svg circle{fill:currentColor; stroke:none}
 #msback:hover, #msearch:hover, #mmore:hover{color:var(--accent)}
@@ -1675,7 +1705,7 @@ button.tnight:hover .chev{color:var(--accent)}
 
 
 
-  .clear, .ghost, #sort, .wider, .mapbtns button,
+  .clear, .ghost, #sort, .sortlbl, .wider, .mapbtns button,
   .shfoot .shbtn, .qmore{min-height:32px; position:relative}
   .clear::after, .ghost::after, .wider::after, .mapbtns button::after,
   .shfoot .shbtn::after, .qmore::after{
@@ -1710,6 +1740,12 @@ button.tnight:hover .chev{color:var(--accent)}
 
 @media (max-width:699px), (pointer:coarse){
   input, textarea, select, #q, #sort{font-size:16px}
+
+  .sortlbl{display:inline-flex}
+  #sort{
+    position:absolute; left:0; right:0; top:-6px; bottom:-6px; width:100%; height:auto;
+    max-width:none; min-height:0; margin:0; padding:0; border:0; opacity:0; z-index:1;
+  }
 }
 
 @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
@@ -1739,7 +1775,8 @@ button.tnight:hover .chev{color:var(--accent)}
 
     <div id="qwrap"><input id="q" type="search" aria-label="搜尋景點或主題" placeholder="搜尋景點或主題"><button id="qx" type="button" hidden aria-label="清除搜尋文字" title="清除搜尋文字">×</button></div>
 
-    <button id="qreset" class="btn-act" type="button" hidden aria-label="重置所有篩選與行程" title="重置所有篩選與行程"><span class="gl" aria-hidden="true">⟲</span><span class="lbl">重置</span></button>
+
+    <button id="qreset" class="btn-act" type="button" hidden aria-label="重置所有篩選與行程" title="重置所有篩選與行程"><span class="gl" aria-hidden="true"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2.6 4.2v4.4h4.3"/><path d="M4.4 12.2a6.5 6.5 0 1 0 1.5-6.8L2.6 8.6"/></svg></span><span class="lbl">重置</span></button>
     <button id="theme" class="btn-act" title="切換明暗" aria-label="切換明暗"></button>
 
     <button id="msearch" type="button" aria-label="搜尋" title="搜尋景點、基地或主題">
@@ -3369,7 +3406,12 @@ function renderSort(){
   sel.title="依車程＝離所屬基地的車程（多日遊的車程是雙層的：基地離新竹、景點離基地）";
   sel.innerHTML=SORTS.map(s=>`<option value="${s.id}"${S.sort===s.id?" selected":""}>${s.label}</option>`).join("");
   sel.onchange=()=>{ S.sort=sel.value; S.sortPicked=true; save(); render(); };
-  return sel;
+
+  const wrap=document.createElement("span"); wrap.className="sortwrap";
+  const lbl=document.createElement("span"); lbl.className="sortlbl btn-act"; lbl.setAttribute("aria-hidden","true");
+  lbl.innerHTML=esc((SORTS.find(s=>s.id===S.sort)||SORTS[0]).label)+CHEV_SVG;
+  wrap.append(sel, lbl);
+  return wrap;
 }
 
 function renderTripsMini(){
@@ -4776,12 +4818,13 @@ function zoneSheetBody(){
   const base=BS[view.bid];
   const zone=base && zonesOf(base).find(z=>z.name===view.name);
   const lodges=view.ids.map(id=>BY_ID[id]).filter(Boolean);
-  const intro=document.createElement("p"); intro.className="gintro";
+
+  const intro=document.createElement("p"); intro.className="gintro place-summary";
   intro.textContent=`${base ? base.name+"　" : ""}住宿 ${lodges.length} 家`;
-  w.appendChild(intro);
+  const detail=document.createElement("div"); detail.className="detail place-detail";
   if (zone && zone.note){
-    const note=document.createElement("p"); note.className="znote"; note.textContent=zone.note;
-    w.appendChild(note);
+    const note=document.createElement("p"); note.className="desc"; note.textContent=zone.note;
+    detail.appendChild(note);
   }
   const body=document.createElement("div"); body.className="zbody";
   if (lodges.length) lodges.forEach(p=>body.appendChild(rowFor(p, null, null, null, true)));
@@ -4790,7 +4833,8 @@ function zoneSheetBody(){
     empty.textContent="這一帶目前沒有可定位的住宿資料。";
     body.appendChild(empty);
   }
-  w.appendChild(body);
+  detail.appendChild(body);
+  w.appendChild(placeCard(intro, detail));
   return w;
 }
 
