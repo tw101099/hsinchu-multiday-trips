@@ -30,7 +30,6 @@
 
   --hover-bg:#f6f2e9;
   --ink:#2a241e; --ink2:#665b4f; --ink3:#736a5d;
-  --section-title-color:var(--ink2);
 
   --line:#e6ddcc; --line2:#d1c6b0;
 
@@ -751,13 +750,13 @@ html.sheeton .panel{overflow:hidden}
 
 .fsum{
   flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:6px;
-  font-size:12.5px; color:var(--ink3); white-space:nowrap; overflow:hidden;
+  white-space:nowrap; overflow:hidden;
 }
 .fsum .ssico{display:inline-flex; align-items:center; gap:3px}
 .fsum .ic{width:15px; height:15px; margin-right:0}
 .fsum .ftxt{overflow:hidden; text-overflow:ellipsis}
 
-.fnum{flex:none; font-size:12.5px; color:var(--ink3); white-space:nowrap}
+.fnum{flex:none; white-space:nowrap}
 
 @media (min-width:900px) and (max-width:1279px) and (min-height:560px){
   .fbar{top:0}
@@ -800,16 +799,21 @@ html.sheeton .panel{overflow:hidden}
 .cnt{margin-left:5px; color:var(--ink3); font-size:11px}
 .chip[aria-pressed=true] .cnt{color:var(--ink3)}
 
+.sec, .sec .ssub, .fsum, .results > .corr > .tcath, .ghead .gnm, #mcond,
+.gintro .gdesc, .lodgebox .zhead{
+  font-size:12.5px; font-weight:400; color:var(--ink2);
+}
+.sec .n, .fnum, .results > .corr > .tcath .n, .ghead .n{font-size:12.5px; color:var(--ink3)}
 .sec{
   display:flex; align-items:center; gap:7px; width:100%; min-height:36px;
   border:0; background:none;
   padding:9px 0; margin-top:11px; border-top:1px solid var(--line);
-  font-size:12.5px; color:var(--ink2); text-align:left;
+  text-align:left;
 }
 
-@media (hover:hover){.sec:hover{color:var(--accent)}}
+@media (hover:hover){.sec:not(.secitin):hover{color:var(--accent)}}
 
-.sec .n{display:inline-flex; align-items:center; color:var(--ink3); font-variant-numeric:tabular-nums}
+.sec .n{display:inline-flex; align-items:center; font-variant-numeric:tabular-nums}   
 
 .sec .n .ic{width:13px; height:13px; margin:0 0 0 3px}
 
@@ -823,18 +827,16 @@ html.sheeton .panel{overflow:hidden}
 .sec .chev{margin-left:auto}
 
 .sec .ssub{
-  flex:1; min-width:0; color:var(--ink2);
+  flex:1; min-width:0;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
-@media (hover:hover){.sec:hover .ssub{color:var(--ink)}}
+
+@media (hover:hover){.sec:not(.secitin):hover .ssub{color:var(--ink)}}
 
 .sec.secitin{
-  color:var(--section-title-color, var(--ink)); cursor:default;
+  cursor:default;
   box-shadow:inset 0 -1px 0 var(--line2);
 }
-.sec.secitin .ssub{color:inherit}
-@media (hover:hover){.sec.secitin:hover{color:var(--section-title-color, var(--ink))}}
-@media (hover:hover){.sec.secitin:hover .ssub{color:inherit}}
 
 .shfoot{display:flex; justify-content:flex-end; padding:12px 0 2px}
 .shfoot .shbtn{
@@ -881,26 +883,25 @@ html.sheeton .panel{overflow:hidden}
 .tpickmini .rtlist{margin-left:2px}
 .tpickmini .rthead{padding:5px 7px; font-size:12.5px}
 
-.tpickmini .rtrips{margin-left:10px; padding-left:7px}
+.tpickmini .rtrips{margin-left:10px; padding-left:3px}
 .tpickmini .trow{padding:5px 8px; font-size:12.5px}
 
 .results{padding:2px 14px 20px}   
 
 .scrollpad{height:0; flex:none}
 
-.results .tcath{margin:16px 0 2px; padding:5px 2px}
+.results .tcath{margin:16px -14px 2px; padding:5px 16px}
 
 .results > .corr:first-child > .tcath{margin-top:4px}
 
-.results > .corr > .bgroup > .ghead,
+.results > .corr > .bgroup > .ghead{margin-left:-14px; width:calc(100% + 28px)}
 .results > .corr > .bgroup > .gintro,
 .results > .corr > .bgroup > .blodge{margin-left:4px}
 
-.results > .corr > .bgroup > .ghead,
 .results > .corr > .bgroup > .gintro,
 .results > .corr > .bgroup > .blodge{width:calc(100% - 4px)}
 
-.results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:13px; border-left:3px solid var(--line);
+.results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:3px; border-left:3px solid var(--line);
   border-left-color:color-mix(in srgb, var(--dc, var(--line)) 30%, transparent)}
 .results > .corr > .bgroup > .ghead.tripgrp ~ .grp{border-left-color:color-mix(in srgb, var(--accent) 30%, transparent)}
 
@@ -951,26 +952,26 @@ html.sheeton .panel{overflow:hidden}
 
 .ghead{
   position:relative; display:flex; width:100%; align-items:center; gap:8px;
-  margin:14px 0 6px; padding:6px 9px; border:0; border-radius:8px;
-  border-bottom:1px solid var(--line); background:none; text-align:left;
+  margin:14px 0 6px; padding:6px 23px 6px 27px; border:0; border-radius:0;
+  background:none; text-align:left;
   font:inherit; font-size:12px; color:var(--ink3); transition:background .12s;
 }
 
 .ghead .rbar{flex:none; width:3px; height:17px; border-radius:2px; background:var(--dc,var(--ink3))}
 
-.results > .corr > .bgroup > .ghead.stuck{margin-left:0; width:100%; padding-left:13px}
 .ghead.stuck::before{
-  content:""; position:absolute; left:2px; top:50%; margin-top:-4px; width:8px; height:8px;
+  content:""; position:absolute; left:16px; top:50%; margin-top:-4px; width:8px; height:8px;
   border-radius:2px; background:var(--dc,var(--ink3));
 }
+
 .ghead .gnm{
-  flex:1; min-width:0; font-size:14px; font-weight:600; color:var(--ink);
+  flex:1; min-width:0;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
-.ghead .num{flex:none}
+.ghead .n{flex:none}
 .ghead .chev{flex:none; width:12px; height:12px; color:var(--ink3); transition:transform .15s}
 
-.ghead[aria-expanded=true]{margin-bottom:0; box-shadow:none}
+.ghead[aria-expanded=true]{margin-bottom:0}
 
 .ghead{
   position:sticky; top:calc(var(--l1h) * 2); z-index:399; min-height:var(--l1h);
@@ -978,10 +979,8 @@ html.sheeton .panel{overflow:hidden}
   background:var(--panel); background-image:var(--paper-panel);
 }
 
-.ghead.stuck{border-radius:0}
-
 .results > .corr > .tcath{
-  position:sticky; top:calc(var(--l1h) * 2); z-index:398; min-height:30px;
+  position:sticky; top:calc(var(--l1h) * 2); z-index:398; min-height:var(--l1h);
   background:var(--panel); background-image:var(--paper-panel);
   box-shadow:inset 0 -1px 0 var(--line2);
 }
@@ -1002,8 +1001,8 @@ html.sheeton .panel{overflow:hidden}
 }
 
 .gintro .gdesc{
-  flex:1; min-width:0;
-  font-size:13px; color:var(--ink2); line-height:1.65; margin:0;
+  flex:1; min-width:0; line-height:1.65; margin:0;
+
 }
 
 .gintro .groads{font-size:11.5px; color:var(--ink3); line-height:1.5; margin:0}
@@ -1074,9 +1073,7 @@ html.sheeton .panel{overflow:hidden}
 }
 .place-card.timeline{width:calc(100% - 5px); margin-left:5px}
 
-.results > .corr > .bgroup > .grp > .place-card{margin-left:-16px; width:calc(100% + 16px)}
-.results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%; padding-left:25px}
-.results > .corr > .bgroup > .grp > .place-card > .place-detail{padding-left:25px}
+.results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%}
 .place-card > .place-summary{
   width:100%; margin:0; border:0; border-radius:0; background:transparent;
 }
@@ -1225,7 +1222,7 @@ html.sheeton .panel{overflow:hidden}
 :root{--trowgap:8px}   
 
 .rtrips{display:flex; flex-direction:column; gap:var(--trowgap);
-        margin:2px 0 6px 9px; padding-left:13px; border-left:3px solid var(--line);
+        margin:2px 0 6px 9px; padding-left:3px; border-left:3px solid var(--line);
         border-left-color:color-mix(in srgb, var(--dc, var(--line)) 30%, transparent)}
 
 .trow{
@@ -1370,13 +1367,14 @@ html.sheeton .panel{overflow:hidden}
 
 .lodgebox h3{margin:12px 0 6px; font-size:12px; color:var(--ink3); font-weight:600; letter-spacing:.06em}
 
-.lodgebox .zhead{margin:10px 0 2px; font-size:12.5px; color:var(--ink); font-weight:600}
+.lodgebox .zhead{margin:10px 0 2px}
 
 .lodgebox p.zhead.plain{color:var(--ink3); font-weight:500}
 .lodgebox button.zhead{
   display:flex; align-items:center; gap:7px; width:100%; text-align:left;
   border:1px solid var(--line); border-radius:8px; background:var(--sunk);
-  font:inherit; font-size:12.5px; font-weight:600; padding:4px 8px; margin:10px 0 2px;
+  padding:4px 8px; margin:10px 0 2px;
+
 }
 
 @media (hover:hover){.lodgebox button.zhead:hover{background-color:var(--panel); border-color:var(--line2)}}
@@ -1699,7 +1697,7 @@ html.sheeton .panel{overflow:hidden}
   margin:0 calc(-1 * max(14px, env(safe-area-inset-right))) -9px calc(-1 * max(14px, env(safe-area-inset-left)));
   padding:0 max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left));
   box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line2);
-  font-size:12.5px; color:var(--ink2);
+
 }
 #mcond .mcn{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 
@@ -3419,9 +3417,12 @@ function renderFilterBar(){
   return bar;
 }
 
+function countHtml(n, unit){
+  return `<span class="num">${n}</span>` + (unit ? ` ${unit}` : "");
+}
 function barNum(n, total, filtered, unit, title){
   const el=document.createElement("span"); el.className="fnum";
-  el.innerHTML=`<span class="num">${filtered ? `${n}/${total}` : total}</span> ${unit}`;
+  el.innerHTML=countHtml(filtered ? `${n}/${total}` : total, unit);
   el.title=title; return el;
 }
 
@@ -4762,7 +4763,7 @@ function renderList(){
 
     h.innerHTML=`<span class="rbar"></span>` +
       `<span class="gnm">這趟行程</span>` +
-      `<span class="num">${tripRows.length}</span>`;
+      `<span class="n">${countHtml(tripRows.length)}</span>`;   // 計數同 `.ghead .n`（棒 DM5 釘層文字契約②）
     h.title = `${t.code||""} ${t.name||""}`.trim();
     const tc=corrBox(), tb=bgroupBox();
     tb.appendChild(h);
@@ -4793,7 +4794,7 @@ function renderList(){
 
     h.innerHTML=`<span class="rbar"></span>` +
       `<span class="gnm">${esc(r.name)}</span>` +
-      `<span class="num">${g[r.id].length}</span>` +
+      `<span class="n">${countHtml(g[r.id].length)}</span>` +
       `<svg class="chev" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>`;
     h.onclick=()=>selectBase(r.id, true);
 
@@ -4827,7 +4828,7 @@ function renderList(){
     const h=document.createElement("div"); h.className="tcath";
     h.style.setProperty("--cc", color);
     h.innerHTML=`<span class="nm">${esc(label)}</span>` +
-                `<span class="n">${rows.reduce((n,r)=>n+g[r.id].length,0)}</span>`;
+                `<span class="n">${countHtml(rows.reduce((n,r)=>n+g[r.id].length,0))}</span>`;
     cw.appendChild(h);
     rows.forEach(r=>baseGroup(r, cw));
     wrap.appendChild(cw);
@@ -5316,7 +5317,7 @@ function renderPanel(){
 
 
   expHost.appendChild(section("基地",
-    S.base.size ? `${S.base.size}/${BASES.length} 個` : `${BASES.length} 個`, S.basesOpen,
+    countHtml(S.base.size ? `${S.base.size}/${BASES.length}` : BASES.length, "個"), S.basesOpen,
     ()=>{ S.basesOpen=!S.basesOpen; save(); render(); }, "toplevel basesec",
     baseSub()));
 
