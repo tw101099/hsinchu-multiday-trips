@@ -44,6 +44,8 @@
   --sb:#d1c6b0; --sb-hover:#a89a80;
 
   --sh:70,50,25;
+
+  --lift-shadow:0 1px 2px rgba(var(--sh),.10), 0 6px 18px rgba(var(--sh),.12);
   --pinfx:radial-gradient(circle at 38% 32%, rgba(255,255,255,.3), rgba(255,255,255,0) 55%, rgba(60,40,20,.16) 100%);
   --tile:sepia(.28) saturate(.75) contrast(.93) brightness(1.04);
 
@@ -80,6 +82,7 @@
     --danger:#c17167;
     --sb:#4f463d; --sb-hover:#6a5f52;
     --sh:0,0,0;   
+    --lift-shadow:0 1px 2px rgba(var(--sh),.16), 0 6px 18px rgba(var(--sh),.20);   
     --pinfx:radial-gradient(circle at 38% 32%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%, rgba(0,0,0,.22) 100%);
     --tile:invert(1) hue-rotate(180deg) brightness(.82) contrast(.82) sepia(.35);
 
@@ -107,6 +110,7 @@
         --danger:#c17167;
     --sb:#4f463d; --sb-hover:#6a5f52;
     --sh:0,0,0;   
+    --lift-shadow:0 1px 2px rgba(var(--sh),.16), 0 6px 18px rgba(var(--sh),.20);   
     --pinfx:radial-gradient(circle at 38% 32%, rgba(255,255,255,.22), rgba(255,255,255,0) 55%, rgba(0,0,0,.22) 100%);
     --tile:invert(1) hue-rotate(180deg) brightness(.82) contrast(.82) sepia(.35);
 
@@ -894,13 +898,16 @@ html.sheeton .panel{overflow:hidden}
 .tpickmini .rtrips{margin-left:10px; padding-left:8px}
 .tpickmini .trow{padding:5px 8px; font-size:12.5px}
 
-.results{padding:2px 14px 20px}   
+.results{padding:0 14px 20px}   
 
 .scrollpad{height:0; flex:none}
 
-.results .tcath{margin:16px -14px 2px; padding:5px 14px 5px 16px}
+.results .tcath{margin:var(--trowgap) -14px 0; padding:5px 14px 5px 16px}
 
-.results > .corr:first-child > .tcath{margin-top:4px}
+.results > .corr:first-child > .tcath{margin-top:0}
+
+.results > .corr > .tcath + .bgroup > .ghead,
+.results > .corr:first-child > .bgroup:first-child > .ghead{margin-top:0}
 
 .results > .corr > .bgroup > .ghead{margin-left:-14px; width:calc(100% + 28px)}
 .results > .corr > .bgroup > .gintro,
@@ -960,7 +967,7 @@ html.sheeton .panel{overflow:hidden}
 
 .ghead{
   position:relative; display:flex; width:100%; align-items:center; gap:8px;
-  margin:14px 0 6px; padding:6px 14px 6px 27px; border:0; border-radius:0;
+  margin:var(--trowgap) 0 6px; padding:6px 14px 6px 27px; border:0; border-radius:0;   
   background:none; text-align:left;
   font:inherit; font-size:12px; color:var(--ink3); transition:background .12s;
 }
@@ -1249,9 +1256,6 @@ html.sheeton .panel{overflow:hidden}
 .trow[aria-pressed=true]{padding:5px 8px; color:var(--ink); font-weight:600}
 .tpickmini .trow[aria-pressed=true]{padding:4px 7px}   
 
-.rtrips > .trow[aria-pressed=true]{margin-left:-11px; width:calc(100% + 11px); padding-left:19px}
-.tpickmini .rtrips > .trow[aria-pressed=true]{padding-left:18px}
-
 .trow .tl{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 
 .trow .tbs{flex:none; font-size:11.5px; color:var(--ink3)}
@@ -1337,7 +1341,7 @@ html.sheeton .panel{overflow:hidden}
 
 .mi.nd{color:var(--ink2)}
 
-.trow, .tstop, .tnight, .flag{
+.trow, .tstop, .tnight{
   background-color:var(--card-bg); background-image:var(--card-lift), var(--paper-panel);
 }
 .place-card > .place-detail, .place-card > .place-summary, .gintro, .blodge, .nlodge,
@@ -1347,6 +1351,9 @@ html.sheeton .panel{overflow:hidden}
   background-color:var(--sunk); background-image:var(--paper-panel);
 }
 
+.flag, .lodgebox .zhead{
+  background-color:var(--panel); background-image:var(--paper-panel);
+}
 .tstop{
   display:flex; width:100%; align-items:flex-start; gap:8px; text-align:left;
   margin-left:5px; padding:7px 9px; border:1px solid var(--line); border-radius:var(--r);
@@ -1384,13 +1391,11 @@ html.sheeton .panel{overflow:hidden}
 .place-card, .gintro, .blodge, .nlodge,
 .trow[aria-pressed=true], .tstop.open, .tstop[aria-pressed=true],
 .tnight.open, .tnight[aria-pressed=true]{
-  border-width:2px; border-style:solid; border-color:var(--line2);
-  border-color:color-mix(in srgb, var(--accent) 22%, transparent);
-  box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent),
-             0 1px 6px color-mix(in srgb, var(--accent) 12%, transparent);
+  border-width:2px; border-style:solid; border-color:transparent;
+  box-shadow:var(--lift-shadow);
 }
 
-.blodge, .nlodge{border-top-width:0; clip-path:inset(0 -8px -8px -8px)}
+.blodge, .nlodge{border-top-width:0; clip-path:inset(0 -28px -28px -28px)}
 
 .nlodge{
   width:100%; margin:0 0 4px 5px; padding:2px 9px 8px;   
@@ -1403,16 +1408,17 @@ html.sheeton .panel{overflow:hidden}
 
 .lodgebox .zhead{margin:10px 0 2px}
 
-.lodgebox p.zhead.plain{color:var(--ink3); font-weight:500}
+.lodgebox p.zhead.plain{color:var(--ink3); font-weight:500; padding:4px 8px; border-radius:8px}
+
 .lodgebox button.zhead{
   display:flex; align-items:center; gap:7px; width:100%; text-align:left;
-  border:1px solid var(--line); border-radius:8px; background:var(--sunk);
+  border:1px solid var(--line); border-radius:8px;
   padding:4px 8px; margin:10px 0 2px;
 
 }
 
-@media (hover:hover){.lodgebox button.zhead:hover{background-color:var(--panel); border-color:var(--line2)}}
-.lodgebox button.zhead[aria-pressed=true]{border-color:var(--accent); background:var(--panel)}
+@media (hover:hover){.lodgebox button.zhead:hover{background-color:var(--hover-bg); border-color:var(--line2)}}
+.lodgebox button.zhead[aria-pressed=true]{border-color:var(--accent); background-color:var(--panel)}
 .lodgebox .zhead .zn{flex:1; min-width:0}
 .lodgebox .zhead .zck{flex:none; color:var(--accent); font-size:13px; line-height:1}
 
@@ -1424,7 +1430,7 @@ html.sheeton .panel{overflow:hidden}
 .lodgebox button.zhead[aria-pressed=true] .zloc{color:var(--accent)}
 .lodgebox .zhead.locatable{
   display:flex; align-items:center; gap:7px; width:100%; padding:4px 8px;
-  border:1px solid var(--line); border-radius:8px; background:var(--sunk);
+  border:1px solid var(--line); border-radius:8px;   
 }
 .lodgebox .zhead.locatable .zn{flex:1; min-width:0}
 .lodgebox .zlocbtn{
@@ -1432,7 +1438,7 @@ html.sheeton .panel{overflow:hidden}
   display:inline-flex; align-items:center; justify-content:center;
   border:0; border-radius:8px; background:none; color:var(--ink3); cursor:pointer;
 }
-@media (hover:hover){.lodgebox .zlocbtn:hover{background-color:var(--panel); color:var(--accent)}}
+@media (hover:hover){.lodgebox .zlocbtn:hover{background-color:var(--hover-bg); color:var(--accent)}}   
 .lodgebox .zlocbtn .zloc{width:14px; height:14px}
 
 .lodgebox .znote{margin:1px 0 5px 8px; font-size:11.5px; color:var(--ink2); line-height:1.6}
