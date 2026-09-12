@@ -705,9 +705,8 @@ html.sheeton .panel{overflow:hidden}
   }
   .panel.twolane .lane-explore > .sec.basesec{top:0}
   .panel.twolane .lane-explore > .sec.seclist{top:var(--l1h)}
-  .panel.twolane .lane-explore > .fbar{
-    box-shadow:inset 0 -1px 0 var(--line), 0 2px 4px rgb(60 45 30 / 6%);
-  }
+
+  .panel.twolane .lane-explore > .fbar{box-shadow:inset 0 -1px 0 var(--line)}
 
   .panel.twolane .lane-explore > .sec.basesec:hover,
   .panel.twolane .lane-explore > .sec.seclist:hover{background:var(--hover-bg)}
@@ -817,6 +816,8 @@ html.sheeton .panel{overflow:hidden}
 .sec.toplevel{padding-left:14px; padding-right:14px; border-top:0; margin-top:0}
 
 .sec.toplevel{position:relative}
+
+.stuck-last{box-shadow:inset 0 -1px 0 var(--line), 0 2px 4px rgb(60 45 30 / 6%) !important}
 .sec.toplevel::after{content:""; position:absolute; left:0; right:0; bottom:-1px;
                      height:1px; background:var(--line); z-index:1; pointer-events:none}
 .sec .chev{margin-left:auto}
@@ -946,13 +947,13 @@ html.sheeton .panel{overflow:hidden}
 
 .ghead{
   position:relative; display:flex; width:100%; align-items:center; gap:7px;
-  margin:14px 0 6px; padding:6px 10px 6px 15px; border:0; border-radius:8px;
+  margin:14px 0 6px; padding:6px 10px 6px 20px; border:0; border-radius:8px;
   border-bottom:1px solid var(--line); background:none; text-align:left;
   font:inherit; font-size:12px; color:var(--ink3); transition:background .12s;
 }
 
 .ghead::before{
-  content:""; position:absolute; left:0; top:8px; bottom:8px; width:3px;
+  content:""; position:absolute; left:8px; top:8px; bottom:8px; width:3px;
   border-radius:2px; background:var(--dc,var(--ink3));
 }
 .ghead .gnm{
@@ -962,11 +963,7 @@ html.sheeton .panel{overflow:hidden}
 .ghead .num{flex:none}
 .ghead .chev{flex:none; width:12px; height:12px; color:var(--ink3); transition:transform .15s}
 
-.ghead[aria-expanded=true]{
-  margin-bottom:0; border-radius:8px 8px 0 0;
-  border:1px solid var(--accent); border-bottom-color:transparent; background:var(--accent-soft);
-}
-.ghead[aria-expanded=true] + .gintro{border-radius:0; border-top:0}
+.ghead[aria-expanded=true]{margin-bottom:0; border-bottom-color:transparent}
 
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
@@ -5158,6 +5155,8 @@ function renderPanel(){
     tripHost=document.createElement("div"); tripHost.className="lane lane-trip";
     expHost=document.createElement("div"); expHost.className="lane lane-explore";
     expHost.addEventListener("scroll", updateTotop, {passive:true});
+    expHost.addEventListener("scroll", ()=>syncStuck(expHost), {passive:true});
+    tripHost.addEventListener("scroll", ()=>syncStuck(tripHost), {passive:true});
     panel.append(tripHost, expHost);
 
     if (foldT){
@@ -5495,6 +5494,19 @@ function updateTotop(){
   btn.classList.toggle("show", box.scrollTop > vh*1.75);
 }
 document.getElementById("panel").addEventListener("scroll", updateTotop, {passive:true});
+document.getElementById("panel").addEventListener("scroll", ()=>syncStuck(document.getElementById("panel")), {passive:true});
+
+function syncStuck(box){
+  if (!box) return;
+  const bt=box.getBoundingClientRect().top; let last=null;
+  [...box.children].forEach(el=>{
+    const cs=getComputedStyle(el); if (cs.position!=="sticky") return;
+    const top=parseFloat(cs.top)||0; const r=el.getBoundingClientRect();
+    el.classList.remove("stuck-last");
+    if (r.top <= bt+top+0.5 && r.height>0) last=el;
+  });
+  if (last) last.classList.add("stuck-last");
+}
 addEventListener("resize", updateTotop);
 
 let LANE_STATE=null;
@@ -5525,6 +5537,7 @@ function render(){
   draw(); renderPanel(); renderMapBtns(); renderMapCond(); updateTotop();
 
   renderSheet();
+  document.querySelectorAll(".lane, #panel").forEach(syncStuck);
   syncHash();
 
   flushSheetPush();
