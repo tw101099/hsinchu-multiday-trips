@@ -962,8 +962,12 @@ html.sheeton .panel{overflow:hidden}
 .ghead .num{flex:none}
 .ghead .chev{flex:none; width:12px; height:12px; color:var(--ink3); transition:transform .15s}
 
-.ghead[aria-expanded=true]{margin-bottom:0; border-radius:8px 8px 0 0; border-bottom-color:transparent}
-.ghead[aria-expanded=true] + .gintro{border-radius:0 0 0 0}
+.ghead[aria-expanded=true]{
+  margin-bottom:0; border-radius:8px 8px 0 0;
+  border:1px solid var(--accent); border-bottom-color:transparent; background:var(--accent-soft);
+}
+.ghead[aria-expanded=true] + .gintro{border-radius:0; border-top:0}
+.ghead[aria-expanded=true]::before{left:1px}   
 
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
