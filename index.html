@@ -161,6 +161,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 .clear, .ghost, #sort, .sortlbl,
 
 #qreset, .qmore,
+
+.mfbtn,
 .mapbtns button,
 .tags .tag{
   font-size:12.5px; line-height:1.5; padding:3px 10px; border-radius:999px;
@@ -617,10 +619,9 @@ html.sheeton .panel{overflow:hidden}
 
 .mfbar{display:none; align-items:center; justify-content:flex-end; gap:8px; padding:3px 14px; min-height:38px; flex-wrap:nowrap}
 .mfbtn{
-  flex:none; min-height:32px; padding:0 12px; border-radius:999px; cursor:pointer; position:relative;
-  display:inline-flex; align-items:center; gap:6px;
-  font-family:inherit; font-size:13.5px; line-height:1.4;
-  border:1px solid var(--line); background:var(--chip-bg); color:var(--ink);
+  flex:none; min-height:32px; cursor:pointer; position:relative;
+  display:inline-flex; align-items:center; gap:6px; font-family:inherit; white-space:nowrap;
+
 }
 .mfbtn::after{content:""; position:absolute; inset:-6px 0}
 .mf-place .mfbtn{margin-left:auto}
@@ -629,7 +630,7 @@ html.sheeton .panel{overflow:hidden}
   .fbar > .mf-place{display:flex; padding:0; min-height:0; margin-left:auto}
 }
 .mfbtn[aria-expanded=true]{background:var(--accent-soft); border-color:var(--accent); font-weight:600}
-.mfbtn .mfn{font-size:15px; line-height:1; color:var(--accent)}
+.mfbtn .mfn{font-size:12.5px; line-height:1; color:var(--accent)}
 
 .mfsum{display:flex; flex-wrap:wrap; gap:6px; align-items:center; flex:1 1 auto; min-width:0}
 .mfsum .mfv{
