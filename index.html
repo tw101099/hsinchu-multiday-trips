@@ -857,9 +857,8 @@ html.sheeton .panel{overflow:hidden}
 .rrow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
 .blodge{
-  margin:0 0 10px; padding:8px 12px 10px;
-  border:1px solid var(--accent); border-top:0; border-radius:0 0 8px 8px;
-  background:var(--accent-soft);
+  margin:0 0 10px; padding:8px 10px 8px;
+  border-radius:0 0 8px 8px;
 }
 
 .btrips{display:flex; flex-direction:column; gap:var(--trowgap); margin:0 0 10px}
@@ -883,14 +882,14 @@ html.sheeton .panel{overflow:hidden}
 .tpickmini .rtlist{margin-left:2px}
 .tpickmini .rthead{padding:5px 7px; font-size:12.5px}
 
-.tpickmini .rtrips{margin-left:10px; padding-left:3px}
+.tpickmini .rtrips{margin-left:10px; padding-left:8px}
 .tpickmini .trow{padding:5px 8px; font-size:12.5px}
 
 .results{padding:2px 14px 20px}   
 
 .scrollpad{height:0; flex:none}
 
-.results .tcath{margin:16px -14px 2px; padding:5px 16px}
+.results .tcath{margin:16px -14px 2px; padding:5px 14px 5px 16px}
 
 .results > .corr:first-child > .tcath{margin-top:4px}
 
@@ -901,7 +900,7 @@ html.sheeton .panel{overflow:hidden}
 .results > .corr > .bgroup > .gintro,
 .results > .corr > .bgroup > .blodge{width:calc(100% - 4px)}
 
-.results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:3px; border-left:3px solid var(--line);
+.results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:0; border-left:3px solid var(--line);
   border-left-color:color-mix(in srgb, var(--dc, var(--line)) 30%, transparent)}
 .results > .corr > .bgroup > .ghead.tripgrp ~ .grp{border-left-color:color-mix(in srgb, var(--accent) 30%, transparent)}
 
@@ -952,7 +951,7 @@ html.sheeton .panel{overflow:hidden}
 
 .ghead{
   position:relative; display:flex; width:100%; align-items:center; gap:8px;
-  margin:14px 0 6px; padding:6px 23px 6px 27px; border:0; border-radius:0;
+  margin:14px 0 6px; padding:6px 14px 6px 27px; border:0; border-radius:0;
   background:none; text-align:left;
   font:inherit; font-size:12px; color:var(--ink3); transition:background .12s;
 }
@@ -991,8 +990,8 @@ html.sheeton .panel{overflow:hidden}
 
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
-  margin:0; padding:10px 13px 11px;
-  border:1px solid var(--accent); border-radius:8px 8px 0 0; background:var(--accent-soft);
+  margin:0; padding:8px 11px 9px;
+  border-radius:8px 8px 0 0;
 }
 .gintro .gstyle{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 8px}
 .gintro .gchip{
@@ -1012,9 +1011,9 @@ html.sheeton .panel{overflow:hidden}
   transition:background .12s, border-color .12s;
 }
 
-.row[aria-expanded=true]{background:var(--accent-soft); border-color:var(--accent)}
+.row[aria-expanded=true]{border-color:var(--accent)}
 
-.row[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent)}
+.row[aria-pressed=true]{border-color:var(--accent)}
 
 .row.act{border-color:var(--accent)}
 .tmk{flex:none; width:7px; height:7px; border-radius:2px; background:var(--accent)}
@@ -1068,24 +1067,26 @@ html.sheeton .panel{overflow:hidden}
   margin:-1px 9px 10px; padding:11px 13px 13px; background:var(--accent-soft); overflow:hidden;
 }
 .place-card{
-  width:100%; border:1px solid var(--accent); border-radius:var(--r);
+  width:100%; border-radius:var(--r);
   background:var(--accent-soft); overflow:hidden; margin:0 0 10px;
 }
 .place-card.timeline{width:calc(100% - 5px); margin-left:5px}
 
 .results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%}
+
 .place-card > .place-summary{
-  width:100%; margin:0; border:0; border-radius:0; background:transparent;
+  width:100%; margin:0; border:0; border-radius:0;
 }
+
+.place-card > .row, .place-card > .tstop{padding:5px 7px}
+.place-card > .gintro{padding:8px 11px 9px}
 
 .place-card > .place-detail{
   margin:0; border:0; border-top:1px solid var(--line); border-radius:0;
-  padding-left:9px; padding-right:9px; background:transparent;
+  padding-left:7px; padding-right:7px;
 }
 
-.place-card.is-expanded > .place-summary{
-  background:var(--accent-soft); border-color:var(--accent); transition:none;
-}
+.place-card.is-expanded > .place-summary{border:0; transition:none}
 @media (pointer:coarse){
   .place-card.is-expanded{transform:translateZ(0)}
 }
@@ -1099,8 +1100,9 @@ html.sheeton .panel{overflow:hidden}
 .facts .hint2{margin-left:7px; font-size:11px; color:var(--ink3)}
 
 .detail .desc{font-size:14px; margin:0 0 9px; -webkit-user-select:text; user-select:text}
-.flag{font-size:12.5px; color:var(--ink2); background:var(--panel); border-radius:8px; padding:7px 10px; margin:0 0 8px}
-.flag.season{color:var(--warn); background:none; padding:0 0 0 1px}
+
+.flag{font-size:12.5px; color:var(--ink2); border-radius:8px; padding:7px 10px; margin:0 0 8px}
+.flag.season{color:var(--warn)}
 
 .tags{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 9px}
 
@@ -1222,19 +1224,20 @@ html.sheeton .panel{overflow:hidden}
 :root{--trowgap:8px}   
 
 .rtrips{display:flex; flex-direction:column; gap:var(--trowgap);
-        margin:2px 0 6px 9px; padding-left:3px; border-left:3px solid var(--line);
+        margin:2px 0 6px 9px; padding-left:8px; border-left:3px solid var(--line);
         border-left-color:color-mix(in srgb, var(--dc, var(--line)) 30%, transparent)}
 
 .trow{
   display:flex; width:100%; align-items:center; gap:8px; padding:6px 9px; min-height:32px;
   font-size:13px;
-  border:1px solid var(--line); border-radius:8px; background:var(--chip-bg);
+  border:1px solid var(--line); border-radius:8px;
   text-align:left; color:var(--ink2);
   transition:border-color .12s, background .12s, color .12s;
 }
 @media (hover:hover){.trow:hover{border-color:var(--line2); color:var(--ink)}}   
-.trow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent);
-                         color:var(--ink); font-weight:600}
+
+.trow[aria-pressed=true]{padding:4px 7px; color:var(--ink); font-weight:600}
+.tpickmini .trow[aria-pressed=true]{padding:3px 6px}   
 
 .trow .tl{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 
@@ -1321,15 +1324,24 @@ html.sheeton .panel{overflow:hidden}
 
 .mi.nd{color:var(--ink2)}
 
+.trow, .tstop, .tnight, .flag{
+  background-color:var(--card-bg); background-image:var(--card-lift), var(--paper-panel);
+}
+.place-card > .place-detail, .place-card > .place-summary, .gintro, .nlodge,
+.trow[aria-pressed=true], .tstop.open, .tstop[aria-pressed=true],
+.tnight.open, .tnight[aria-pressed=true],
+.row[aria-pressed=true], .row[aria-expanded=true]{
+  background-color:var(--sunk); background-image:var(--paper-panel);
+}
+.blodge{background-color:var(--panel); background-image:var(--paper-panel)}
 .tstop{
   display:flex; width:100%; align-items:flex-start; gap:8px; text-align:left;
   margin-left:5px; padding:7px 9px; border:1px solid var(--line); border-radius:var(--r);
-  background:var(--card-bg); background-image:var(--card-lift), var(--paper-panel);
   transition:border-color .12s, background .12s;
 }
 @media (hover:hover){.tstop:hover{border-color:var(--line2)}}   
 
-.tstop.open, .tstop[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent)}
+.tstop.open, .tstop[aria-pressed="true"]{padding:5px 7px}
 
 .tstop.open{border-bottom-left-radius:0; border-bottom-right-radius:0}
 .tstop .tb{flex:1; min-width:0}
@@ -1339,7 +1351,6 @@ html.sheeton .panel{overflow:hidden}
 .tnight{
   display:flex; align-items:center; gap:7px; width:100%; text-align:left;
   margin:0 0 0 5px; padding:6px 10px; border:1px solid var(--line); border-radius:8px;
-  background:var(--card-bg); background-image:var(--card-lift), var(--paper-panel);
   font:inherit; font-size:12.5px; color:var(--ink2);
 }
 .tnight b{color:var(--ink); font-weight:600}
@@ -1349,18 +1360,25 @@ html.sheeton .panel{overflow:hidden}
 @media (hover:hover){button.tnight:hover .chev{color:var(--accent)}}
 
 .tnight.open{
-  background:var(--accent-soft); border-color:var(--accent); color:var(--ink);
+  padding:4px 8px; color:var(--ink);
   border-bottom-left-radius:0; border-bottom-right-radius:0;
 }
 
 .tnight.open .chev{color:var(--accent)}
 
-.tnight[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink)}
+.tnight[aria-pressed=true]{padding:4px 8px; color:var(--ink)}   
+
+.place-card, .gintro, .blodge, .nlodge,
+.trow[aria-pressed=true], .tstop.open, .tstop[aria-pressed=true],
+.tnight.open, .tnight[aria-pressed=true]{
+  border-width:3px; border-style:solid; border-color:var(--line2);
+  border-color:color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.blodge, .nlodge{border-top-width:0}
 
 .nlodge{
-  width:100%; margin:0 0 4px 5px; padding:2px 10px 9px;
-  border:1px solid var(--accent); border-top:0; border-radius:0 0 8px 8px;
-  background:var(--accent-soft);
+  width:100%; margin:0 0 4px 5px; padding:2px 8px 7px;   
+  border-radius:0 0 8px 8px;
 }
 
 .nlodge > h3:first-child{margin-top:6px}
