@@ -152,12 +152,13 @@ button{font:inherit; color:inherit; cursor:pointer}
 .lodgebox button.zhead:focus-visible{outline-offset:-2px}
 
 .row-select, .row-toggle{cursor:pointer}
-.row-select:hover, .row-toggle:hover{background:var(--hover-bg)}
+
+@media (hover:hover){.row-select:hover, .row-toggle:hover{background-color:var(--hover-bg)}}
 
 .row-toggle[aria-expanded=true] .chev{transform:rotate(180deg)}
 .btn-act{cursor:pointer}
 
-.btn-act:hover{border-color:var(--accent)!important; color:var(--accent)!important}
+@media (hover:hover){.btn-act:hover{border-color:var(--accent)!important; color:var(--accent)!important}}
 
 .acts a, .acts button,
 .mapcard .acts a, .mapcard .acts button,
@@ -177,10 +178,10 @@ button{font:inherit; color:inherit; cursor:pointer}
   background:var(--chip-bg); border:1px solid var(--line); color:var(--ink2);
 }
 
-.btn-act.primary:hover{
+@media (hover:hover){.btn-act.primary:hover{
   color:var(--on-accent)!important; border-color:var(--accent);
-  background:color-mix(in srgb, var(--accent) 88%, var(--ink));
-}
+  background-color:color-mix(in srgb, var(--accent) 88%, var(--ink));
+}}
 
 .num{font-size:.92em; letter-spacing:-.01em; font-variant-numeric:tabular-nums}
 .mv{font-size:.92em; letter-spacing:-.01em; white-space:nowrap; font-variant-numeric:tabular-nums}
@@ -208,7 +209,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   background:var(--bg); color:var(--ink2);
   transition:background-color .15s, color .15s, box-shadow .15s;
 }
-.seg button:hover{background:var(--accent-soft); color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
+@media (hover:hover){.seg button:hover{background-color:var(--accent-soft); color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}}
 
 .seg button[aria-pressed=true]{background:var(--accent); color:var(--on-accent); box-shadow:none}
 .seg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
@@ -221,7 +222,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   overflow-x:auto; scrollbar-width:none;
 }
 #qwrap::-webkit-scrollbar{display:none}
-#qwrap:hover{border-color:var(--accent)}
+@media (hover:hover){#qwrap:hover{border-color:var(--accent)}}
 #qwrap:focus-within{outline:1px solid var(--accent); border-color:var(--accent)}
 #q{
   flex:1 1 60px; min-width:50px; width:0; padding:3px 0 3px 6px; border:none; outline:none;
@@ -235,7 +236,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   color:var(--accent); background:none; white-space:nowrap; font-family:inherit;
 }
 
-.qtok:hover{opacity:.7}
+@media (hover:hover){.qtok:hover{opacity:.7}}
 .qtok .x{font-size:14px; line-height:1; opacity:.8}
 
 #qx{
@@ -244,7 +245,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   padding:0 2px; font-family:inherit;
 }
 #qx[hidden]{display:none}
-#qx:hover{color:var(--accent)}
+@media (hover:hover){#qx:hover{color:var(--accent)}}
 
 #q::-webkit-search-cancel-button{-webkit-appearance:none; appearance:none; display:none}
 
@@ -330,7 +331,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   border:0; border-radius:8px; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer}
 .mcondsum .mcsline{display:flex; align-items:center; min-width:0}
 .mcondsum .mcsline .mcsrow{flex:1 1 auto; min-width:0}
-.mcondsum .mcsrow:hover{background:var(--hover-bg); color:var(--accent)}
+@media (hover:hover){.mcondsum .mcsrow:hover{background-color:var(--hover-bg); color:var(--accent)}}
 .mcondsum .mcsv{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .mcondsum .mcsicons{display:flex; align-items:center; gap:6px}
 .mcondsum .mcsk{color:var(--ink3); margin-right:3px}
@@ -342,7 +343,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   font-family:inherit; font-size:12px; line-height:1.4; color:var(--ink3);
   border-radius:999px; white-space:nowrap;
 }
-.mcsx:hover{color:var(--accent); background:var(--hover-bg)}
+@media (hover:hover){.mcsx:hover{color:var(--accent); background-color:var(--hover-bg)}}
 .mcsx:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
 
 .leaflet-bar a.locbtn{display:flex; align-items:center; justify-content:center; cursor:pointer}
@@ -399,10 +400,10 @@ button{font:inherit; color:inherit; cursor:pointer}
 .mapcard .ttl{display:flex; align-items:flex-start; gap:8px}
 .mapcard .ttl b{font-size:14px; font-weight:600; flex:1; min-width:0}
 .mapcard .x{flex:none; border:0; background:none; color:var(--ink3); font-size:16px; line-height:1; padding:0 2px}
-.mapcard .x:hover{color:var(--accent)}
+@media (hover:hover){.mapcard .x:hover{color:var(--accent)}}
 .mapcard .sub{margin:3px 0 0; font-size:12px; color:var(--ink3)}
 .mapcard .m{margin:5px 0 0; font-size:12px; color:var(--ink2); display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px}
-.mapcard .acts{display:flex; flex-wrap:wrap; gap:6px; margin-top:9px}
+.mapcard .acts{display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; margin-top:9px}   
 
 .mapcard .acts a, .mapcard .acts button{
   text-decoration:none; white-space:nowrap;
@@ -562,7 +563,7 @@ html.sheeton .panel{overflow:hidden}
   touch-action:none;
 }
 .sheetgrab span{display:block; width:38px; height:4px; border-radius:999px; background:var(--line)}
-.sheetgrab:hover span{background:var(--accent)}
+@media (hover:hover){.sheetgrab:hover span{background-color:var(--accent)}}
 .sheetgrab:focus-visible{outline:2px solid var(--accent); outline-offset:-3px}
 
 .sheethead{
@@ -611,7 +612,7 @@ html.sheeton .panel{overflow:hidden}
   font-family:inherit; font-size:13px; color:var(--ink3); text-decoration:underline;
   text-underline-offset:3px;
 }
-.sheetreset:hover{color:var(--accent)}
+@media (hover:hover){.sheetreset:hover{color:var(--accent)}}
 .sheetreset:focus-visible{outline:2px solid var(--accent); outline-offset:-2px; border-radius:6px}
 
 .mfbtn{
@@ -647,7 +648,7 @@ html.sheeton .panel{overflow:hidden}
   flex:none; width:40px; height:40px; border:0; background:none; cursor:pointer;
   font-size:19px; line-height:1; color:var(--ink3); border-radius:999px;
 }
-.mfx:hover{color:var(--accent); background:var(--hover-bg)}
+@media (hover:hover){.mfx:hover{color:var(--accent); background-color:var(--hover-bg)}}
 .mfx:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
 
 @media (max-width:899px), (max-height:559px){
@@ -687,7 +688,7 @@ html.sheeton .panel{overflow:hidden}
   }
 
 
-  .panel.twolane .lane-trip > .sec.toplevel:first-child:hover{background:var(--hover-bg)}
+  @media (hover:hover){.panel.twolane .lane-trip > .sec.toplevel:first-child:hover{background-color:var(--hover-bg)}}
 
 
 
@@ -697,7 +698,7 @@ html.sheeton .panel{overflow:hidden}
   }
 
 
-  .panel.twolane .lane-explore > .sec.basesec:hover{background:var(--hover-bg)}
+  @media (hover:hover){.panel.twolane .lane-explore > .sec.basesec:hover{background-color:var(--hover-bg)}}
 
   .panel.twolane.foldt{width:441px; flex:0 0 441px}
   .panel.twolane.folde{width:381px; flex:0 0 381px}
@@ -718,7 +719,7 @@ html.sheeton .panel{overflow:hidden}
     writing-mode:vertical-rl; text-orientation:upright;
     transition:background-color .15s, color .15s;
   }
-  .railbtn:hover{background:var(--accent-soft); color:var(--accent)}
+  @media (hover:hover){.railbtn:hover{background-color:var(--accent-soft); color:var(--accent)}}
   .railbtn:focus-visible{outline:2px solid var(--accent); outline-offset:-3px}
 
   .lanefold{
@@ -731,7 +732,7 @@ html.sheeton .panel{overflow:hidden}
     background:var(--panel); color:var(--ink3);
     transition:background-color .15s, color .15s;
   }
-  .lanefold:hover{background:var(--accent-soft); color:var(--accent)}
+  @media (hover:hover){.lanefold:hover{background-color:var(--accent-soft); color:var(--accent)}}
 
   .lanefold:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
 
@@ -806,7 +807,7 @@ html.sheeton .panel{overflow:hidden}
   font-size:12.5px; color:var(--ink2); text-align:left;
 }
 
-.sec:hover{color:var(--accent)}
+@media (hover:hover){.sec:hover{color:var(--accent)}}
 
 .sec .n{display:inline-flex; align-items:center; color:var(--ink3); font-variant-numeric:tabular-nums}
 
@@ -825,15 +826,15 @@ html.sheeton .panel{overflow:hidden}
   flex:1; min-width:0; color:var(--ink2);
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
-.sec:hover .ssub{color:var(--ink)}
+@media (hover:hover){.sec:hover .ssub{color:var(--ink)}}
 
 .sec.secitin{
   color:var(--section-title-color, var(--ink)); cursor:default;
   box-shadow:inset 0 -1px 0 var(--line2);
 }
 .sec.secitin .ssub{color:inherit}
-.sec.secitin:hover{color:var(--section-title-color, var(--ink))}
-.sec.secitin:hover .ssub{color:inherit}
+@media (hover:hover){.sec.secitin:hover{color:var(--section-title-color, var(--ink))}}
+@media (hover:hover){.sec.secitin:hover .ssub{color:inherit}}
 
 .shfoot{display:flex; justify-content:flex-end; padding:12px 0 2px}
 .shfoot .shbtn{
@@ -850,7 +851,7 @@ html.sheeton .panel{overflow:hidden}
   font-size:13px;
   border:1px solid transparent; border-radius:8px; background:none; text-align:left; color:var(--ink2);
 }
-.rrow:hover{color:var(--ink)}   
+@media (hover:hover){.rrow:hover{color:var(--ink)}}   
 .rrow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
 .blodge{
@@ -1112,7 +1113,8 @@ html.sheeton .panel{overflow:hidden}
 }
 
 .mapcard .tags{margin:8px 0 0}
-.acts{display:flex; gap:7px; flex-wrap:wrap; margin:10px 0 4px}
+
+.acts{display:flex; gap:7px; flex-wrap:wrap; justify-content:flex-end; margin:10px 0 4px}
 
 .acts a, .acts button{
   text-decoration:none;
@@ -1126,7 +1128,7 @@ html.sheeton .panel{overflow:hidden}
 .zone-sheet .zbody .row{padding:5px 6px}
 .zone-sheet .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
 .wider{border:0; background:none; color:var(--ink3); font-size:12px; text-decoration:underline; padding:4px 6px 0}
-.wider:hover{color:var(--accent)}
+@media (hover:hover){.wider:hover{color:var(--accent)}}
 
 .legend{display:flex; flex-wrap:wrap; gap:4px 12px; padding:11px 15px 8px; font-size:11.5px;
         color:var(--ink3); margin-top:11px; border-top:1px solid var(--line)}
@@ -1168,7 +1170,7 @@ html.sheeton .panel{overflow:hidden}
 
 .tcath.tog{width:100%; min-height:30px; border:0; background:none; text-align:left;
            padding:5px 2px; margin:2px 0; border-radius:6px}
-.tcath.tog:hover{color:var(--ink)}   
+@media (hover:hover){.tcath.tog:hover{color:var(--ink)}}   
 .tcath .nm{flex:1; min-width:0}
 
 .tcath .csel{flex:none; font-size:11px; font-weight:400; color:var(--accent); font-variant-numeric:tabular-nums}
@@ -1185,7 +1187,7 @@ html.sheeton .panel{overflow:hidden}
   border:1px solid transparent; border-radius:8px; background:none; text-align:left;
   font-size:12.5px; color:var(--ink2);
 }
-.rthead:hover{color:var(--ink)}   
+@media (hover:hover){.rthead:hover{color:var(--ink)}}   
 .rthead[aria-expanded=true]{color:var(--ink)}
 
 .rthead .rbar{flex:none; width:3px; height:17px; border-radius:2px}
@@ -1233,7 +1235,7 @@ html.sheeton .panel{overflow:hidden}
   text-align:left; color:var(--ink2);
   transition:border-color .12s, background .12s, color .12s;
 }
-.trow:hover{border-color:var(--line2); color:var(--ink)}   
+@media (hover:hover){.trow:hover{border-color:var(--line2); color:var(--ink)}}   
 .trow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent);
                          color:var(--ink); font-weight:600}
 
@@ -1328,7 +1330,7 @@ html.sheeton .panel{overflow:hidden}
   background:var(--card-bg); background-image:var(--card-lift), var(--paper-panel);
   transition:border-color .12s, background .12s;
 }
-.tstop:hover{border-color:var(--line2)}   
+@media (hover:hover){.tstop:hover{border-color:var(--line2)}}   
 
 .tstop.open, .tstop[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent)}
 
@@ -1346,8 +1348,8 @@ html.sheeton .panel{overflow:hidden}
 .tnight b{color:var(--ink); font-weight:600}
 
 .tnight .chev{margin-left:auto; color:var(--ink3)}
-button.tnight:hover{color:var(--ink); border-color:var(--line2)}
-button.tnight:hover .chev{color:var(--accent)}
+@media (hover:hover){button.tnight:hover{color:var(--ink); border-color:var(--line2)}}
+@media (hover:hover){button.tnight:hover .chev{color:var(--accent)}}
 
 .tnight.open{
   background:var(--accent-soft); border-color:var(--accent); color:var(--ink);
@@ -1377,7 +1379,7 @@ button.tnight:hover .chev{color:var(--accent)}
   font:inherit; font-size:12.5px; font-weight:600; padding:4px 8px; margin:10px 0 2px;
 }
 
-.lodgebox button.zhead:hover{background:var(--panel); border-color:var(--line2)}
+@media (hover:hover){.lodgebox button.zhead:hover{background-color:var(--panel); border-color:var(--line2)}}
 .lodgebox button.zhead[aria-pressed=true]{border-color:var(--accent); background:var(--panel)}
 .lodgebox .zhead .zn{flex:1; min-width:0}
 .lodgebox .zhead .zck{flex:none; color:var(--accent); font-size:13px; line-height:1}
@@ -1386,7 +1388,7 @@ button.tnight:hover .chev{color:var(--accent)}
   flex:none; width:13px; height:13px; color:var(--ink3);
   stroke:currentColor; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round;
 }
-.lodgebox button.zhead:hover .zloc{color:var(--accent)}
+@media (hover:hover){.lodgebox button.zhead:hover .zloc{color:var(--accent)}}
 .lodgebox button.zhead[aria-pressed=true] .zloc{color:var(--accent)}
 .lodgebox .zhead.locatable{
   display:flex; align-items:center; gap:7px; width:100%; padding:4px 8px;
@@ -1398,7 +1400,7 @@ button.tnight:hover .chev{color:var(--accent)}
   display:inline-flex; align-items:center; justify-content:center;
   border:0; border-radius:8px; background:none; color:var(--ink3); cursor:pointer;
 }
-.lodgebox .zlocbtn:hover{background:var(--panel); color:var(--accent)}
+@media (hover:hover){.lodgebox .zlocbtn:hover{background-color:var(--panel); color:var(--accent)}}
 .lodgebox .zlocbtn .zloc{width:14px; height:14px}
 
 .lodgebox .znote{margin:1px 0 5px 8px; font-size:11.5px; color:var(--ink2); line-height:1.6}
@@ -1426,7 +1428,7 @@ button.tnight:hover .chev{color:var(--accent)}
   margin:0; padding:2px 5px; border:1px solid transparent; border-radius:6px;
   background:none; color:inherit; font-size:12px; line-height:1.65;
 }
-.precheck button.pcrow:hover{background:var(--panel); border-color:var(--line2)}
+@media (hover:hover){.precheck button.pcrow:hover{background-color:var(--panel); border-color:var(--line2)}}
 
 .precheck button.pcrow[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent)}
 
@@ -1657,7 +1659,7 @@ button.tnight:hover .chev{color:var(--accent)}
 #msback svg{width:20px; height:20px}
 
 #mmore svg circle{fill:currentColor; stroke:none}
-#msback:hover, #msearch:hover, #mmore:hover{color:var(--accent)}
+@media (hover:hover){#msback:hover, #msearch:hover, #mmore:hover{color:var(--accent)}}
 #msback:focus-visible, #msearch:focus-visible, #mmore:focus-visible{
   outline:2px solid var(--accent); outline-offset:-2px; border-radius:999px;
 }
@@ -1684,7 +1686,7 @@ button.tnight:hover .chev{color:var(--accent)}
   border:0; border-radius:8px; background:none; cursor:pointer;
   font-family:inherit; font-size:13.5px; line-height:1.4; color:var(--ink2);
 }
-#mmenu button:hover{background:var(--hover-bg); color:var(--accent)}
+@media (hover:hover){#mmenu button:hover{background-color:var(--hover-bg); color:var(--accent)}}
 #mmenu button:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
 #mmenu button[hidden]{display:none}
 
@@ -3680,9 +3682,9 @@ function renderDetail(p, inline, noNear){
   const acts=document.createElement("div"); acts.className="acts";
   acts.insertAdjacentHTML("beforeend",
 
-    `<a class="btn-act" href="https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HOME.name)}&destination=${encodeURIComponent(gnav(p))}" target="_blank" rel="noopener">導航</a>` +
+    (p.source?`<a class="btn-act" href="${esc(p.source)}" target="_blank" rel="noopener">參考</a>`:"") +
     `<a class="btn-act" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gview(p))}" target="_blank" rel="noopener">看 Google 地圖</a>` +
-    (p.source?`<a class="btn-act" href="${esc(p.source)}" target="_blank" rel="noopener">參考</a>`:""));
+    `<a class="btn-act" href="https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(HOME.name)}&destination=${encodeURIComponent(gnav(p))}" target="_blank" rel="noopener">導航</a>`);
   d.appendChild(acts);
   const canWiden = S.near < NEAR_STEPS.length-1;
   if (!noNear && (near.length || canWiden)){
