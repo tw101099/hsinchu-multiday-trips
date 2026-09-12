@@ -967,7 +967,6 @@ html.sheeton .panel{overflow:hidden}
   border:1px solid var(--accent); border-bottom-color:transparent; background:var(--accent-soft);
 }
 .ghead[aria-expanded=true] + .gintro{border-radius:0; border-top:0}
-.ghead[aria-expanded=true]::before{left:1px}   
 
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
@@ -1047,6 +1046,9 @@ html.sheeton .panel{overflow:hidden}
   background:var(--accent-soft); overflow:hidden; margin:0 0 10px;
 }
 .place-card.timeline{width:calc(100% - 5px); margin-left:5px}
+
+.results > .place-card{margin-left:8px; width:calc(100% - 8px)}
+.results > .place-card > .row{margin-left:0; width:100%}
 .place-card > .place-summary{
   width:100%; margin:0; border:0; border-radius:0; background:transparent;
 }
@@ -4885,7 +4887,8 @@ const SHEETS = {
     tab:"map", kind:"map",
     ok: () => !!(S.sel && BY_ID[S.sel]),
     title: () => `景點｜${(BY_ID[S.sel]||{}).name||""}`,
-    body: () => renderDetail(BY_ID[S.sel]),
+
+    body: () => { const p=BY_ID[S.sel]; return placeCard(rowFor(p, null, null, null, true), renderDetail(p)); },
   },
   mbase: {
     tab:"map", kind:"map",
@@ -5375,8 +5378,9 @@ function renderPanel(){
       const r=el.getBoundingClientRect();
 
       const nx=el.nextElementSibling;
+
       const bodyTop=(nx && (nx.classList.contains("detail") || nx.classList.contains("gintro")
-                            || nx.classList.contains("blodge")))
+                            || nx.classList.contains("blodge") || nx.classList.contains("place-detail")))
         ? nx.getBoundingClientRect().top : r.bottom;
       let d=0;
       if (r.top < floorY) d = r.top - floorY;
@@ -5441,7 +5445,8 @@ function select(id, keepBase, inPlace){
 
     gotoTab("place");
     S.listOpen=true;
-    if (inPlace) SCROLL_NEAR=`.results > .row[data-id="${id}"]`;
+
+    if (inPlace) SCROLL_NEAR=`.results .row[data-id="${id}"]`;
     else SCROLL_TO=id;
   }
   render();
