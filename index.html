@@ -40,7 +40,6 @@
   --guide-w:2.5px;
   --guide-full:88%;
   --guide-dim:30%;
-  --note-rule-w:2px;
 
   --panel-max:741px;
   --map-min:320px;
@@ -1082,7 +1081,7 @@ html.sheeton .panel{overflow:hidden}
   width:100%; margin:0; border:0; border-radius:0;
 }
 
-.place-card > .row, .place-card > .tstop{padding:6px 8px}
+.place-card > .row, .place-card > .tstop{padding-top:8px; padding-right:10px; padding-bottom:8px}
 .place-card > .gintro{padding:9px 12px 10px}
 
 .place-card > .place-detail{
@@ -1105,6 +1104,8 @@ html.sheeton .panel{overflow:hidden}
 .place-card.is-expanded > .place-summary{background:none; box-shadow:none; color:inherit; padding-bottom:4px; transition:none}
 .place-card.is-expanded > .place-summary .t{color:var(--ink)}
 .place-card.is-expanded > .place-summary .m{color:var(--ink2)}
+
+.place-card.timeline > .place-summary{padding-left:calc(10px - var(--guide-w))}
 @media (pointer:coarse){
   .place-card.is-expanded{transform:translateZ(0)}
 }
@@ -1112,7 +1113,7 @@ html.sheeton .panel{overflow:hidden}
 .sheetbody .place-detail{border-top:0; border-radius:0; margin:0}
 .sheetbody .place-card > .place-detail{border-top:0; border-radius:0}
 
-.sheetbody .place-card{margin-bottom:14px}
+.sheetbody .place-card:not(.timeline){margin-bottom:14px}
 
 .facts{display:grid; grid-template-columns:auto 1fr; gap:2px 14px; font-size:13px; margin-top:0; margin-bottom:10px}
 .facts dt{color:var(--ink3)}
@@ -1312,12 +1313,12 @@ html.sheeton .panel{overflow:hidden}
 }
 
 .tdnote{
-  margin:6px 0 0 5px; padding-left:13px; border-left:var(--note-rule-w) solid var(--hair);   
+  margin:6px 0 0 5px; padding-left:13px; border-left:3px solid var(--hair);   
   font-size:11.5px; line-height:1.65; color:var(--ink2);
 }
 
 .tdwhy{
-  margin:0 0 12px 5px; padding-left:13px; border-left:var(--note-rule-w) solid var(--hair);   
+  margin:0 0 12px 5px; padding-left:13px; border-left:3px solid var(--hair);   
   font-size:11.5px; line-height:1.65; color:var(--ink2);
 }
 
