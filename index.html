@@ -911,7 +911,7 @@ html.sheeton .panel{overflow:hidden}
 .tpickmini .rtlist{margin-left:2px}
 .tpickmini .rthead{padding:5px 7px; font-size:12.5px}
 
-.tpickmini .rtrips{margin-left:10px; padding-left:8px}
+.tpickmini .rtrips{margin-left:10px; padding-left:calc(8px + var(--guide-w))}   
 .tpickmini .trow{padding:5px 8px; font-size:12.5px}
 
 .results{padding:0 14px 20px}   
@@ -927,9 +927,13 @@ html.sheeton .panel{overflow:hidden}
 
 .results > .corr > .bgroup > .ghead{margin-left:-14px; width:calc(100% + 28px)}
 
-.results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:0; border-left:var(--guide-w) solid var(--line);
-  border-left-color:color-mix(in srgb, var(--dc, var(--line)) var(--guide-dim), transparent)}
-.results > .corr > .bgroup > .ghead.tripgrp ~ .grp{border-left-color:color-mix(in srgb, var(--accent) var(--guide-dim), transparent)}
+.results > .corr > .bgroup > .grp{position:relative; margin:0 0 0 13px; padding-left:var(--guide-w); border-left:0}
+.results > .corr > .bgroup > .grp::before{
+  content:""; position:absolute; top:0; bottom:0; left:0; width:var(--guide-w);
+  background:color-mix(in srgb, var(--dc, var(--accent)) var(--guide-dim), transparent);
+  pointer-events:none;
+}
+.results > .corr > .bgroup > .ghead.tripgrp ~ .grp::before{background:color-mix(in srgb, var(--accent) var(--guide-dim), transparent)}
 
 .qbh{display:flex; align-items:center; gap:6px; margin:4px 0 5px; padding:5px 2px;
      font-size:12.5px; font-weight:600; color:var(--ink2); letter-spacing:.04em}
@@ -1075,7 +1079,6 @@ html.sheeton .panel{overflow:hidden}
 
 .results > .corr > .bgroup > .grp > .place-card{margin-bottom:14px}
 .results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%}
-.results > .corr > .bgroup > .grp > .place-card > .place-detail{padding-left:10px}
 
 .place-card > .place-summary{
   width:100%; margin:0; border-radius:0;
@@ -1086,7 +1089,7 @@ html.sheeton .panel{overflow:hidden}
 
 .place-card > .place-detail{
   margin:0; border:0; border-top:0; border-radius:0;
-  padding:2px 9px 0 calc(10px + var(--guide-w));
+  padding:2px 9px 0 10px;
 }
 
 .place-detail{--detail-body-inset:7px}
@@ -1251,9 +1254,13 @@ html.sheeton .panel{overflow:hidden}
 
 :root{--trowgap:8px}   
 
-.rtrips{display:flex; flex-direction:column; gap:var(--trowgap);
-        margin:2px 0 6px 9px; padding-left:8px; border-left:var(--guide-w) solid var(--line);
-        border-left-color:color-mix(in srgb, var(--dc, var(--line)) var(--guide-dim), transparent)}
+.rtrips{display:flex; flex-direction:column; gap:var(--trowgap); position:relative;
+        margin:2px 0 6px 9px; padding-left:calc(8px + var(--guide-w)); border-left:0}
+.rtrips::before{
+  content:""; position:absolute; top:0; bottom:0; left:0; width:var(--guide-w);
+  background:color-mix(in srgb, var(--dc, var(--accent)) var(--guide-dim), transparent);
+  pointer-events:none;
+}
 
 .trow{
   display:flex; width:100%; align-items:center; gap:8px; padding:6px 9px; min-height:32px;
@@ -1336,10 +1343,14 @@ html.sheeton .panel{overflow:hidden}
 .tdfeel .fx{font-size:11px; color:var(--ink3)}
 
 .tleg{
-  display:flex; align-items:center; gap:7px; flex-wrap:wrap;
-  margin-left:5px; padding:7px 0 7px 7px; font-size:11.5px; color:var(--ink3);
-  border-left:var(--guide-w) solid var(--dc,var(--line2));
-  border-left-color:color-mix(in srgb, var(--dc,var(--line2)) var(--guide-full), transparent);
+  display:flex; align-items:center; gap:7px; flex-wrap:wrap; position:relative;
+  margin-left:5px; padding:7px 0 7px calc(7px + var(--guide-w)); font-size:11.5px; color:var(--ink3);
+  border-left:0;
+}
+.tleg::before{
+  content:""; position:absolute; top:0; bottom:0; left:0; width:var(--guide-w);
+  background:color-mix(in srgb, var(--dc, var(--accent)) var(--guide-full), transparent);
+  pointer-events:none;
 }
 
 .tleg .ic, .rthead .away.rmt .ic{stroke-width:.857}
@@ -1347,7 +1358,10 @@ html.sheeton .panel{overflow:hidden}
 
 .tleg .mv{color:var(--ink2)}
 
-.tleg.nodrive{border-left-style:dashed}
+.tleg.nodrive::before{
+  background:repeating-linear-gradient(to bottom,
+    color-mix(in srgb, var(--dc, var(--accent)) var(--guide-full), transparent) 0 6px, transparent 6px 10px);
+}
 .tleg .nd{color:var(--ink2)}
 
 .mi.nd{color:var(--ink2)}
