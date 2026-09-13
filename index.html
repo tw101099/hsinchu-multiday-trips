@@ -335,7 +335,8 @@ button{font:inherit; color:inherit; cursor:pointer}
   -webkit-overflow-scrolling:touch;
   padding-bottom:env(safe-area-inset-bottom);
 }
-.stage{position:relative; flex:1 1 auto; min-height:220px; background:var(--sunk)}
+
+.stage{position:relative; flex:1 1 auto; min-height:220px; background:var(--surface-base-sheet)}
 #map{position:absolute; inset:0}
 
 .mapnote{
@@ -550,9 +551,9 @@ button{font:inherit; color:inherit; cursor:pointer}
     position:sticky; background:var(--panel); background-image:var(--paper-panel);
   }
 
-  #app[data-mtab=trip] .sec.sectrips{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--line2)}
+  #app[data-mtab=trip] .sec.sectrips{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--hair)}
 
-  #app[data-mtab=place] .sec.basesec{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--line2)}
+  #app[data-mtab=place] .sec.basesec{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--hair)}   
 
 
   #app[data-mtab=map] .panel{display:none; border-top:0}
@@ -627,8 +628,9 @@ html.sheeton .panel{overflow:hidden}
 .sheetwrap[data-kind=map] .sheetbody .detail{
   margin:0 0 10px; border-top:1px solid var(--accent); border-radius:var(--r);
 }
+
 .sheetwrap[data-kind=map] .sheetbody .place-card > .place-detail{
-  margin:0; border:0; border-top:1px solid var(--line); border-radius:0;
+  margin:0; border-top:0; border-radius:0;
 }
 .sheetwrap[data-kind=map] .sheetbody .tripbox{padding:0}
 .sheetwrap[data-kind=map] .sheetbody .gintro,
@@ -702,7 +704,7 @@ html.sheeton .panel{overflow:hidden}
 
 @media (min-width:900px) and (min-height:560px){
   .main{flex-direction:row}
-  .panel{width:410px; flex:0 0 410px; border-top:0; border-right:1px solid var(--line)}
+  .panel{width:410px; flex:0 0 410px; border-top:0; border-right:1px solid var(--hair)}   
   .main.nomap .panel{width:auto; flex:1 1 auto}
 
 }
@@ -720,14 +722,14 @@ html.sheeton .panel{overflow:hidden}
   .main.nomap .panel.twolane{width:auto; flex:1 1 auto}
   .panel.twolane .lane{min-height:0; overflow-y:auto; overscroll-behavior:contain;
                        -webkit-overflow-scrolling:touch}
-  .panel.twolane .lane-trip{flex:0 0 var(--lane1w); width:var(--lane1w); border-right:1px solid var(--line)}
+  .panel.twolane .lane-trip{flex:0 0 var(--lane1w); width:var(--lane1w); border-right:1px solid var(--hair)}   
   .panel.twolane .lane-explore{flex:1 1 auto; min-width:0}
 
 
 
   .panel.twolane .lane-trip > .sec.toplevel:first-child{
     position:sticky; top:0; z-index:400; background:var(--panel);
-    box-shadow:inset 0 -1px 0 var(--line2);
+    box-shadow:inset 0 -1px 0 var(--hair);   
   }
 
 
@@ -737,7 +739,7 @@ html.sheeton .panel{overflow:hidden}
 
   .panel.twolane .lane-explore > .sec.basesec{
     position:sticky; top:0; z-index:400; background:var(--panel);
-    box-shadow:inset 0 -1px 0 var(--line2);   
+    box-shadow:inset 0 -1px 0 var(--hair);   
   }
 
 
@@ -755,7 +757,7 @@ html.sheeton .panel{overflow:hidden}
     flex:0 0 40px; width:40px; min-width:40px; overflow:hidden;
   }
   .railbtn{
-    width:100%; height:100%; border:0; background:var(--sunk); color:var(--ink2);
+    width:100%; height:100%; border:0; background:var(--surface-base-sheet); color:var(--ink2);   
     font-size:12.5px; letter-spacing:.12em;
 
     display:flex; align-items:center; justify-content:center; padding:12px 0;
@@ -835,7 +837,7 @@ html.sheeton .panel{overflow:hidden}
 
 #sort:focus-visible + .sortlbl{outline:2px solid var(--accent); outline-offset:2px}
 
-.lfilters{padding:8px 14px 10px; border-bottom:1px solid var(--line)}
+.lfilters{padding:8px 14px 10px; border-bottom:1px solid var(--hair)}   
 .frow{display:flex; align-items:flex-start; gap:9px; padding:4px 0}
 .fkey{flex:none; width:52px; padding-top:4px; font-size:11.5px; color:var(--ink3); letter-spacing:.06em}
 .chips{display:flex; flex-wrap:wrap; gap:5px; flex:1; min-width:0}
@@ -955,7 +957,7 @@ html.sheeton .panel{overflow:hidden}
 .results > .corr > .bgroup > .gintro,
 .results > .corr > .bgroup > .blodge{width:calc(100% - 13px)}
 
-.results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:0; border-left:3px solid var(--line);
+.results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:0; border-left:2.5px solid var(--line);
   border-left-color:color-mix(in srgb, var(--dc, var(--line)) 30%, transparent)}
 .results > .corr > .bgroup > .ghead.tripgrp ~ .grp{border-left-color:color-mix(in srgb, var(--accent) 30%, transparent)}
 
@@ -988,7 +990,7 @@ html.sheeton .panel{overflow:hidden}
   font-family:inherit; white-space:nowrap;
 }
 .qtrips, .qbases{
-  padding-bottom:12px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  padding-bottom:12px; margin-bottom:8px; border-bottom:1px solid var(--hair);   
 }
 
 .qtrips, .qbases{margin-bottom:0}
@@ -1111,17 +1113,18 @@ html.sheeton .panel{overflow:hidden}
 
 .detail{
   border:1px solid var(--accent); border-top:0; border-radius:0 0 var(--r) var(--r);
-  margin:-1px 9px 10px; padding:11px 13px 13px; background:var(--accent-soft); overflow:hidden;
+  margin:-1px 9px 10px; padding:11px 13px 13px; background:none; overflow:hidden;
 }
-.place-card{
-  width:100%; border-radius:var(--r);
-  background:var(--accent-soft); overflow:hidden; margin:0 0 10px;
+
+.place-card, .place-card.is-expanded{
+  width:100%; border-radius:0;
+  background:none; box-shadow:none; border:0; overflow:hidden; margin:0 0 14px;
 }
 .place-card.timeline{width:calc(100% - 5px); margin-left:5px}
 
 .results > .corr > .bgroup > .grp > .place-card{margin-left:-3px; width:calc(100% + 3px)}
-.results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%; padding-left:11px}
-.results > .corr > .bgroup > .grp > .place-card > .place-detail{padding-left:11px}
+.results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%; padding-left:10px}
+.results > .corr > .bgroup > .grp > .place-card > .place-detail{padding-left:10px}
 
 .place-card > .place-summary{
   width:100%; margin:0; border:0; border-radius:0;
@@ -1131,16 +1134,31 @@ html.sheeton .panel{overflow:hidden}
 .place-card > .gintro{padding:9px 12px 10px}
 
 .place-card > .place-detail{
-  margin:0; border:0; border-top:1px solid var(--line); border-radius:0;
-  padding-left:8px; padding-right:8px;
+  margin:0; border:0; border-top:0; border-radius:0;
+  padding:2px 9px 0 10px;
 }
 
-.place-card.is-expanded > .place-summary{border:0; box-shadow:none; transition:none}   
+.place-detail .facts, .place-detail .tags, .place-detail .desc, .place-detail .acts{margin-left:7px}
+.place-detail .flag{margin-left:8px}
+.place-detail .facts{margin-bottom:10px}
+.place-detail .tags{margin-bottom:10px}
+.place-detail .acts{margin:10px 0 0 7px}
+
+.place-card.is-expanded > .place-summary,
+.place-card.is-expanded > .place-detail{
+  border-left:3px solid var(--dc, var(--accent));
+  border-left-color:color-mix(in srgb, var(--dc, var(--accent)) 88%, transparent);
+  padding-left:10px;
+}
+.place-card.is-expanded > .place-summary{background:none; box-shadow:none; color:inherit; padding-bottom:4px; transition:none}
+.place-card.is-expanded > .place-summary .t{color:var(--ink)}
+.place-card.is-expanded > .place-summary .m{color:var(--ink2)}
 @media (pointer:coarse){
   .place-card.is-expanded{transform:translateZ(0)}
 }
-.sheetbody .place-detail{border-top:1px solid var(--accent); border-radius:var(--r); margin:0}
-.sheetbody .place-card > .place-detail{border-top:1px solid var(--line); border-radius:0}
+
+.sheetbody .place-detail{border-top:0; border-radius:0; margin:0}
+.sheetbody .place-card > .place-detail{border-top:0; border-radius:0}
 .detail h3{margin:0 0 8px; font-size:12px; color:var(--ink3); font-weight:600; letter-spacing:.06em}
 .facts{display:grid; grid-template-columns:auto 1fr; gap:2px 14px; font-size:13px; margin:0 0 10px}
 .facts dt{color:var(--ink3)}
@@ -1150,8 +1168,10 @@ html.sheeton .panel{overflow:hidden}
 
 .detail .desc{font-size:14px; margin:0 0 9px; -webkit-user-select:text; user-select:text}
 
-.flag{font-size:12.5px; color:var(--ink2); border-radius:8px; padding:7px 10px; margin:0 0 8px}
+.flag{display:flex; align-items:flex-start; gap:7px; background:none; box-shadow:none; border:0; padding:0; margin:3px 0 8px 1px; font-size:12px; line-height:1.65; color:var(--ink2)}
+.flag .fi{width:14px; height:14px; flex:none; margin-top:3px; stroke:currentColor; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; color:var(--ink3)}
 .flag.season{color:var(--warn)}
+.flag.season .fi{color:var(--warn)}
 
 .tags{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 9px}
 
@@ -1169,8 +1189,10 @@ html.sheeton .panel{overflow:hidden}
 }
 
 .acts .primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
-.nearby{margin-top:11px; border-top:1px solid var(--hair); padding-top:8px}   
-.nearby .row{padding:5px 6px}
+
+.nearby{margin:14px 0 0 -10px; padding:0; border-top:0}
+.nearby .row{padding:5px 9px}
+.nearby h3{margin:0 0 4px 10px}
 .nearby .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
 
 .zone-sheet .zbody .row{padding:5px 6px}
@@ -1179,7 +1201,7 @@ html.sheeton .panel{overflow:hidden}
 @media (hover:hover){.wider:hover{color:var(--accent)}}
 
 .legend{display:flex; flex-wrap:wrap; gap:4px 12px; padding:11px 15px 8px; font-size:11.5px;
-        color:var(--ink3); margin-top:11px; border-top:1px solid var(--line)}
+        color:var(--ink3); margin-top:11px; border-top:1px solid var(--hair)}   
 .legend span{display:inline-flex; align-items:center}
 .foot{font-size:11.5px; color:var(--ink3); line-height:1.75; padding:6px 15px 24px; margin:0}
 
@@ -1194,7 +1216,7 @@ html.sheeton .panel{overflow:hidden}
 
 .tpick{display:flex; flex-direction:column; gap:2px; padding:6px 0 2px}
 
-.tfilters{padding:2px 0 7px; margin-bottom:5px; border-bottom:1px solid var(--line)}
+.tfilters{padding:2px 0 7px; margin-bottom:5px; border-bottom:1px solid var(--hair)}   
 
 .tfilters .frow{padding:3px 0}
 .tfilters .fkey{width:38px}
@@ -1272,7 +1294,7 @@ html.sheeton .panel{overflow:hidden}
 :root{--trowgap:8px}   
 
 .rtrips{display:flex; flex-direction:column; gap:var(--trowgap);
-        margin:2px 0 6px 9px; padding-left:8px; border-left:3px solid var(--line);
+        margin:2px 0 6px 9px; padding-left:8px; border-left:2.5px solid var(--line);
         border-left-color:color-mix(in srgb, var(--dc, var(--line)) 30%, transparent)}
 
 .trow{
@@ -1358,7 +1380,8 @@ html.sheeton .panel{overflow:hidden}
 .tleg{
   display:flex; align-items:center; gap:7px; flex-wrap:wrap;
   margin-left:5px; padding:7px 0 7px 7px; font-size:11.5px; color:var(--ink3);
-  border-left:3px solid var(--dc,var(--line2));
+  border-left:2.5px solid var(--dc,var(--line2));
+  border-left-color:color-mix(in srgb, var(--dc,var(--line2)) 88%, transparent);
 }
 
 .tleg .ic, .rthead .away.rmt .ic{stroke-width:.857}
@@ -1389,6 +1412,9 @@ html.sheeton .panel{overflow:hidden}
   color:var(--ink);
 }
 .trow[aria-pressed="true"] .tbs, .row[aria-pressed="true"] .m, .row.act .m{color:var(--ink)}
+
+.trow[aria-pressed="true"] .tdays, .row[aria-pressed="true"] .tag, .row.act .tag,
+.tstop[aria-pressed="true"] .tag, .rrow[aria-pressed="true"] .away{color:var(--ink)}
 .blodge .row:not([aria-pressed="true"]), .nlodge .row:not([aria-pressed="true"]), .nearby .row:not([aria-pressed="true"]){
   background:none; box-shadow:none;
 }
@@ -1768,7 +1794,7 @@ html.sheeton .panel{overflow:hidden}
   flex-basis:calc(100% + max(14px, env(safe-area-inset-left)) + max(14px, env(safe-area-inset-right)));
   margin:0 calc(-1 * max(14px, env(safe-area-inset-right))) -9px calc(-1 * max(14px, env(safe-area-inset-left)));
   padding:0 max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left));
-  box-shadow:inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line2);
+  box-shadow:inset 0 1px 0 var(--hair), inset 0 -1px 0 var(--hair);   
 
 }
 #mcond .mcn{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
@@ -3746,10 +3772,11 @@ function renderDetail(p, inline, noNear){
         `<span class="hint2">${p.drive_min == null ? "只算停留——這個點的車程不列" : "停留＋從基地往返"}</span></dd>` +
     `</dl>` +
 
-    (p.desc?`<p class="desc">${esc(p.desc)}</p>`:"") +
+
     tagsHTML(p) +
-    (p.season?`<p class="flag season">${esc(p.season)}</p>`:"") +
-    (p.note?`<p class="flag">${p.status==="suspended"?"⛔ ":p.status==="partial"?"⚠ ":""}${esc(p.note)}</p>`:"");
+    (p.desc?`<p class="desc">${esc(p.desc)}</p>`:"") +
+    (p.season?`<p class="flag season"><svg class="fi" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/><circle cx="8" cy="8" r="2.6"/></svg><span>${esc(p.season)}</span></p>`:"") +
+    (p.note?`<p class="flag"><svg class="fi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.3"/><path d="M8 7.2v4M8 4.8v.2"/></svg><span>${p.status==="suspended"?"⛔ ":p.status==="partial"?"⚠ ":""}${esc(p.note)}</span></p>`:"");
   wireTags(d, inline);
   const acts=document.createElement("div"); acts.className="acts";
   acts.insertAdjacentHTML("beforeend",
