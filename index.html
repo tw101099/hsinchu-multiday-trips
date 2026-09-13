@@ -37,6 +37,11 @@
   --hair2:color-mix(in srgb, var(--ink) 24%, transparent);
   --tint:color-mix(in srgb, var(--ink) 6%, transparent);
 
+  --guide-w:2.5px;
+  --guide-full:88%;
+  --guide-dim:30%;
+  --note-rule-w:2px;
+
   --chip-bg:#fdfbf6;
 
   --card-bg:#ffffff;   
@@ -634,7 +639,9 @@ html.sheeton .panel{overflow:hidden}
 }
 .sheetwrap[data-kind=map] .sheetbody .tripbox{padding:0}
 
-.sheetwrap[data-kind=map] .sheetbody .base-sheet{margin-left:0; width:auto}
+.sheetwrap[data-kind=map] .sheetbody .base-sheet{margin:0; width:auto; background:none; background-image:none; box-shadow:none}
+.sheetwrap[data-kind=map] .sheetbody .base-sheet > .gintro,
+.sheetwrap[data-kind=map] .sheetbody .base-sheet > .blodge{background:none; box-shadow:none}
 
 .sheetfoot:empty{display:none}
 
@@ -895,12 +902,13 @@ html.sheeton .panel{overflow:hidden}
 .rrow[aria-pressed=true]{color:var(--ink); font-weight:600}
 
 .blodge{
-  padding:8px 11px 9px;   
+  padding:8px var(--base-inset) 9px;   
 }
 
 .btrips{display:flex;flex-direction:column;gap:4px;margin:0 0 14px}
 
-.rrow .rbar{flex:none; width:3px; height:17px; border-radius:2px}
+.rbar{width:var(--guide-w)}
+.rrow .rbar{flex:none; height:17px; border-radius:2px}
 
 .rrow .tmk{margin-left:-4px}
 .rrow .nm{flex:1; min-width:0}
@@ -934,9 +942,9 @@ html.sheeton .panel{overflow:hidden}
 
 .results > .corr > .bgroup > .ghead{margin-left:-14px; width:calc(100% + 28px)}
 
-.results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:0; border-left:2.5px solid var(--line);
-  border-left-color:color-mix(in srgb, var(--dc, var(--line)) 30%, transparent)}
-.results > .corr > .bgroup > .ghead.tripgrp ~ .grp{border-left-color:color-mix(in srgb, var(--accent) 30%, transparent)}
+.results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:0; border-left:var(--guide-w) solid var(--line);
+  border-left-color:color-mix(in srgb, var(--dc, var(--line)) var(--guide-dim), transparent)}
+.results > .corr > .bgroup > .ghead.tripgrp ~ .grp{border-left-color:color-mix(in srgb, var(--accent) var(--guide-dim), transparent)}
 
 .qbh{display:flex; align-items:center; gap:6px; margin:4px 0 5px; padding:5px 2px;
      font-size:12.5px; font-weight:600; color:var(--ink2); letter-spacing:.04em}
@@ -990,7 +998,7 @@ html.sheeton .panel{overflow:hidden}
   font:inherit; font-size:12px; color:var(--ink3); transition:background .12s;
 }
 
-.ghead .rbar{flex:none; width:3px; height:17px; border-radius:2px; background:var(--dc,var(--ink3))}
+.ghead .rbar{flex:none; height:17px; border-radius:2px; background:var(--dc,var(--ink3))}   
 
 .ghead.stuck::before{
   content:""; position:absolute; left:16px; top:50%; margin-top:-4px; width:8px; height:8px;
@@ -1024,7 +1032,7 @@ html.sheeton .panel{overflow:hidden}
 
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
-  margin:0; padding:9px 12px 10px;
+  margin:0; padding:9px var(--base-inset) 10px;   
 }
 .gintro .gstyle{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 8px}
 .gintro .gchip{
@@ -1095,11 +1103,12 @@ html.sheeton .panel{overflow:hidden}
 
 .place-card, .place-card.is-expanded{
   width:100%; border-radius:0;
-  background:none; box-shadow:none; border:0; overflow:hidden; margin:0 0 14px;
+  background:none; box-shadow:none; border:0; overflow:hidden; margin:0;
 }
-.place-card.timeline{width:calc(100% - 5px); margin-left:5px}
 
-.results > .corr > .bgroup > .grp > .place-card{margin-left:-3px; width:calc(100% + 3px)}
+.place-card.timeline{width:calc(100% - 5px); margin-left:5px; margin-top:4px; margin-bottom:4px}
+
+.results > .corr > .bgroup > .grp > .place-card{margin-left:calc(-1 * var(--guide-w)); width:calc(100% + var(--guide-w)); margin-bottom:14px}
 .results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%; padding-left:10px}
 .results > .corr > .bgroup > .grp > .place-card > .place-detail{padding-left:10px}
 
@@ -1115,16 +1124,16 @@ html.sheeton .panel{overflow:hidden}
   padding:2px 9px 0 10px;
 }
 
-.place-detail .facts, .place-detail .tags, .place-detail .desc, .place-detail .acts{margin-left:7px}
-.place-detail .flag{margin-left:8px}
+.place-detail{--detail-body-inset:7px}
+.place-detail .facts, .place-detail .tags, .place-detail .desc, .place-detail .flag, .place-detail .acts{margin-left:var(--detail-body-inset)}
 .place-detail .facts{margin-bottom:10px}
 .place-detail .tags{margin-bottom:10px}
-.place-detail .acts{margin:10px 0 0 7px}
+.place-detail .acts{margin-top:10px; margin-bottom:0}
 
 .place-card.is-expanded > .place-summary,
 .place-card.is-expanded > .place-detail{
-  border-left:3px solid var(--dc, var(--accent));
-  border-left-color:color-mix(in srgb, var(--dc, var(--accent)) 88%, transparent);
+  border-left:var(--guide-w) solid var(--dc, var(--accent));
+  border-left-color:color-mix(in srgb, var(--dc, var(--accent)) var(--guide-full), transparent);
   padding-left:10px;
 }
 .place-card.is-expanded > .place-summary{background:none; box-shadow:none; color:inherit; padding-bottom:4px; transition:none}
@@ -1137,20 +1146,20 @@ html.sheeton .panel{overflow:hidden}
 .sheetbody .place-detail{border-top:0; border-radius:0; margin:0}
 .sheetbody .place-card > .place-detail{border-top:0; border-radius:0}
 
-.facts{display:grid; grid-template-columns:auto 1fr; gap:2px 14px; font-size:13px; margin:0 0 10px}
+.facts{display:grid; grid-template-columns:auto 1fr; gap:2px 14px; font-size:13px; margin-top:0; margin-bottom:10px}
 .facts dt{color:var(--ink3)}
 .facts dd{margin:0}
 
 .facts .hint2{margin-left:7px; font-size:11px; color:var(--ink3)}
 
-.detail .desc{font-size:14px; margin:0 0 9px; -webkit-user-select:text; user-select:text}
+.detail .desc{font-size:14px; margin-top:0; margin-right:0; margin-bottom:9px; -webkit-user-select:text; user-select:text}   
 
-.flag{display:flex; align-items:flex-start; gap:7px; background:none; box-shadow:none; border:0; padding:0; margin:3px 0 8px 1px; font-size:12px; line-height:1.65; color:var(--ink2)}
+.flag{display:flex; align-items:flex-start; gap:7px; background:none; box-shadow:none; border:0; padding:0; margin-top:3px; margin-bottom:8px; font-size:12px; line-height:1.65; color:var(--ink2)}
 .flag .fi{width:14px; height:14px; flex:none; margin-top:3px; stroke:currentColor; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; color:var(--ink3)}
 .flag.season{color:var(--warn)}
 .flag.season .fi{color:var(--warn)}
 
-.tags{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 9px}
+.tags{display:flex; flex-wrap:wrap; gap:5px; margin-top:0; margin-bottom:9px}   
 
 .tags .tag{
   white-space:nowrap; font-size:12px; padding:2px 7px; line-height:1.5; border-radius:999px;
@@ -1159,7 +1168,7 @@ html.sheeton .panel{overflow:hidden}
 
 .mapcard .tags{margin:8px 0 0}
 
-.acts{display:flex; gap:7px; flex-wrap:wrap; justify-content:flex-end; margin:10px 0 4px}
+.acts{display:flex; gap:7px; flex-wrap:wrap; justify-content:flex-end; margin-top:10px; margin-bottom:4px}   
 
 .acts a, .acts button{
   text-decoration:none;
@@ -1240,7 +1249,7 @@ html.sheeton .panel{overflow:hidden}
 @media (hover:hover){.rthead:hover{color:var(--ink)}}   
 .rthead[aria-expanded=true]{color:var(--ink)}
 
-.rthead .rbar{flex:none; width:3px; height:17px; border-radius:2px}
+.rthead .rbar{flex:none; height:17px; border-radius:2px}   
 
 .rthead .tmk{margin-left:-4px}
 
@@ -1275,8 +1284,8 @@ html.sheeton .panel{overflow:hidden}
 :root{--trowgap:8px}   
 
 .rtrips{display:flex; flex-direction:column; gap:var(--trowgap);
-        margin:2px 0 6px 9px; padding-left:8px; border-left:2.5px solid var(--line);
-        border-left-color:color-mix(in srgb, var(--dc, var(--line)) 30%, transparent)}
+        margin:2px 0 6px 9px; padding-left:8px; border-left:var(--guide-w) solid var(--line);
+        border-left-color:color-mix(in srgb, var(--dc, var(--line)) var(--guide-dim), transparent)}
 
 .trow{
   display:flex; width:100%; align-items:center; gap:8px; padding:6px 9px; min-height:32px;
@@ -1335,12 +1344,12 @@ html.sheeton .panel{overflow:hidden}
 }
 
 .tdnote{
-  margin:6px 0 0 5px; padding-left:13px; border-left:3px solid var(--hair);   
+  margin:6px 0 0 5px; padding-left:13px; border-left:var(--note-rule-w) solid var(--hair);   
   font-size:11.5px; line-height:1.65; color:var(--ink2);
 }
 
 .tdwhy{
-  margin:0 0 12px 5px; padding-left:13px; border-left:3px solid var(--hair);   
+  margin:0 0 12px 5px; padding-left:13px; border-left:var(--note-rule-w) solid var(--hair);   
   font-size:11.5px; line-height:1.65; color:var(--ink2);
 }
 
@@ -1361,8 +1370,8 @@ html.sheeton .panel{overflow:hidden}
 .tleg{
   display:flex; align-items:center; gap:7px; flex-wrap:wrap;
   margin-left:5px; padding:7px 0 7px 7px; font-size:11.5px; color:var(--ink3);
-  border-left:2.5px solid var(--dc,var(--line2));
-  border-left-color:color-mix(in srgb, var(--dc,var(--line2)) 88%, transparent);
+  border-left:var(--guide-w) solid var(--dc,var(--line2));
+  border-left-color:color-mix(in srgb, var(--dc,var(--line2)) var(--guide-full), transparent);
 }
 
 .tleg .ic, .rthead .away.rmt .ic{stroke-width:.857}
@@ -1404,7 +1413,7 @@ html.sheeton .panel{overflow:hidden}
   background-color:var(--state-selected); background-image:none; box-shadow:none;
 }
 
-.base-sheet{margin:0 0 10px 13px;width:calc(100% - 13px);
+.base-sheet{--base-inset:12px;margin:0 0 10px 13px;width:calc(100% - 13px);
   background-color:var(--surface-base-sheet);background-image:var(--paper-base-sheet);box-shadow:var(--lift-shadow)}
 .base-sheet > .gintro,.base-sheet > .blodge{margin:0;width:100%;background:none;box-shadow:none;border:0}
 
@@ -1458,7 +1467,8 @@ html.sheeton .panel{overflow:hidden}
 .zbody + .zhead{margin-top:14px}          
 .znote{margin:0 0 4px;font-size:11.5px;color:var(--ink2);line-height:1.6}
 .zbody{margin:0;padding:0;border:0}       
-.lodgebox .row{padding:5px 0}             
+
+.lodgebox .row{padding-block:7px; padding-inline:0}             
 .lodgebox .row .t{font-size:14px}
 
 .lodgebox p.zhead.plain{color:var(--ink3)}
