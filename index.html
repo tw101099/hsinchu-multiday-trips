@@ -1146,6 +1146,8 @@ html.sheeton .panel{overflow:hidden}
 .sheetbody .place-detail{border-top:0; border-radius:0; margin:0}
 .sheetbody .place-card > .place-detail{border-top:0; border-radius:0}
 
+.sheetbody .place-card{margin-bottom:14px}
+
 .facts{display:grid; grid-template-columns:auto 1fr; gap:2px 14px; font-size:13px; margin-top:0; margin-bottom:10px}
 .facts dt{color:var(--ink3)}
 .facts dd{margin:0}
@@ -2029,7 +2031,7 @@ function toggleInline(key, p){
     panTo(p);
 
     if (!String(key).startsWith("g:") && isTwoLane() &&
-        (pass(p) || EXTRA.has(p.id))) SCROLL_TO = p.id;
+        (pass(p) || EXTRA.has(p.id))) SCROLL_TO = {id:p.id};   // 無 mode＝一般列落點（+10），棒 G2
   }
   render();
 }
@@ -3329,7 +3331,7 @@ function wireTags(root, inline){
   root.querySelectorAll(".tag[data-act=tag]").forEach(b=>{
     b.onclick=e=>{
       e.stopPropagation();
-      if (!inline) SCROLL_TO=b.dataset.pid||null;
+      if (!inline) SCROLL_TO=b.dataset.pid ? {id:b.dataset.pid} : null;
       searchFor(b.dataset.tag);
     };
   });
@@ -4072,7 +4074,8 @@ function tripStopRow(p, key){
     `<span class="mi" title="停留（原值 ${rawHT(p.stay_h)}）">${HOURGLASS_SVG}${estH(p.stay_h)}</span></div>`;
   b.append(body);
 
-  b.onclick=()=>{ if (stopToLane2()) select(p.id); else toggleInline(key,p); };
+
+  b.onclick=()=>{ if (stopToLane2()) select(p.id, false, false, "expanded-top"); else toggleInline(key,p); };
   hoverWire(b, "place", p.id);
   return b;
 }
@@ -5467,7 +5470,8 @@ function renderPanel(){
   const boxTop=box.getBoundingClientRect().top + box.clientTop;
   const layersH=[...box.children].reduce((a,el)=>a+stickyH(el), 0);
 
-  const stopAt=el=>{
+
+  const stopAt=(el, breath=10)=>{
     let h=boxTop+layersH;
     if (!el || !el.classList) return h;
     const isRow=!el.classList.contains("ghead") && !el.classList.contains("tcath")
@@ -5475,7 +5479,7 @@ function renderPanel(){
     if (isRow){
       const bg=el.closest(".bgroup");
       if (bg) h+=stickyH(bg.querySelector(":scope > .ghead"));
-      h+=10;
+      h+=breath;
     }
     return h;
   };
@@ -5557,17 +5561,25 @@ function renderPanel(){
 
 
 
-    const el=box.querySelector(`.results > .corr > .bgroup > .grp > .place-card > .row[data-id="${SCROLL_TO}"]`)
-          || box.querySelector(`.results > .corr > .bgroup > .grp > .row[data-id="${SCROLL_TO}"]`);
+
+    const {id:toId, mode:toMode}=SCROLL_TO;
+    const el=box.querySelector(`.results > .corr > .bgroup > .grp > .place-card > .row[data-id="${toId}"]`)
+          || box.querySelector(`.results > .corr > .bgroup > .grp > .row[data-id="${toId}"]`);
+
 
     if (el){
-      let want=stopAt(el);
-      const bg=el.closest(".bgroup"), gh=bg && bg.querySelector(":scope > .ghead");
-      if (gh){
-        const gap=flowTop(el)-flowTop(gh);
-        if (gap < gh.offsetHeight+10) want=stopAt(gh)+gap;
+      const card=toMode==="expanded-top" ? el.closest(".place-card.is-expanded") : null;
+      if (card){
+        anchorTo(card, stopAt(el, 0));
+      } else {
+        let want=stopAt(el);
+        const bg=el.closest(".bgroup"), gh=bg && bg.querySelector(":scope > .ghead");
+        if (gh){
+          const gap=flowTop(el)-flowTop(gh);
+          if (gap < gh.offsetHeight+10) want=stopAt(gh)+gap;
+        }
+        anchorTo(el, want);
       }
-      anchorTo(el, want);
     }
     else { box.scrollTop=0; ANCHORED=true; }
     SCROLL_TO=null;
@@ -5630,7 +5642,7 @@ document.getElementById("panel").addEventListener("click", e=>{
   PIN={sel, idx:Math.max(0, all.indexOf(el)), top:el.getBoundingClientRect().top};
 }, true);
 
-function select(id, keepBase, inPlace){
+function select(id, keepBase, inPlace, scrollMode){
   if (S.sel===id){
 
     if (SHEET==="mplace"){ closeSheet(); return; }
@@ -5658,7 +5670,8 @@ function select(id, keepBase, inPlace){
     gotoTab("place");
 
     if (inPlace) SCROLL_NEAR=`.results > .corr > .bgroup > .grp > .place-card > .row[data-id="${id}"], .results > .corr > .bgroup > .grp > .row[data-id="${id}"]`;
-    else SCROLL_TO=id;
+
+    else SCROLL_TO=scrollMode ? {id, mode:scrollMode} : {id};
   }
   render();
 }
@@ -5771,7 +5784,7 @@ document.querySelectorAll("#views button").forEach(b=>{
     }
     S.view=b.dataset.v; syncViews();
     if (S.sel){
-      if (S.view==="list"){ SCROLL_TO=S.sel; }
+      if (S.view==="list"){ SCROLL_TO={id:S.sel}; }   // 不帶 mode＝一般列落點（棒 G2 改 intent 物件）
       else if (BY_ID[S.sel] && ready){
         const q=BY_ID[S.sel];
         map.setView([q.lat,q.lng], Math.max(map.getZoom(),13), {animate:false});
