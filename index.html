@@ -42,6 +42,11 @@
   --guide-dim:30%;
   --note-rule-w:2px;
 
+  --panel-max:741px;
+  --map-min:320px;
+  --lane1-min:280px;
+  --lane1-max:340px;
+
   --chip-bg:#fdfbf6;
 
   --card-bg:#ffffff;   
@@ -436,9 +441,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 .totop svg{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
 
 .totop.show{opacity:1; pointer-events:auto}
-.totop.docked{right:calc(100vw - 394px + env(safe-area-inset-right))}
 
-.totop.docked.wide{right:calc(100vw - 725px + env(safe-area-inset-right))}
+.totop.docked{right:calc(100vw - var(--panel-w) + 16px + env(safe-area-inset-right))}
 
 .mapcard{
   display:none; align-self:stretch; background-color:var(--surface-sheet); background-image:var(--paper-sheet); border:0;
@@ -464,6 +468,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   border-radius:4px; padding:1px 5px; box-shadow:0 1px 3px rgba(var(--sh),.18);
   cursor:pointer;   
 }
+
 .main.nomap .stage{display:none}
 
 .main.nomap .panel{flex:1 1 auto}
@@ -520,7 +525,6 @@ button{font:inherit; color:inherit; cursor:pointer}
   .mnav button[aria-pressed=true]{color:var(--accent); font-weight:600}
   .mnav button:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
 
-  #views{display:none}
 
   .panel{padding-bottom:0}
 
@@ -691,22 +695,25 @@ html.sheeton .panel{overflow:hidden}
 
 @media (min-width:900px) and (min-height:560px){
   .main{flex-direction:row}
-  .panel{width:410px; flex:0 0 410px; border-top:0; border-right:1px solid var(--hair)}   
-  .main.nomap .panel{width:auto; flex:1 1 auto}
+
+  .panel{border-top:0; border-right:1px solid var(--hair)}   
 
 }
 
-@media (min-width:1280px) and (min-height:560px){
+@media (min-width:900px) and (min-height:560px){
 
+  :root{--panel-w:min(var(--panel-max), calc(100vw - var(--map-min)))}
   .panel.twolane{
-    --lane1w:340px; --l1h:38px;
-    width:741px; flex:0 0 741px;
+
+    --lane1w:clamp(var(--lane1-min), 26.5625vw, var(--lane1-max));
+    --lane2w:calc(var(--panel-w) - var(--lane1w));
+    --rail-w:40px; --l1h:38px;
+    width:var(--panel-w); flex:0 0 var(--panel-w);
     display:flex; flex-direction:row; overflow:hidden;   
 
     position:relative;
   }
 
-  .main.nomap .panel.twolane{width:auto; flex:1 1 auto}
   .panel.twolane .lane{min-height:0; overflow-y:auto; overscroll-behavior:contain;
                        -webkit-overflow-scrolling:touch}
   .panel.twolane .lane-trip{flex:0 0 var(--lane1w); width:var(--lane1w); border-right:1px solid var(--hair)}   
@@ -732,16 +739,13 @@ html.sheeton .panel{overflow:hidden}
 
   @media (hover:hover){.panel.twolane .lane-explore > .sec.basesec:hover{background-color:var(--hover-bg)}}
 
-  .panel.twolane.foldt{width:441px; flex:0 0 441px}
-  .panel.twolane.folde{width:381px; flex:0 0 381px}
-  .panel.twolane.foldt.folde{width:81px; flex:0 0 81px}
-  .main.nomap .panel.twolane.foldt,
-  .main.nomap .panel.twolane.folde,
-  .main.nomap .panel.twolane.foldt.folde{width:auto; flex:1 1 auto}
+  .panel.twolane.foldt{width:calc(var(--rail-w) + var(--lane2w)); flex:0 0 calc(var(--rail-w) + var(--lane2w))}
+  .panel.twolane.folde{width:calc(var(--lane1w) + var(--rail-w) + 1px); flex:0 0 calc(var(--lane1w) + var(--rail-w) + 1px)}
+  .panel.twolane.foldt.folde{width:calc(var(--rail-w) * 2 + 1px); flex:0 0 calc(var(--rail-w) * 2 + 1px)}
 
   .panel.twolane .lane-trip.rail,
   .panel.twolane .lane-explore.rail{
-    flex:0 0 40px; width:40px; min-width:40px; overflow:hidden;
+    flex:0 0 var(--rail-w); width:var(--rail-w); min-width:var(--rail-w); overflow:hidden;
   }
   .railbtn{
     width:100%; height:100%; border:0; background:var(--surface-map); color:var(--ink2);   
@@ -799,12 +803,6 @@ html.sheeton .panel{overflow:hidden}
 .fsum .ftxt{overflow:hidden; text-overflow:ellipsis}
 
 .fnum{flex:none; white-space:nowrap}
-
-@media (min-width:900px) and (max-width:1279px) and (min-height:560px){
-  .fbar{top:0}
-
-  .fbar.tbar{position:relative; top:auto}
-}
 
 .chev{width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round;
       stroke-linejoin:round; margin-left:4px; transition:transform .15s}
@@ -1026,10 +1024,6 @@ html.sheeton .panel{overflow:hidden}
   box-shadow:inset 0 -1px 0 var(--hair);   
 }
 
-@media (min-width:900px) and (max-width:1279px) and (min-height:560px){
-  .results > .corr > .tcath, .ghead{top:var(--l1h)}
-}
-
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
   margin:0; padding:9px var(--base-inset) 10px;   
@@ -1079,22 +1073,6 @@ html.sheeton .panel{overflow:hidden}
 
 .empty .ec .cb{white-space:nowrap}
 .empty .ea{margin-top:12px; display:flex}
-
-.main.nomap .results{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:0 14px; align-items:start}
-.main.nomap .ghead, .main.nomap .gintro, .main.nomap .detail,
-.main.nomap .results > .blodge,
-
-.main.nomap .results > .empty, .main.nomap .results > .qglobal,
-.main.nomap .results > .corr{grid-column:1/-1}
-
-.main.nomap .results > .corr > .bgroup > .grp{
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:0 14px; align-items:start;
-}
-
-@media (min-width:700px){
-  .main.nomap .detail{border-top:1px solid var(--accent); border-radius:var(--r); margin-top:6px}
-}
 
 .detail{
   border:1px solid var(--accent); border-top:0; border-radius:0 0 var(--r) var(--r);
@@ -1876,10 +1854,7 @@ html.sheeton .panel{overflow:hidden}
     <button id="msback" type="button" aria-label="退出搜尋" title="退出搜尋，回到原本的頁面（搜尋條件保留）">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 8H3.2M7.2 4 3.2 8l4 4"/></svg>
     </button>
-    <div class="seg" id="views">
-      <button data-v="map" aria-pressed="true">地圖</button>
-      <button data-v="list" aria-pressed="false">清單</button>
-    </div>
+
 
     <div id="qwrap"><input id="q" type="search" aria-label="搜尋景點或主題" placeholder="搜尋景點或主題"><button id="qx" type="button" hidden aria-label="清除搜尋文字" title="清除搜尋文字">×</button></div>
 
@@ -1974,7 +1949,7 @@ const ICON = {
   "lodging":        '<path d="M2.2 12.8V6M2.2 9.2h11.6v3.6M13.8 12.8V9.2M4.4 6.7h2.9v2.5H4.4z"/>',
 };
 
-const S = { tab:"trip", view:"map", base:new Set(), themes:new Set(), diffs:new Set(),
+const S = { tab:"trip", base:new Set(), themes:new Set(), diffs:new Set(),
             inseason:false, q:"", qtags:[], sel:null,
             basesOpen:false, sort:"total", sortPicked:false, near:0, footOpen:false,
 
@@ -2189,7 +2164,7 @@ function save(){
   try{
     localStorage.setItem(LSKEY, JSON.stringify({
       base:[...S.base], themes:[...S.themes], diffs:[...S.diffs],
-      inseason:S.inseason, view:S.view, sort:S.sort, sortPicked:S.sortPicked, theme:THEME,
+      inseason:S.inseason, sort:S.sort, sortPicked:S.sortPicked, theme:THEME,   // `view:` 2026-09-13 棒 G3 起不寫（S.view 退役）
       seen:true, basesOpen:S.basesOpen,
       footOpen:S.footOpen,
       trip:S.trip, tripsOpen:S.tripsOpen,
@@ -2209,7 +2184,7 @@ function restore(){
     if (Array.isArray(d.diffs)) S.diffs=new Set(d.diffs);
 
     if (d.inseason) S.inseason=true;
-    if (d.view==="list") S.view="list";
+
     if (d.sort && SORTS.some(s=>s.id===d.sort)) S.sort=d.sort;
     if (d.sortPicked) S.sortPicked=true;   // 只往 true 走，沒有回頭（見 S 的說明）
     if (["auto","light","dark"].includes(d.theme)) THEME=d.theme;
@@ -4382,7 +4357,8 @@ function precheckRow(p, icon, text){
   b.innerHTML = (icon ? `<span class="stico">${icon}</span>` : "") +
     `<span class="pct"><span class="pcn">${esc(p.name)}</span>　${esc(text || "")}</span>`;
   b.title = `打開「${p.name}」的景點說明`;
-  b.onclick = () => select(p.id);
+
+  b.onclick = () => select(p.id, false, false, isTwoLane() ? "expanded-top" : undefined);
   return b;
 }
 function precheckBlock(){
@@ -4922,11 +4898,9 @@ function renderList(){
   return wrap;
 }
 
-const TWO_LANE_MQ = matchMedia("(min-width:1280px) and (min-height:560px)");
-
-const isTwoLane = () => TWO_LANE_MQ.matches;
-
 const DESK_MQ = matchMedia("(min-width:900px) and (min-height:560px)");
+
+const isTwoLane = () => DESK_MQ.matches;
 
 function scrollBox(){
   return document.querySelector("#panel > .lane-explore") || document.getElementById("panel");
@@ -5356,7 +5330,7 @@ function renderPanel(){
   panel.classList.toggle("twolane", two);
   LANE_STATE=two;   // 讓 syncLanes 知道現在畫的是哪一種，不用再自己去比 DOM
 
-  const foldable = two && S.view==="map";
+  const foldable = two;
   const foldT = foldable && S.foldTrip, foldE = foldable && S.foldExp;
   panel.classList.toggle("foldt", foldT);
   panel.classList.toggle("folde", foldE);
@@ -5678,10 +5652,9 @@ function select(id, keepBase, inPlace, scrollMode){
 
 function syncViews(){
   MOBILE_STATE = hasMapCard();
-  document.querySelectorAll("#views button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===S.view));
   document.querySelectorAll("#mnav button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.t===S.tab));
   document.getElementById("app").dataset.mtab = S.tab;
-  document.getElementById("main").classList.toggle("nomap", MOBILE_STATE ? S.tab!=="map" : S.view!=="map");
+  document.getElementById("main").classList.toggle("nomap", MOBILE_STATE && S.tab!=="map");
 }
 
 document.querySelectorAll("#mnav button").forEach(b=>{
@@ -5710,10 +5683,7 @@ function updateTotop(){
   if (!btn) return;
   btn.hidden = isMapOnly();
   if (btn.hidden) return;
-  const main=document.getElementById("main");
-  const docked = DESK_MQ.matches && main && !main.classList.contains("nomap");
-  btn.classList.toggle("docked", docked);
-  btn.classList.toggle("wide", docked && isTwoLane());
+  btn.classList.toggle("docked", isTwoLane());
   const box=scrollBox();
   const vh = box.clientHeight || innerHeight;
   btn.classList.toggle("show", box.scrollTop > vh*1.75);
@@ -5749,7 +5719,7 @@ function syncLanes(){
   LANE_STATE=two;
   render();
 }
-TWO_LANE_MQ.addEventListener("change", syncLanes);
+DESK_MQ.addEventListener("change", syncLanes);   // 改前掛 `TWO_LANE_MQ`（1280），棒 G3 起同一條線
 addEventListener("resize", syncLanes);
 new ResizeObserver(syncLanes).observe(document.getElementById("main"));
 document.getElementById("totop").onclick=()=>{
@@ -5776,24 +5746,6 @@ function render(){
   flushSheetPush();
 }
 
-document.querySelectorAll("#views button").forEach(b=>{
-  b.onclick=()=>{
-    if (b.dataset.v===S.view){
-      scrollBox().scrollTo({top:0, behavior: RM.matches ? "auto" : "smooth"});
-      return;
-    }
-    S.view=b.dataset.v; syncViews();
-    if (S.sel){
-      if (S.view==="list"){ SCROLL_TO={id:S.sel}; }   // 不帶 mode＝一般列落點（棒 G2 改 intent 物件）
-      else if (BY_ID[S.sel] && ready){
-        const q=BY_ID[S.sel];
-        map.setView([q.lat,q.lng], Math.max(map.getZoom(),13), {animate:false});
-      }
-    }
-    save(); render();
-    if (S.view==="map") resizeMap();
-  };
-});
 document.getElementById("q").addEventListener("input", e=>{
   S.q=e.target.value.trim().toLowerCase(); syncQX(); qExpReset(); filterChanged();
 });
