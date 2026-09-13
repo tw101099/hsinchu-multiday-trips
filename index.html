@@ -191,8 +191,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 .sec:focus-visible, .tcath.tog:focus-visible, .rthead:focus-visible,
 .ghead:focus-visible, .rrow:focus-visible, .trow:focus-visible,
-.row:focus-visible, .tstop:focus-visible, .tnight:focus-visible,
-.lodgebox button.zhead:focus-visible{outline-offset:-2px}
+.row:focus-visible, .tstop:focus-visible, .tnight:focus-visible{outline-offset:-2px}
 
 .row-select, .row-toggle{cursor:pointer}
 
@@ -633,8 +632,8 @@ html.sheeton .panel{overflow:hidden}
   margin:0; border-top:0; border-radius:0;
 }
 .sheetwrap[data-kind=map] .sheetbody .tripbox{padding:0}
-.sheetwrap[data-kind=map] .sheetbody .gintro,
-.sheetwrap[data-kind=map] .sheetbody .blodge{margin-left:0; width:auto}
+
+.sheetwrap[data-kind=map] .sheetbody .base-sheet{margin-left:0; width:auto}
 
 .sheetfoot:empty{display:none}
 
@@ -855,9 +854,10 @@ html.sheeton .panel{overflow:hidden}
 .chip[aria-pressed=true] .cnt{color:var(--ink3)}
 
 .sec, .sec .ssub, .fsum, .results > .corr > .tcath, .ghead .gnm, #mcond,
-.gintro .gdesc, .lodgebox .zhead{
+.gintro .gdesc{
   font-size:12.5px; font-weight:400; color:var(--ink2);
 }
+
 .sec .n, .fnum, .results > .corr > .tcath .n, .ghead .n{font-size:12.5px; color:var(--ink3)}
 .sec{
   display:flex; align-items:center; gap:7px; width:100%; min-height:36px;
@@ -913,10 +913,10 @@ html.sheeton .panel{overflow:hidden}
 .rrow[aria-pressed=true]{color:var(--ink); font-weight:600}
 
 .blodge{
-  margin:0 0 10px; padding:8px 11px 9px;   
+  padding:8px 11px 9px;   
 }
 
-.btrips{display:flex; flex-direction:column; gap:var(--trowgap); margin:0 0 10px}
+.btrips{display:flex;flex-direction:column;gap:4px;margin:0 0 14px}
 
 .rrow .rbar{flex:none; width:3px; height:17px; border-radius:2px}
 
@@ -951,11 +951,6 @@ html.sheeton .panel{overflow:hidden}
 .results > .corr:first-child > .bgroup:first-child > .ghead{margin-top:0}
 
 .results > .corr > .bgroup > .ghead{margin-left:-14px; width:calc(100% + 28px)}
-.results > .corr > .bgroup > .gintro,
-.results > .corr > .bgroup > .blodge{margin-left:13px}
-
-.results > .corr > .bgroup > .gintro,
-.results > .corr > .bgroup > .blodge{width:calc(100% - 13px)}
 
 .results > .corr > .bgroup > .grp{margin:0 0 0 13px; padding-left:0; border-left:2.5px solid var(--line);
   border-left-color:color-mix(in srgb, var(--dc, var(--line)) 30%, transparent)}
@@ -1047,7 +1042,7 @@ html.sheeton .panel{overflow:hidden}
 
 .gintro{
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
-  margin:0; padding:9px 12px 10px;   
+  margin:0; padding:9px 12px 10px;
 }
 .gintro .gstyle{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 8px}
 .gintro .gchip{
@@ -1159,7 +1154,7 @@ html.sheeton .panel{overflow:hidden}
 
 .sheetbody .place-detail{border-top:0; border-radius:0; margin:0}
 .sheetbody .place-card > .place-detail{border-top:0; border-radius:0}
-.detail h3{margin:0 0 8px; font-size:12px; color:var(--ink3); font-weight:600; letter-spacing:.06em}
+
 .facts{display:grid; grid-template-columns:auto 1fr; gap:2px 14px; font-size:13px; margin:0 0 10px}
 .facts dt{color:var(--ink3)}
 .facts dd{margin:0}
@@ -1192,11 +1187,15 @@ html.sheeton .panel{overflow:hidden}
 
 .nearby{margin:14px 0 0 -10px; padding:0; border-top:0}
 .nearby .row{padding:5px 9px}
+
+.crumb,.nearby h3,.btlbl,.zgrouplbl{
+  font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.06em;line-height:1.5;
+  margin:0;background:none;border:0;box-shadow:none}
+.btlbl{margin-bottom:6px}
+.crumb{margin-bottom:8px}
 .nearby h3{margin:0 0 4px 10px}
 .nearby .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
 
-.zone-sheet .zbody .row{padding:5px 6px}
-.zone-sheet .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
 .wider{border:0; background:none; color:var(--ink3); font-size:12px; text-decoration:underline; padding:4px 6px 0}
 @media (hover:hover){.wider:hover{color:var(--accent)}}
 
@@ -1395,9 +1394,7 @@ html.sheeton .panel{overflow:hidden}
 .mi.nd{color:var(--ink2)}
 
 .trow, .tstop, .tnight,
-.lodgebox .zhead.locatable,
-.gintro, .blodge, .nlodge,
-.tstop.open, .tnight.open{
+.tstop.open{
   background-color:var(--surface-sheet);
   background-image:var(--card-lift),var(--paper-sheet);
   box-shadow:var(--lift-shadow);
@@ -1425,9 +1422,24 @@ html.sheeton .panel{overflow:hidden}
   background-color:var(--state-selected); background-image:none; box-shadow:none;
 }
 
+.base-sheet{margin:0 0 10px 13px;width:calc(100% - 13px);
+  background-color:var(--surface-base-sheet);background-image:var(--paper-base-sheet);box-shadow:var(--lift-shadow)}
+.base-sheet > .gintro,.base-sheet > .blodge{margin:0;width:100%;background:none;box-shadow:none;border:0}
+
+.blodge .trow{background-color:var(--state-hover);background-image:none;box-shadow:none;border-color:transparent}
+@media (hover:hover){.blodge .trow:hover{background-color:var(--state-selected)}}
+.blodge .trow[aria-pressed="true"]{background-color:var(--state-selected);color:var(--ink)}
+.blodge .trow[aria-pressed="true"] .tbs{color:var(--ink)}
+
+.lodge-sheet{margin:0 0 4px 5px;width:calc(100% - 5px);
+  background-color:var(--surface-sheet);background-image:var(--paper-sheet);box-shadow:var(--lift-shadow)}
+.lodge-sheet > .tnight,.lodge-sheet > .nlodge{margin:0;width:100%;background:none;box-shadow:none;border:0}
+.lodge-sheet > .tnight{padding:6px 10px;color:var(--ink)}
+.lodge-sheet > .nlodge{padding:2px 9px 10px}
+
 .trow, .tstop, .tnight, .row, .rrow, .rthead, .tcath.tog,
 .place-card, .gintro, .blodge, .nlodge, .tstop.open, .tnight.open,
-.lodgebox .zhead.locatable, .zlocbtn{border-radius:0}
+.base-sheet, .lodge-sheet{border-radius:0}   
 
 .tstop{
   display:flex; width:100%; align-items:flex-start; gap:8px; text-align:left;
@@ -1456,58 +1468,35 @@ html.sheeton .panel{overflow:hidden}
 
 .tnight[aria-pressed=true]{color:var(--ink)}   
 
-.nlodge{
-  width:100%; margin:0 0 4px 5px; padding:2px 9px 8px;   
-}
+.zhead,.zhead.locatable{display:flex;align-items:center;gap:7px;width:100%;min-height:32px;
+  margin:0;padding:0;border:0;background:none;box-shadow:none;
+  font-size:13px;font-weight:500;color:var(--ink);letter-spacing:0}
+.zhead .zlocbtn{margin:0;width:40px;height:32px;border-radius:0}   
+.zgrouplbl + .zhead{margin-top:8px}       
+.zbody + .zhead{margin-top:14px}          
+.znote{margin:0 0 4px;font-size:11.5px;color:var(--ink2);line-height:1.6}
+.zbody{margin:0;padding:0;border:0}       
+.lodgebox .row{padding:5px 0}             
+.lodgebox .row .t{font-size:14px}
 
-.nlodge > h3:first-child{margin-top:6px}
+.lodgebox p.zhead.plain{color:var(--ink3)}
 
-.lodgebox h3{margin:12px 0 6px; font-size:12px; color:var(--ink3); font-weight:600; letter-spacing:.06em}
-
-.lodgebox .zhead{margin:10px 0 2px}
-
-.lodgebox p.zhead.plain{color:var(--ink3); font-weight:500; padding:4px 8px; border-radius:0}   
-
-.lodgebox button.zhead{
-  display:flex; align-items:center; gap:7px; width:100%; text-align:left;
-  border:1px solid var(--line); border-radius:0;   
-  padding:4px 8px; margin:10px 0 2px;
-
-}
-
-@media (hover:hover){.lodgebox button.zhead:hover{background-color:var(--hover-bg); border-color:var(--line2)}}
-.lodgebox button.zhead[aria-pressed=true]{border-color:var(--accent); background-color:var(--panel)}
 .lodgebox .zhead .zn{flex:1; min-width:0}
-.lodgebox .zhead .zck{flex:none; color:var(--accent); font-size:13px; line-height:1}
 
 .lodgebox .zhead .zloc{
   flex:none; width:13px; height:13px; color:var(--ink3);
   stroke:currentColor; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round;
 }
-@media (hover:hover){.lodgebox button.zhead:hover .zloc{color:var(--accent)}}
-.lodgebox button.zhead[aria-pressed=true] .zloc{color:var(--accent)}
-.lodgebox .zhead.locatable{
-  display:flex; align-items:center; gap:7px; width:100%; padding:4px 8px;
-  border:1px solid transparent; border-radius:0;   
-}
-.lodgebox .zhead.locatable .zn{flex:1; min-width:0}
+
 .lodgebox .zlocbtn{
-  flex:none; width:40px; height:32px; margin:-4px -8px -4px 0; padding:0;
+  flex:none; padding:0;   
   display:inline-flex; align-items:center; justify-content:center;
-  border:0; border-radius:0; background:none; color:var(--ink3); cursor:pointer;   
+  border:0; background:none; color:var(--ink3); cursor:pointer;
 }
 @media (hover:hover){.lodgebox .zlocbtn:hover{background-color:var(--hover-bg); color:var(--accent)}}   
 .lodgebox .zlocbtn .zloc{width:14px; height:14px}
 
-.lodgebox .znote{margin:1px 0 5px 8px; font-size:11.5px; color:var(--ink2); line-height:1.6}
-
-.lodgebox .zgrouplbl, .btrips .btlbl{font-size:11px; color:var(--ink3); letter-spacing:.04em}
-.lodgebox .zgrouplbl{margin:8px 0 0}
-.btrips .btlbl{margin:0 0 3px}
-
-.lodgebox .zbody{margin-left:16px; padding-left:8px; border-left:1px solid var(--hair)}   
-.lodgebox .row{padding:5px 6px}
-.lodgebox .nonear{margin:2px 6px 0; font-size:12px; color:var(--ink3); line-height:1.6}
+.lodgebox .nonear{margin:2px 0 0; font-size:12px; color:var(--ink3); line-height:1.6}   
 
 .tday > .detail{margin-left:5px; margin-right:0; width:100%}
 .lodgebox .detail{margin-left:0; margin-right:0}      
@@ -1820,8 +1809,7 @@ html.sheeton .panel{overflow:hidden}
 
   .sec, .tpickmini .sec.mini,
   .tcath.tog, .rthead,
-  .rrow, .trow, .row, .tstop, .tnight,
-  .lodgebox button.zhead{min-height:40px}
+  .rrow, .trow, .row, .tstop, .tnight{min-height:40px}
 
   .seg button{min-height:34px}
   #theme{min-width:40px; min-height:40px}
@@ -3759,7 +3747,8 @@ function renderDetail(p, inline, noNear){
     }).filter(o=>o && o.d<=step.km), step.n);
   const d=document.createElement("div"); d.className="detail place-detail";
   d.innerHTML =
-    `<p class="crumb" style="margin:0 0 8px;font-size:12px;color:var(--ink3)">` +
+
+    `<p class="crumb">` +
       `${esc((BS[p.base]||{}).name||p.base||"")}　${esc((TH[p.theme]||{}).name||"")}　${esc(p.kind||"")}</p>` +
     `<dl class="facts">` +
       `<dt>位置</dt><dd>${esc(p.town)}${p.coord_conf==="low"?"（座標估計值）":""}</dd>` +
@@ -4125,7 +4114,10 @@ function nightRow(d, i, total){
     const box=document.createElement("div"); box.className="nlodge lodgebox";
 
     box.appendChild(lodgingBlock(b, p=>`tl:${key}:${p.id}`, "inline"));
-    return [el, box];
+
+    const sheet=document.createElement("div"); sheet.className="lodge-sheet";
+    sheet.append(el, box);
+    return [sheet];
   }
   const el=document.createElement("div"); el.className="tnight";
   el.innerHTML = (i===total-1)
@@ -4606,12 +4598,7 @@ function lodgingBlock(b, keyOf, mode){
     inlineRow(p, keyOf(p), null, null, true).forEach(n=>host.appendChild(n));
   };
 
-  const headed = mode==="inline";
-  if (headed){
-    const h1=document.createElement("h3");
-    h1.textContent=`住宿（${lodges.length} 家）`;
-    frag.appendChild(h1);
-  }
+
   if (!lodges.length){
     const e=document.createElement("p"); e.className="nonear";
     e.textContent="這個基地還沒有住宿資料。";
@@ -4622,7 +4609,7 @@ function lodgingBlock(b, keyOf, mode){
     lodges.forEach(p=>put(frag,p));
     return frag;
   }
-  if (headed){
+  {
     const gl=document.createElement("p"); gl.className="zgrouplbl"; gl.textContent="住宿區域";
     frag.appendChild(gl);
   }
@@ -4695,6 +4682,14 @@ function baseIntro(r){
     (zonesOf(r).length ? `　住宿帶 <span class="num">${zonesOf(r).length}</span> 條` : "") +
     `</span>`;
   return rd;
+}
+
+function baseSheet(b){
+  const w=document.createElement("div"); w.className="base-sheet";
+  w.appendChild(baseIntro(b));
+  const lx=baseLodgeBox(b);
+  if (lx) w.appendChild(lx);
+  return w;
 }
 function baseLodgeBox(b){
   if (!b) return null;
@@ -4900,12 +4895,8 @@ function renderList(){
     bg.appendChild(h);
 
 
-    if (open) bg.appendChild(baseIntro(r));
 
-    if (BASE_SEL===r.id){
-      const bx=baseLodgeBox(r);
-      if (bx) bg.appendChild(bx);
-    }
+    if (open) bg.appendChild(baseSheet(r));
     if (!g[r.id].length) return;
     const gb=grpBox();
     gb.style.setProperty("--dc", baseColor(r));
@@ -5021,12 +5012,13 @@ function zoneSheetBody(){
   const zone=base && zonesOf(base).find(z=>z.name===view.name);
   const lodges=view.ids.map(id=>BY_ID[id]).filter(Boolean);
 
-  const intro=document.createElement("p"); intro.className="gintro place-summary";
-  intro.textContent=`${base ? base.name+"　" : ""}住宿 ${lodges.length} 家`;
-  const detail=document.createElement("div"); detail.className="detail place-detail";
+  const sheet=document.createElement("div"); sheet.className="base-sheet";
+  const intro=document.createElement("div"); intro.className="gintro";
+  intro.innerHTML=`<span class="gdesc">${base ? esc(base.name)+"　" : ""}住宿 <span class="num">${lodges.length}</span> 家</span>`;
+  const box=document.createElement("div"); box.className="blodge lodgebox";
   if (zone && zone.note){
-    const note=document.createElement("p"); note.className="desc"; note.textContent=zone.note;
-    detail.appendChild(note);
+    const note=document.createElement("p"); note.className="znote"; note.textContent=zone.note;
+    box.appendChild(note);
   }
   const body=document.createElement("div"); body.className="zbody";
   if (lodges.length) lodges.forEach(p=>body.appendChild(rowFor(p, null, null, null, true)));
@@ -5035,8 +5027,9 @@ function zoneSheetBody(){
     empty.textContent="這一帶目前沒有可定位的住宿資料。";
     body.appendChild(empty);
   }
-  detail.appendChild(body);
-  w.appendChild(placeCard(intro, detail));
+  box.appendChild(body);
+  sheet.append(intro, box);
+  w.appendChild(sheet);
   return w;
 }
 
@@ -5080,14 +5073,7 @@ const SHEETS = {
     ok: () => !!(BASE_SEL && BS[BASE_SEL]),
     title: () => `基地｜${(BS[BASE_SEL]||{}).name||""}`,
 
-    body: () => {
-      const b=BS[BASE_SEL];
-      const w=document.createElement("div");
-      w.appendChild(baseIntro(b));
-      const lx=baseLodgeBox(b);
-      if (lx) w.appendChild(lx);
-      return w;
-    },
+    body: () => baseSheet(BS[BASE_SEL]),   // 同一張 `.base-sheet`（棒 F3）；Sheet 裡縮排歸零見 CSS `.sheetwrap[data-kind=map] .sheetbody .base-sheet`
   },
   mzone: {
     tab:"map", kind:"map",
@@ -5611,8 +5597,10 @@ function renderPanel(){
 
       const nx=el.nextElementSibling;
 
+
       const bodyTop=(nx && (nx.classList.contains("detail") || nx.classList.contains("gintro")
-                            || nx.classList.contains("blodge") || nx.classList.contains("place-detail")))
+                            || nx.classList.contains("blodge") || nx.classList.contains("place-detail")
+                            || nx.classList.contains("base-sheet")))
         ? nx.getBoundingClientRect().top : r.bottom;
       let d=0;
       if (r.top < floorY) d = r.top - floorY;
