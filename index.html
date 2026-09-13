@@ -1067,26 +1067,26 @@ html.sheeton .panel{overflow:hidden}
 }
 
 .place-card, .place-card.is-expanded{
-  width:100%; border-radius:0;
-  background:none; box-shadow:none; border:0; overflow:hidden; margin:0;
+  position:relative; width:100%; border-radius:0;
+  background:none; box-shadow:none; border:0; margin:0;
 }
 
 .place-card.timeline{width:calc(100% - 5px); margin-left:5px; margin-top:4px; margin-bottom:4px}
 
-.results > .corr > .bgroup > .grp > .place-card{margin-left:calc(-1 * var(--guide-w)); width:calc(100% + var(--guide-w)); margin-bottom:14px}
-.results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%; padding-left:10px}
+.results > .corr > .bgroup > .grp > .place-card{margin-bottom:14px}
+.results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%}
 .results > .corr > .bgroup > .grp > .place-card > .place-detail{padding-left:10px}
 
 .place-card > .place-summary{
-  width:100%; margin:0; border:0; border-radius:0;
+  width:100%; margin:0; border-radius:0;
 }
 
-.place-card > .row, .place-card > .tstop{padding-top:8px; padding-right:10px; padding-bottom:8px}
+.place-card > .row, .place-card > .tstop{border:1px solid transparent; padding:7px 9px}
 .place-card > .gintro{padding:9px 12px 10px}
 
 .place-card > .place-detail{
   margin:0; border:0; border-top:0; border-radius:0;
-  padding:2px 9px 0 10px;
+  padding:2px 9px 0 calc(10px + var(--guide-w));
 }
 
 .place-detail{--detail-body-inset:7px}
@@ -1095,17 +1095,16 @@ html.sheeton .panel{overflow:hidden}
 .place-detail .tags{margin-bottom:10px}
 .place-detail .acts{margin-top:10px; margin-bottom:0}
 
-.place-card.is-expanded > .place-summary,
-.place-card.is-expanded > .place-detail{
-  border-left:var(--guide-w) solid var(--dc, var(--accent));
-  border-left-color:color-mix(in srgb, var(--dc, var(--accent)) var(--guide-full), transparent);
-  padding-left:10px;
+.place-card.is-expanded::before{
+  content:""; position:absolute; top:0; bottom:0; left:calc(-1 * var(--guide-w)); width:var(--guide-w);
+  background:color-mix(in srgb, var(--dc, var(--accent)) var(--guide-full), transparent);
+  pointer-events:none;
 }
+.place-card.timeline::before{left:0}
 .place-card.is-expanded > .place-summary{background:none; box-shadow:none; color:inherit; transition:none}   
 .place-card.is-expanded > .place-summary .t{color:var(--ink)}
 .place-card.is-expanded > .place-summary .m{color:var(--ink2)}
 
-.place-card.timeline > .place-summary{padding-left:calc(10px - var(--guide-w))}
 @media (pointer:coarse){
   .place-card.is-expanded{transform:translateZ(0)}
 }
