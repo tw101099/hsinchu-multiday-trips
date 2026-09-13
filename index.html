@@ -255,18 +255,6 @@ button{font:inherit; color:inherit; cursor:pointer}
 .logo{font-weight:700; white-space:nowrap}
 .logo small{display:block; font-weight:400; font-size:11px; color:var(--ink3); letter-spacing:.06em}
 
-.seg{display:flex; align-items:stretch; gap:2px; padding:2px;
-  background:var(--bg); border:1px solid var(--hair2); border-radius:999px}   
-.seg button{
-  border:0; border-radius:999px; padding:4px 13px; font-size:13px;
-  background:var(--bg); color:var(--ink2);
-  transition:background-color .15s, color .15s, box-shadow .15s;
-}
-@media (hover:hover){.seg button:hover{background-color:var(--accent-soft); color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}}
-
-.seg button[aria-pressed=true]{background:var(--accent); color:var(--on-accent); box-shadow:none}
-.seg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-
 #qwrap{
 
   flex:1 1 150px; max-width:250px; min-width:110px; padding:2px 9px 2px 6px;
@@ -1783,7 +1771,6 @@ html.sheeton .panel{overflow:hidden}
   .tcath.tog, .rthead,
   .rrow, .trow, .row, .tstop, .tnight{min-height:40px}
 
-  .seg button{min-height:34px}
   #theme{min-width:40px; min-height:40px}
   #qwrap{min-height:40px}
 
@@ -5468,13 +5455,28 @@ function renderPanel(){
     const prev=el.style.position; el.style.position="static";
     const t=el.getBoundingClientRect().top; el.style.position=prev; return t;
   };
+
   const anchorTo=(el, want)=>{
     if (!el) return false;
-    const desired=box.scrollTop + (flowTop(el) - Math.max(want, boxTop));
+    const floorY=Math.max(want, boxTop);
+    const desired=box.scrollTop + (flowTop(el) - floorY);
     const max=box.scrollHeight-box.clientHeight;
     if (desired>max) padEl.style.height=Math.ceil(desired-max)+"px";
     box.scrollTop=Math.max(0, desired);
     ANCHORED=true;
+    let fixed=false;
+    const refix=()=>{
+      if (fixed || !el.isConnected || !box.isConnected) return;
+      const diff=flowTop(el)-floorY;
+      if (Math.abs(diff)<1) return;
+      fixed=true;
+      const want2=box.scrollTop+diff, max2=box.scrollHeight-box.clientHeight;
+      if (want2>max2) padEl.style.height=((parseFloat(padEl.style.height)||0)+Math.ceil(want2-max2))+"px";
+      box.scrollTop=Math.max(0, want2);
+      ANCHORED=true;
+      document.querySelectorAll(".lane, #panel").forEach(syncStuck);
+    };
+    requestAnimationFrame(()=>requestAnimationFrame(refix)); setTimeout(refix, 0);
     return true;
   };
   if (SCROLL_RESET){
