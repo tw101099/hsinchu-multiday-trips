@@ -26,6 +26,7 @@
   --surface-panel:var(--panel);
   --surface-sheet:#ffffff;
   --surface-base-sheet:#ece5d6;
+  --surface-map:var(--surface-base-sheet);
   --paper-sheet:var(--paper-card);
   --paper-base-sheet:var(--paper-panel);
   --state-hover:color-mix(in srgb, var(--ink) 4%, transparent);
@@ -217,7 +218,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 .mfbtn,
 .mapbtns button{
   font-size:12.5px; line-height:1.5; padding:3px 10px; border-radius:999px;
-  background:var(--chip-bg); border:1px solid var(--line); color:var(--ink2);
+  background:var(--chip-bg); border:1px solid var(--hair); color:var(--ink2);   
 }
 
 @media (hover:hover){.btn-act.primary:hover{
@@ -305,7 +306,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 #theme{
   flex:none; display:flex; align-items:center; justify-content:center;
-  border:1px solid var(--line2); background:var(--chip-bg); border-radius:999px;
+  border:1px solid var(--hair); background:var(--chip-bg); border-radius:999px;   
   padding:5px 9px; line-height:1; color:var(--ink2);
 }
 
@@ -335,12 +336,12 @@ button{font:inherit; color:inherit; cursor:pointer}
   padding-bottom:env(safe-area-inset-bottom);
 }
 
-.stage{position:relative; flex:1 1 auto; min-height:220px; background:var(--surface-base-sheet)}
+.stage{position:relative; flex:1 1 auto; min-height:220px; background:var(--surface-map)}
 #map{position:absolute; inset:0}
 
 .mapnote{
   position:absolute; left:10px; bottom:calc(10px + env(safe-area-inset-bottom)); z-index:500; display:none; max-width:calc(100% - 20px);
-  background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+  background-color:var(--surface-sheet); background-image:var(--paper-sheet); border:0; border-radius:0;
   padding:5px 10px; font-size:11.5px; color:var(--ink2); box-shadow:0 1px 6px rgba(var(--sh),.13);
 }
 .mapmsg{
@@ -366,12 +367,12 @@ button{font:inherit; color:inherit; cursor:pointer}
 .mcondsum{
   position:absolute; top:10px; left:54px; right:10px; z-index:500; display:none;
   flex-direction:column; align-items:stretch; gap:0; max-width:calc(100% - 64px);
-  background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+  background-color:var(--surface-sheet); background-image:var(--paper-sheet); border:0; border-radius:0;
   padding:2px; font-size:11.5px; line-height:1.5; color:var(--ink2);
   box-shadow:0 1px 6px rgba(var(--sh),.13);
 }
 .mcondsum .mcsrow{display:flex; align-items:center; min-height:36px; width:100%; padding:0 6px;
-  border:0; border-radius:8px; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer}
+  border:0; border-radius:0; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer}
 .mcondsum .mcsline{display:flex; align-items:center; min-width:0}
 .mcondsum .mcsline .mcsrow{flex:1 1 auto; min-width:0}
 @media (hover:hover){.mcondsum .mcsrow:hover{background-color:var(--hover-bg); color:var(--accent)}}
@@ -379,11 +380,10 @@ button{font:inherit; color:inherit; cursor:pointer}
 .mcondsum .mcsicons{display:flex; align-items:center; gap:6px}
 .mcondsum .mcsk{color:var(--ink3); margin-right:3px}
 
-.mcondsum .mcsg + .mcsg{margin-left:10px}
-
 .mcsx{
-  flex:none; min-height:36px; padding:0 10px; border:0; background:none; cursor:pointer;
-  font-family:inherit; font-size:12px; line-height:1.4; color:var(--ink3);
+  flex:none; width:36px; height:36px; min-height:36px; padding:0; border:0; background:none; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:inherit; font-size:19px; line-height:1; color:var(--ink3);
   border-radius:999px; white-space:nowrap;
 }
 @media (hover:hover){.mcsx:hover{color:var(--accent); background-color:var(--hover-bg)}}
@@ -423,7 +423,7 @@ button{font:inherit; color:inherit; cursor:pointer}
   bottom:calc(16px + env(safe-area-inset-bottom));
   width:40px; height:40px;
   border-radius:50%; display:flex; align-items:center; justify-content:center;
-  background:var(--panel); border:1px solid var(--line2); color:var(--ink2);
+  background:var(--panel); border:1px solid var(--hair); color:var(--ink2);   
   box-shadow:0 2px 10px rgba(var(--sh),.24); opacity:0; pointer-events:none;
   transition:opacity .15s, border-color .15s, color .15s;
 }
@@ -436,8 +436,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 .totop.docked.wide{right:calc(100vw - 725px + env(safe-area-inset-right))}
 
 .mapcard{
-  display:none; align-self:stretch; background:var(--panel); border:1px solid var(--line2);
-  border-radius:var(--r); box-shadow:0 2px 14px rgba(var(--sh),.24); padding:10px 12px;
+  display:none; align-self:stretch; background-color:var(--surface-sheet); background-image:var(--paper-sheet); border:0;
+  border-radius:0; box-shadow:0 2px 14px rgba(var(--sh),.24); padding:10px 12px;
 }
 .mapcard.on{display:block}
 .mapcard .ttl{display:flex; align-items:flex-start; gap:8px}
@@ -575,9 +575,10 @@ html.sheeton .panel{overflow:hidden}
   display:flex; flex-direction:column;
 
   max-height:82vh; max-height:82dvh;
-  background:var(--panel); border-top:1px solid var(--line);
-  border-radius:16px 16px 0 0;
-  box-shadow:0 -3px 20px rgba(var(--sh),.20);
+
+  background-color:var(--surface-sheet); background-image:var(--paper-sheet); border-top:0;
+  border-radius:0;
+  box-shadow:0 -1px 3px rgba(var(--sh),.16), 0 -4px 14px rgba(var(--sh),.14);
 
   padding-bottom:env(safe-area-inset-bottom);
 }
@@ -605,13 +606,13 @@ html.sheeton .panel{overflow:hidden}
 
   touch-action:none;
 }
-.sheetgrab span{display:block; width:38px; height:4px; border-radius:999px; background:var(--line)}
+.sheetgrab span{display:block; width:38px; height:4px; border-radius:999px; background:var(--hair)}   
 @media (hover:hover){.sheetgrab:hover span{background-color:var(--accent)}}
 .sheetgrab:focus-visible{outline:2px solid var(--accent); outline-offset:-3px}
 
 .sheethead{
   flex:none; display:flex; align-items:center; gap:10px;
-  padding:0 14px 8px; border-bottom:1px solid var(--line);
+  padding:0 14px 8px; border-bottom:1px solid var(--hair);
 }
 .sheettitle{flex:1; min-width:0; font-size:15px; font-weight:700; color:var(--ink)}
 .sheetbody{
@@ -639,25 +640,18 @@ html.sheeton .panel{overflow:hidden}
 
 .sheetfoot{
   flex:none; display:flex; align-items:center; justify-content:flex-end; gap:10px;
-  padding:9px 14px 12px; border-top:1px solid var(--line); background:var(--panel);
+  padding:9px 14px 12px; border-top:1px solid var(--hair); background:none;
 }
 
 .sheetbtn{
   min-height:32px; padding:0 14px; border-radius:999px; cursor:pointer; position:relative;
   font-family:inherit; font-size:13.5px; line-height:1.4;
-  border:1px solid var(--line); background:var(--chip-bg); color:var(--ink2);
+  border:1px solid var(--hair); background:var(--chip-bg); color:var(--ink2);   
 }
 .sheetbtn.sb-clear{flex:none}
 .sheetbtn.sb-go{flex:none; font-weight:600; background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
 .sheetbtn::after{content:""; position:absolute; inset:-6px 0}
 .sheetbtn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-.sheetreset{
-  flex:none; min-height:40px; padding:0 10px; border:0; background:none; cursor:pointer;
-  font-family:inherit; font-size:13px; color:var(--ink3); text-decoration:underline;
-  text-underline-offset:3px;
-}
-@media (hover:hover){.sheetreset:hover{color:var(--accent)}}
-.sheetreset:focus-visible{outline:2px solid var(--accent); outline-offset:-2px; border-radius:6px}
 
 .mfbtn{
   flex:none; cursor:pointer; position:relative;
@@ -681,19 +675,6 @@ html.sheeton .panel{overflow:hidden}
   transform:rotate(45deg);
 }
 .fbhint.out{opacity:0}
-
-.mfsum{display:flex; flex-wrap:wrap; gap:6px; align-items:center; flex:1 1 auto; min-width:0}
-.mfsum .mfv{
-  font-size:12px; line-height:1.5; padding:2px 8px; border-radius:999px;
-  border:1px solid var(--line); color:var(--ink2);
-}
-
-.mfx{
-  flex:none; width:40px; height:40px; border:0; background:none; cursor:pointer;
-  font-size:19px; line-height:1; color:var(--ink3); border-radius:999px;
-}
-@media (hover:hover){.mfx:hover{color:var(--accent); background-color:var(--hover-bg)}}
-.mfx:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
 
 @media (max-width:899px), (max-height:559px){
   .sheetwrap[data-open]{display:block}
@@ -756,7 +737,7 @@ html.sheeton .panel{overflow:hidden}
     flex:0 0 40px; width:40px; min-width:40px; overflow:hidden;
   }
   .railbtn{
-    width:100%; height:100%; border:0; background:var(--surface-base-sheet); color:var(--ink2);   
+    width:100%; height:100%; border:0; background:var(--surface-map); color:var(--ink2);   
     font-size:12.5px; letter-spacing:.12em;
 
     display:flex; align-items:center; justify-content:center; padding:12px 0;
@@ -796,8 +777,9 @@ html.sheeton .panel{overflow:hidden}
 .fpop{
   position:absolute; top:100%; left:0; right:0; z-index:410;
   padding:14px; border-radius:0;   
-  background-color:var(--panel); background-image:var(--paper-panel);
-  box-shadow:0 6px 16px rgb(60 45 30 / 10%);
+
+  background-color:var(--surface-sheet); background-image:var(--paper-sheet);
+  box-shadow:var(--lift-shadow);
 }
 .fpop .lfilters, .fpop .tfilters{padding:0; margin:0; border-bottom:0}
 
@@ -843,7 +825,7 @@ html.sheeton .panel{overflow:hidden}
 
 .chip{
   display:inline-flex; align-items:center;
-  border:1px solid var(--line); background:var(--chip-bg); border-radius:999px;
+  border:1px solid var(--hair); background:var(--chip-bg); border-radius:999px;   
   padding:3px 10px; font-size:12.5px; color:var(--ink2); line-height:1.5;
   transition:border-color .15s, background .15s, color .15s;
 }
@@ -862,7 +844,7 @@ html.sheeton .panel{overflow:hidden}
 .sec{
   display:flex; align-items:center; gap:7px; width:100%; min-height:36px;
   border:0; background:none;
-  padding:9px 0; margin-top:11px; border-top:1px solid var(--line);
+  padding:9px 0; margin-top:11px; border-top:1px solid var(--hair);   
   text-align:left;
 }
 
@@ -1761,7 +1743,7 @@ html.sheeton .panel{overflow:hidden}
   #mmenu{
     display:flex; flex-direction:column; align-items:stretch;
     position:absolute; top:100%; right:max(14px,env(safe-area-inset-right)); z-index:1100;
-    min-width:190px; padding:5px; border:1px solid var(--line); border-radius:12px;
+    min-width:190px; padding:5px; border:1px solid var(--hair); border-radius:12px;   
     background:var(--panel); box-shadow:0 8px 24px rgba(var(--sh),.18);
   }
   #mmenu[hidden]{display:none}
