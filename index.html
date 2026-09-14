@@ -1078,7 +1078,8 @@ html.sheeton .panel{overflow:hidden}
   background:none; box-shadow:none; border:0; margin:0;
 }
 
-.place-card.timeline{width:calc(100% - 5px); margin-left:5px; margin-top:4px; margin-bottom:4px}
+.place-card.timeline{width:calc(100% - 5px); margin-left:5px; margin-top:0; margin-bottom:0}
+.place-card.timeline.is-expanded > .place-summary, .place-card.timeline.is-expanded > .place-detail{background:none; box-shadow:none}
 
 .results > .corr > .bgroup > .grp > .place-card{margin-bottom:14px}
 .results > .corr > .bgroup > .grp > .place-card > .row{margin-left:0; width:100%}
@@ -1106,7 +1107,8 @@ html.sheeton .panel{overflow:hidden}
   background:color-mix(in srgb, var(--dc, var(--accent)) var(--guide-full), transparent);
   pointer-events:none;
 }
-.place-card.timeline::before{left:0}
+
+.place-card.timeline.is-expanded::before{display:none}
 
 .lodgebox .place-card.is-expanded::before{left:calc(-1 * var(--lodge-inset))}
 .place-card.is-expanded > .place-summary{background:none; box-shadow:none; color:inherit; transition:none}   
@@ -1372,7 +1374,8 @@ html.sheeton .panel{overflow:hidden}
 .mi.nd{color:var(--ink2)}
 
 .trow, .tstop, .tnight,
-.tstop.open{
+.tstop.open,
+.place-card.timeline.is-expanded{
   background-color:var(--surface-sheet);
   background-image:var(--card-lift),var(--paper-sheet);
   box-shadow:var(--lift-shadow);
@@ -1401,7 +1404,7 @@ html.sheeton .panel{overflow:hidden}
 }
 
 .base-sheet{--base-inset:12px;margin:0 0 10px 13px;width:calc(100% - 13px);
-  background-color:var(--surface-base-sheet);background-image:var(--paper-base-sheet);box-shadow:var(--lift-shadow)}
+  background-color:var(--surface-sheet);background-image:var(--paper-sheet);box-shadow:var(--lift-shadow)}   
 .base-sheet > .gintro,.base-sheet > .blodge{margin:0;width:100%;background:none;box-shadow:none;border:0}
 
 .blodge .trow{background-color:var(--state-hover);background-image:none;box-shadow:none;border-color:transparent}
