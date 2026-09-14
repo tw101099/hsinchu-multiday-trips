@@ -38,6 +38,8 @@
   --tint:color-mix(in srgb, var(--ink) 6%, transparent);
 
   --guide-w:2.5px;
+
+  --guide-slot:3px;
   --guide-full:88%;
   --guide-dim:30%;
 
@@ -928,7 +930,7 @@ html.sheeton .panel{overflow:hidden}
 
 .results > .corr > .bgroup > .ghead{margin-left:-14px; width:calc(100% + 28px)}
 
-.results > .corr > .bgroup > .grp{position:relative; margin:0 0 0 13px; padding-left:var(--guide-w); border-left:0}
+.results > .corr > .bgroup > .grp{position:relative; margin:0 0 0 13px; padding-left:var(--guide-slot); border-left:0}   
 .results > .corr > .bgroup > .grp::before{
   content:""; position:absolute; top:0; bottom:0; left:0; width:var(--guide-w);
   background:color-mix(in srgb, var(--dc, var(--accent)) var(--guide-dim), transparent);
@@ -1100,7 +1102,7 @@ html.sheeton .panel{overflow:hidden}
 .place-detail .acts{margin-top:10px; margin-bottom:0}
 
 .place-card.is-expanded::before{
-  content:""; position:absolute; top:0; bottom:0; left:calc(-1 * var(--guide-w)); width:var(--guide-w);
+  content:""; position:absolute; top:0; bottom:0; left:calc(-1 * var(--guide-slot)); width:var(--guide-w);   
   background:color-mix(in srgb, var(--dc, var(--accent)) var(--guide-full), transparent);
   pointer-events:none;
 }
