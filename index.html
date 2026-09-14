@@ -887,6 +887,7 @@ html.sheeton .panel{overflow:hidden}
 .rrow[aria-pressed=true]{color:var(--ink); font-weight:600}
 
 .blodge{
+  --lodge-inset:var(--base-inset);     
   padding:8px var(--base-inset) 9px;   
 }
 
@@ -1104,6 +1105,8 @@ html.sheeton .panel{overflow:hidden}
   pointer-events:none;
 }
 .place-card.timeline::before{left:0}
+
+.lodgebox .place-card.is-expanded::before{left:calc(-1 * var(--lodge-inset))}
 .place-card.is-expanded > .place-summary{background:none; box-shadow:none; color:inherit; transition:none}   
 .place-card.is-expanded > .place-summary .t{color:var(--ink)}
 .place-card.is-expanded > .place-summary .m{color:var(--ink2)}
@@ -1408,7 +1411,7 @@ html.sheeton .panel{overflow:hidden}
   background-color:var(--surface-sheet);background-image:var(--paper-sheet);box-shadow:var(--lift-shadow)}
 .lodge-sheet > .tnight,.lodge-sheet > .nlodge{margin:0;width:100%;background:none;box-shadow:none;border:0}
 .lodge-sheet > .tnight{padding:6px 10px;color:var(--ink)}
-.lodge-sheet > .nlodge{padding:2px 9px 10px}
+.lodge-sheet > .nlodge{--lodge-inset:9px;padding:2px var(--lodge-inset) 10px}   
 
 .trow, .tstop, .tnight, .row, .rrow, .rthead, .tcath.tog,
 .place-card, .gintro, .blodge, .nlodge, .tstop.open, .tnight.open,
