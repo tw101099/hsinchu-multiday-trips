@@ -1410,7 +1410,7 @@ html.sheeton .panel{overflow:hidden}
 .lodge-sheet{margin:0 0 4px 5px;width:calc(100% - 5px);
   background-color:var(--surface-sheet);background-image:var(--paper-sheet);box-shadow:var(--lift-shadow)}
 .lodge-sheet > .tnight,.lodge-sheet > .nlodge{margin:0;width:100%;background:none;box-shadow:none;border:0}
-.lodge-sheet > .tnight{padding:6px 10px;color:var(--ink)}
+.lodge-sheet > .tnight{padding:6px 10px;color:var(--ink);border:1px solid transparent}   
 .lodge-sheet > .nlodge{--lodge-inset:9px;padding:2px var(--lodge-inset) 10px}   
 
 .trow, .tstop, .tnight, .row, .rrow, .rthead, .tcath.tog,
@@ -1418,7 +1418,7 @@ html.sheeton .panel{overflow:hidden}
 .base-sheet, .lodge-sheet{border-radius:0}   
 
 .tstop{
-  display:flex; width:100%; align-items:flex-start; gap:8px; text-align:left;
+  display:flex; width:calc(100% - 5px); align-items:flex-start; gap:8px; text-align:left;   
   margin-left:5px; padding:7px 9px; border:1px solid transparent; border-radius:var(--r);
   transition:border-color .12s, background .12s;
 }
@@ -1428,7 +1428,7 @@ html.sheeton .panel{overflow:hidden}
 .tstop .m{font-size:12px; color:var(--ink2); margin-top:1px; display:flex; align-items:center; flex-wrap:wrap}
 
 .tnight{
-  display:flex; align-items:center; gap:7px; width:100%; text-align:left;
+  display:flex; align-items:center; gap:7px; width:calc(100% - 5px); text-align:left;   
   margin:0 0 0 5px; padding:6px 10px; border:1px solid transparent; border-radius:0;   
   font:inherit; font-size:12.5px; color:var(--ink2);
 }
