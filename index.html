@@ -1971,9 +1971,7 @@ const S = { tab:"trip", base:new Set(), themes:new Set(), diffs:new Set(),
 let EXTRA = new Set();
 
 function nearPool(st){
-  const maxKm=NEAR_STEPS[NEAR_STEPS.length-1].km;
-  return PLACES.filter(x=>x.id!==st.id && nkm(st,x)<=maxKm)
-    .sort((a,b)=>nkm(st,a)-nkm(st,b));
+  return PLACES.filter(x=>x.id!==st.id);
 }
 
 const RM = matchMedia("(prefers-reduced-motion: reduce)");
@@ -3636,9 +3634,8 @@ function renderBaseFinder(){
 }
 
 function legBit(p, rel){
-  if (rel) return `<span class="mi" title="車程${rel.min!=null?`（實算 ${rawT(rel.min)}）`:""}">${CAR_SVG}` +
-    (rel.min!=null ? `${est(rel.min)} · ` : ``) +
-    `${kmv(rel.km, rel.real?"":"直線 ")}</span>`;
+  if (rel) return `<span class="mi" title="車程（實算 ${rawT(rel.min)} · ${kmT(rel.km)}）">` +
+    `${CAR_SVG}${est(rel.min)}</span>`;
   return driveBit(p);
 }
 
@@ -3686,7 +3683,7 @@ function rowFor(p, extra, rel, key, selMode){
   return b;
 }
 
-const NEAR_STEPS = [{km:10,n:5},{km:20,n:8},{km:30,n:10},{km:40,n:12}];
+const NEAR_STEPS = [{min:15,n:5},{min:30,n:8},{min:45,n:10},{min:60,n:12}];
 
 function pickNearby(list, n){
   const groups=new Map();
@@ -3721,8 +3718,8 @@ function renderDetail(p, inline, noNear){
   const road=NEAR[p.id];
   const near=pickNearby(pool.map(x=>{
       const r=road&&road[x.id];
-      return r ? {x, d:r.km, min:r.min, real:true} : null;
-    }).filter(o=>o && o.d<=step.km), step.n);
+      return r ? {x, d:r.min, km:r.km} : null;
+    }).filter(o=>o && o.d<=step.min), step.n);
   const d=document.createElement("div"); d.className="detail place-detail";
   d.innerHTML =
 
@@ -3755,17 +3752,17 @@ function renderDetail(p, inline, noNear){
   const canWiden = S.near < NEAR_STEPS.length-1;
   if (!noNear && (near.length || canWiden)){
     const n=document.createElement("div"); n.className="nearby";
-    n.innerHTML=`<h3>附近精選地點（車程 ${step.km} 公里內）</h3>`;
-    if (near.length) near.forEach(({x,d:dd,min,real})=>
-      n.appendChild(rowFor(x, null, {km:dd, min, real})));
+    n.innerHTML=`<h3>附近精選地點（車程 ${step.min} 分內）</h3>`;
+    if (near.length) near.forEach(({x,d:dd,km})=>
+      n.appendChild(rowFor(x, null, {min:dd, km})));
     else {
       const e=document.createElement("p"); e.className="nonear";
-      e.textContent="這個車程範圍內沒有別的點。山上繞路遠，可以放寬距離再看。";
+      e.textContent="這個車程範圍內沒有別的點。山上繞路遠，可以放寬時間再看。";
       n.appendChild(e);
     }
     if (canWiden){
       const more=document.createElement("button"); more.className="wider";
-      more.textContent=`再遠一點（${NEAR_STEPS[S.near+1].km} 公里內）`;
+      more.textContent=`再遠一點（${NEAR_STEPS[S.near+1].min} 分內）`;
       more.onclick=()=>{ S.near++; render(); };
       n.appendChild(more);
     }
