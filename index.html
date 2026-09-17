@@ -800,15 +800,15 @@ html.sheeton .panel{overflow:hidden}
   white-space:nowrap; text-decoration:none; font-family:inherit;
 }
 
-#sort{
-  flex:none; font-family:inherit; max-width:120px;
-
-  height:calc(12.5px * 1.5 + 8px);
-}
-
 .sortwrap{flex:none; position:relative; display:inline-flex}
-.sortlbl{display:none; align-items:center; white-space:nowrap}
+.sortlbl{display:inline-flex; align-items:center; white-space:nowrap}
 .sortlbl .chev{margin-left:3px}
+
+#sort{
+  position:absolute; left:0; right:0; top:-6px; bottom:-6px; width:100%; height:auto;
+  flex:none; font-family:inherit; max-width:none; min-height:0;
+  margin:0; padding:0; border:0; opacity:0; z-index:1;
+}
 
 #sort:focus-visible + .sortlbl{outline:2px solid var(--accent); outline-offset:2px}
 
@@ -1836,11 +1836,6 @@ html.sheeton .panel{overflow:hidden}
 @media (max-width:699px), (pointer:coarse){
   input, textarea, select, #q, #sort{font-size:16px}
 
-  .sortlbl{display:inline-flex}
-  #sort{
-    position:absolute; left:0; right:0; top:-6px; bottom:-6px; width:100%; height:auto;
-    max-width:none; min-height:0; margin:0; padding:0; border:0; opacity:0; z-index:1;
-  }
 }
 
 @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
