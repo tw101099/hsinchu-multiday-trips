@@ -783,6 +783,20 @@ html.sheeton .panel{overflow:hidden}
 }
 .fpop .lfilters, .fpop .tfilters{padding:0; margin:0; border-bottom:0}
 
+.stickpop{
+  position:fixed; z-index:420; padding:12px 14px 14px;
+  border:0; border-radius:0;
+  background-color:var(--surface-sheet); background-image:var(--paper-sheet);
+  box-shadow:var(--lift-shadow);
+  overflow:auto; overscroll-behavior:contain;
+}
+
+.stickpop .base-sheet{margin:0; width:auto; background:none; background-image:none; box-shadow:none}
+.stickpop .base-sheet > .gintro,
+.stickpop .base-sheet > .blodge{background:none; box-shadow:none}
+
+.ghead[aria-expanded=true]:not(:has(+ .base-sheet)){margin-bottom:6px}
+
 .fsum{
   flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:6px;
   white-space:nowrap; overflow:hidden;
@@ -4853,6 +4867,8 @@ function renderList(){
     h.className="ghead row-toggle"; h.setAttribute("aria-expanded", open);
 
     h.dataset.bid=r.id;
+
+    h.dataset.spkey=r.id;
     h.style.setProperty("--dc", baseColor(r));
     h.title = open ? `收起「${r.name}」的住宿清單`
                    : `展開「${r.name}」的推薦行程、住宿區域與各家住宿`;
@@ -4861,7 +4877,11 @@ function renderList(){
       `<span class="gnm">${esc(r.name)}</span>` +
       `<span class="n">${countHtml(g[r.id].length)}</span>` +
       `<svg class="chev" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>`;
-    h.onclick=()=>selectBase(r.id, true);
+
+    h.onclick=()=>{
+      if (stickpopHit(h, "basesheet", r.id)) return;
+      selectBase(r.id, true);
+    };
 
     hoverWire(h, "base", r.id);
     bg.appendChild(h);
@@ -5342,6 +5362,8 @@ function renderPanel(){
     expHost=document.createElement("div"); expHost.className="lane lane-explore";
     expHost.addEventListener("scroll", updateTotop, {passive:true});
     expHost.addEventListener("scroll", ()=>syncStuck(expHost), {passive:true});
+
+    expHost.addEventListener("scroll", ()=>stickpopSync(false), {passive:true});
     tripHost.addEventListener("scroll", ()=>syncStuck(tripHost), {passive:true});
     panel.append(tripHost, expHost);
 
@@ -5367,9 +5389,11 @@ function renderPanel(){
     const t = S.trip && TRIP_BY_ID[S.trip];
 
 
-    tripHost.appendChild(section("推薦行程", null, S.tripsOpen,
-      ()=>{ S.tripsOpen=!S.tripsOpen; save(); render(); }, "toplevel deskonly sectrips",
-      tripSub(t)));
+
+    const secT=section("推薦行程", null, S.tripsOpen,
+      ()=>{ secJumpHit(secT, "trips", S.tripsOpen); S.tripsOpen=!S.tripsOpen; save(); render(); },
+      "toplevel deskonly sectrips", tripSub(t));
+    tripHost.appendChild(secT);
 
     tripHost.appendChild(renderTripBar());
 
@@ -5401,10 +5425,12 @@ function renderPanel(){
 
 
 
-  expHost.appendChild(section("基地",
+
+  const secB=section("基地",
     countHtml(S.base.size ? `${S.base.size}/${BASES.length}` : BASES.length, "個"), S.basesOpen,
-    ()=>{ S.basesOpen=!S.basesOpen; save(); render(); }, "toplevel basesec",
-    baseSub()));
+    ()=>{ secJumpHit(secB, "bases", S.basesOpen); S.basesOpen=!S.basesOpen; save(); render(); },
+    "toplevel basesec", baseSub());
+  expHost.appendChild(secB);
 
   const qb=qBaseSection();
   if (qb){
@@ -5508,6 +5534,23 @@ function renderPanel(){
 
   if (two) tripHost.scrollTop = SCROLL_TRIPTOP ? 0 : keepTrip;
   SCROLL_TRIPTOP=false;
+
+  if (SECJUMP){
+    const sj=SEC_JUMPS[SECJUMP.key], sbox=sj && sj.box();
+    const sec=sbox && sbox.querySelector(sj.sel);
+    if (sbox && sec){
+      if (SECJUMP.mode==="back"){ sbox.scrollTop = SECJUMP.to; }
+      else {
+        const sbt=sbox.getBoundingClientRect().top + sbox.clientTop;
+        const prev=sec.style.position; sec.style.position="static";
+        const ft=sec.getBoundingClientRect().top;
+        sec.style.position=prev;
+        sbox.scrollTop += (ft - sbt);
+      }
+      if (sbox===box) ANCHORED=true;
+    }
+    SECJUMP=null;
+  }
 
   if (SCROLL_BASE){
     const gh=box.querySelector(`.ghead[data-bid="${SCROLL_BASE}"]`);
@@ -5706,6 +5749,7 @@ function updateTotop(){
 }
 document.getElementById("panel").addEventListener("scroll", updateTotop, {passive:true});
 document.getElementById("panel").addEventListener("scroll", ()=>syncStuck(document.getElementById("panel")), {passive:true});
+document.getElementById("panel").addEventListener("scroll", ()=>stickpopSync(false), {passive:true});
 
 function syncStuck(box){
   if (!box) return;
@@ -5757,6 +5801,8 @@ function render(){
 
   renderSheet();
   document.querySelectorAll(".lane, #panel").forEach(syncStuck);
+
+  stickpopSync(true);
   syncHash();
 
   flushSheetPush();
@@ -5806,6 +5852,117 @@ document.addEventListener("pointerdown", e=>{
   }
   closeFpops(false);
 }, true);
+
+const SP_GAP = 12;    // 浮層下緣與 lane 底之間留的邊距
+const SP_MIN = 120;   // 矮視窗的高度地板：視窗矮到 560 仍看得到一段內容並可內捲
+let STICKPOP = null;  // null | {kind, key}；**模組層旗標，不進 `S`、不存檔**（同 `LF_POP`／`TF_POP`）
+
+const SP_KINDS = {
+  basesheet: { sel:".results .ghead", key:el=>el.dataset.spkey,
+               body:k=>baseSheet(BS[k]), base:k=>BASE_SEL===k },
+};
+
+function spDisplaced(el){
+  const now=el.getBoundingClientRect().top;
+  const prev=el.style.position; el.style.position="static";
+  const flow=el.getBoundingClientRect().top;
+  el.style.position=prev;
+  return Math.abs(now-flow) > 1;
+}
+function spStuck(el){ return !!el && el.classList.contains("stuck") && spDisplaced(el); }
+
+function spVisible(el, box){
+  const r=el.getBoundingClientRect(), b=box.getBoundingClientRect();
+  return r.bottom > b.top+0.5 && r.top < b.bottom-0.5;
+}
+
+function spIsCurrent(el, k, box){
+  const st=[...box.querySelectorAll(k.sel)].filter(x=>x.classList.contains("stuck"));
+  return !st.length || st[st.length-1]===el;
+}
+
+function stickpopAnchor(){
+  if (!STICKPOP) return null;
+  const k=SP_KINDS[STICKPOP.kind], box=scrollBox();
+  if (!k || !box) return null;
+  const all=[...box.querySelectorAll(k.sel)];
+  return k.key ? (all.find(el=>k.key(el)===STICKPOP.key) || null) : (all[0] || null);
+}
+function spAria(el, k){
+  if (el && k) el.setAttribute("aria-expanded", !!k.base(k.key ? k.key(el) : null));
+}
+
+function setStickpop(spec){
+  const prev=stickpopAnchor(), pk=STICKPOP && SP_KINDS[STICKPOP.kind];
+  spAria(prev, pk);                       // 舊錨列的 `aria-expanded` 翻回它自己的真值
+  STICKPOP = spec || null;
+  const old=document.querySelector(".stickpop");
+  if (old) old.remove();
+  if (STICKPOP) stickpopSync(true);
+}
+
+function stickpopSync(rebuild){
+  const old=document.querySelector(".stickpop");
+  if (!STICKPOP){ if (old) old.remove(); return; }
+  const k=SP_KINDS[STICKPOP.kind], box=scrollBox(), a=stickpopAnchor();
+  if (!k || !box || !a || !spVisible(a,box) || (k.key && !spIsCurrent(a,k,box))){
+    STICKPOP=null; if (old) old.remove(); spAria(a,k); return;
+  }
+  let p=old;
+  if (!p){
+    p=document.createElement("div"); p.className="stickpop";
+    p.onclick=e=>e.stopPropagation();     // 浮層內的點擊不算「點到外面」（同 `.fpop`）
+    document.body.appendChild(p); rebuild=true;
+  }
+  if (rebuild){
+    const keep=p.scrollTop;               // 重造內容不該把人捲回浮層頂端
+    p.innerHTML=""; p.appendChild(k.body(STICKPOP.key));
+    p.scrollTop=keep;
+  }
+  a.setAttribute("aria-expanded", true);
+
+  const r=a.getBoundingClientRect(), lr=box.getBoundingClientRect();
+  p.style.top       = r.bottom+"px";
+  p.style.left      = r.left+"px";
+  p.style.width     = r.width+"px";
+  p.style.maxHeight = Math.max(SP_MIN, lr.bottom-r.bottom-SP_GAP)+"px";
+}
+
+function stickpopHit(el, kind, key){
+  if (!spStuck(el)) return false;
+  const kk = (key==null) ? null : key;
+  const same = STICKPOP && STICKPOP.kind===kind && STICKPOP.key===kk;
+  setStickpop(same ? null : {kind, key:kk});
+  return true;
+}
+
+document.addEventListener("pointerdown", e=>{
+  if (!STICKPOP) return;
+  const p=document.querySelector(".stickpop");
+  if (p && p.contains(e.target)) return;
+  const a=stickpopAnchor();
+  if (a && a.contains(e.target)) return;
+  setStickpop(null);
+}, true);
+
+addEventListener("resize", ()=>{ if (STICKPOP) stickpopSync(false); });
+
+const SEC_JUMPS = {
+  trips: { sel:".sec.sectrips",
+           box:()=>document.querySelector("#panel > .lane-trip") || document.getElementById("panel") },
+  bases: { sel:".sec.basesec", box:()=>scrollBox() },
+};
+let SECJUMP = null;        // null | {key, mode:"open"|"back", to}；下一次 renderPanel 消費，不存檔
+const SEC_BACK = {};       // key → **展開前那一刻**的 scrollTop（模組層記憶，不進 `S`、不存檔）
+
+function secJumpHit(el, key, isOpen){
+  const spec=SEC_JUMPS[key];
+  if (!spec || !spStuck(el)) return;      // 未釘住＝維持現狀（連記憶都不寫）
+  const box=spec.box();
+  if (!box) return;
+  if (isOpen) SECJUMP = (SEC_BACK[key]!=null) ? {key, mode:"back", to:SEC_BACK[key]} : null;
+  else { SEC_BACK[key]=box.scrollTop; SECJUMP={key, mode:"open"}; }
+}
 document.getElementById("q").addEventListener("keydown", e=>{
   if (e.key==="Backspace" && !e.target.value && S.qtags.length){
     S.qtags.pop();
@@ -5820,6 +5977,8 @@ addEventListener("keydown", e=>{
   if (e.key!=="Escape") return;
 
 
+
+  if (STICKPOP){ const a=stickpopAnchor(); setStickpop(null); if (a) a.focus({preventScroll:true}); return; }
   if (MMENU){ closeMMenu(true); return; }
 
   if (LF_POP || TF_POP){ closeFpops(true); return; }
