@@ -5954,14 +5954,25 @@ const SEC_JUMPS = {
 };
 let SECJUMP = null;        // null | {key, mode:"open"|"back", to}；下一次 renderPanel 消費，不存檔
 const SEC_BACK = {};       // key → **展開前那一刻**的 scrollTop（模組層記憶，不進 `S`、不存檔）
+const SEC_FWD  = {};       // key → **收合前那一刻**的 scrollTop（棒 Y；同上不進 `S`、不存檔）
 
 function secJumpHit(el, key, isOpen){
   const spec=SEC_JUMPS[key];
-  if (!spec || !spStuck(el)) return;      // 未釘住＝維持現狀（連記憶都不寫）
+  if (!spec) return;
   const box=spec.box();
   if (!box) return;
-  if (isOpen) SECJUMP = (SEC_BACK[key]!=null) ? {key, mode:"back", to:SEC_BACK[key]} : null;
-  else { SEC_BACK[key]=box.scrollTop; SECJUMP={key, mode:"open"}; }
+  const stuck = spStuck(el);
+  if (isOpen){
+
+    if (stuck) SEC_FWD[key]=box.scrollTop; // 收合前的位置：下一次展開回這裡
+    SECJUMP = (SEC_BACK[key]!=null) ? {key, mode:"back", to:SEC_BACK[key]} : null;
+    delete SEC_BACK[key];                 // 用掉即清（棒 Y 待裁裁定）：不清的話，之後某次
+  } else {
+    if (!stuck) return;                   // 展開的「帶你去／返回」只在釘住離位時（維持 V 現制）
+    SEC_BACK[key]=box.scrollTop;          // 展開前的位置：下一次收合回這裡（V 的現制）
+    SECJUMP = (SEC_FWD[key]!=null) ? {key, mode:"back", to:SEC_FWD[key]} : {key, mode:"open"};
+    delete SEC_FWD[key];                  // 用掉即清：下一次展開退回「帶你去」語意
+  }
 }
 document.getElementById("q").addEventListener("keydown", e=>{
   if (e.key==="Backspace" && !e.target.value && S.qtags.length){
