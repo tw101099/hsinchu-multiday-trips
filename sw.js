@@ -57,6 +57,12 @@
 // 與 `data/` 備援一起消失，下一次開站在網路半死時就沒有東西可退。舊副本改由 activate 與
 // 每次成功導覽時用 keys() 過濾清掉，效果相同、不賠掉備援。新版 SW 本身靠 sw.js 位元組比對
 // 生效，不需要版本號。
+// v6（不推號）：2026-09-24 棒 AB 讓導覽請求改帶 `cache: "no-cache"`（見 networkFirst；可用性總審
+// 第二節 #19，本人裁 a）。病例：主機回應 `max-age=600`，發布後十分鐘內 network-first 那一趟會被
+// 瀏覽器 HTTP 快取直接接走，使用者看到的是舊版；改成每次向伺服器驗證（ETag），沒新版只回 304。
+// **照上面那條紀律不推**：動的是 network-first 那條路的取用方式，不是「殼層資源要不要重新抓」
+// ——`data/` 與 manifest／icons 一行沒改；推號會把逾時閘門倚靠的頁面副本與 `data/` 備援一起清掉。
+// CDN 那一層（邊緣節點自己的快取）這一刀管不到，本來就不在 SW 的權限裡。
 const CACHE_VERSION = "v6";
 const CACHE_NAME = `hsinchu-multiday-${CACHE_VERSION}`;
 
@@ -185,7 +191,15 @@ function offlinePage() {
 async function networkFirst(request, event) {
   // 先發車再開快取：`caches.open()` 不 await，fetch 就不必等它。
   const opening = caches.open(CACHE_NAME);
-  const network = fetch(request).then(async (fresh) => {
+  // `cache: "no-cache"`（2026-09-24 棒 AB，可用性總審第二節 #19，本人裁 a）：每一趟都帶 ETag／
+  // Last-Modified 回伺服器驗證，沒有新版只回 304（瀏覽器用它 HTTP 快取裡那份，不重下 1.7 MB）。
+  // 改前是預設的 `cache: "default"`——主機給 `max-age=600`，十分鐘內 SW 這一趟「網路」其實是
+  // 瀏覽器 HTTP 快取直接回的舊頁，network-first 在那十分鐘裡形同 cache-first。
+  // **只動這一條（導覽請求）**：`data/` 靠 `?v=<內容摘要>` 換鑰匙，內容變了網址就變，不需要；
+  // 殼層資源是刻意的 cache-first。快取鑰匙仍用原本的 `request`（`pageKey(request)`），這個選項只
+  // 改取用方式、不改存哪裡。第二個參數會讓 fetch 內部重建 Request，`mode:"navigate"` 依規格
+  // 轉成 `same-origin`——這裡本來就只處理同源（fetch handler 開頭擋掉跨源），行為不變。
+  const network = fetch(request, { cache: "no-cache" }).then(async (fresh) => {
     // 只快取成功的同源回應；opaque/失敗回應不寫入快取。
     // **put 刻意不 await**（跟加 timeout 之前逐字相同）：等寫完才回應會替
     // 正常路徑平白加上一次寫入的時間。
