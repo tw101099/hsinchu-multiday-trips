@@ -5504,17 +5504,19 @@ function renderPanel(){
     if (desired>max) padEl.style.height=Math.ceil(desired-max)+"px";
     box.scrollTop=Math.max(0, desired);
     ANCHORED=true;
-    let fixed=false;
+
+    let passes=0;
     const refix=()=>{
-      if (fixed || !el.isConnected || !box.isConnected) return;
+      if (passes>=3 || !el.isConnected || !box.isConnected) return;
       const diff=flowTop(el)-floorY;
       if (Math.abs(diff)<1) return;
-      fixed=true;
+      passes++;
       const want2=box.scrollTop+diff, max2=box.scrollHeight-box.clientHeight;
       if (want2>max2) padEl.style.height=((parseFloat(padEl.style.height)||0)+Math.ceil(want2-max2))+"px";
       box.scrollTop=Math.max(0, want2);
       ANCHORED=true;
       document.querySelectorAll(".lane, #panel").forEach(syncStuck);
+      requestAnimationFrame(()=>requestAnimationFrame(refix));
     };
     requestAnimationFrame(()=>requestAnimationFrame(refix)); setTimeout(refix, 0);
     return true;
@@ -5600,12 +5602,13 @@ function renderPanel(){
           || box.querySelector(`.results > .corr > .bgroup > .grp > .row[data-id="${toId}"]`);
 
 
+
     if (el){
       const card=toMode==="expanded-top" ? el.closest(".place-card.is-expanded") : null;
       if (card){
         anchorTo(card, stopAt(el, 0));
       } else {
-        let want=stopAt(el);
+        let want=stopAt(el, el.closest(".place-card.is-expanded") ? 0 : 10);   // 棒 Z：已展開＝貼齊（見上）
         const bg=el.closest(".bgroup"), gh=bg && bg.querySelector(":scope > .ghead");
         if (gh){
           const gap=flowTop(el)-flowTop(gh);
@@ -5629,7 +5632,8 @@ function renderPanel(){
   if (SCROLL_NEAR){
     const el=box.querySelector(SCROLL_NEAR);
     if (el){
-      const floorY=stopAt(el), ceilY=box.getBoundingClientRect().bottom;
+
+      const floorY=stopAt(el, el.closest(".place-card.is-expanded") ? 0 : 10), ceilY=box.getBoundingClientRect().bottom;
       const r=el.getBoundingClientRect();
 
       const nx=el.nextElementSibling;
