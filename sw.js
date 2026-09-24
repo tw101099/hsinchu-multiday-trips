@@ -50,6 +50,13 @@
 // 裡指定的**，理由也站得住：舊快取裡那份 9.4 MB 的內嵌版 index.html 從此不會再被
 // 用到（下一次上線就被新版蓋掉），留著只是佔著使用者手機 9 MB。舊版在被清掉之前
 // 仍然是完整可離線的一頁，所以這一刀沒有中斷任何人的離線能力。
+// v6（不推號）：2026-09-24 棒 AA 把頁面副本的快取鑰匙去掉查詢字串、並清掉累積的帶查詢字串
+// 副本（見 pageKey／prunePageCopies）。**照上面那條紀律不推**：這一刀動的是 network-first
+// 那條路的存取鑰匙與整理，不是「殼層資源要不要重新抓」——manifest／icons 一個位元組沒變。
+// 推號的代價正是檔頭講的那一件：activate 會把整份 v6 清掉，逾時閘門要倚靠的那份頁面副本
+// 與 `data/` 備援一起消失，下一次開站在網路半死時就沒有東西可退。舊副本改由 activate 與
+// 每次成功導覽時用 keys() 過濾清掉，效果相同、不賠掉備援。新版 SW 本身靠 sw.js 位元組比對
+// 生效，不需要版本號。
 const CACHE_VERSION = "v6";
 const CACHE_NAME = `hsinchu-multiday-${CACHE_VERSION}`;
 
@@ -87,6 +94,12 @@ self.addEventListener("activate", (event) => {
           .filter((n) => n.startsWith("hsinchu-multiday-") && n !== CACHE_NAME)
           .map((n) => caches.delete(n))
       );
+      // 棒 AA（2026-09-24）：改版前累積下來的帶查詢字串頁面副本，在新版 SW 接手的這一刻清一次
+      // （CACHE_VERSION 刻意沒推，舊快取不會被整個刪掉，所以要在這裡清；理由見檔頭 v6 之後那段）。
+      // 失敗不擋 activate。
+      try {
+        await prunePageCopies(await caches.open(CACHE_NAME));
+      } catch (e) {}
       await self.clients.claim();
     })()
   );
@@ -123,10 +136,39 @@ function timeoutAfter(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms, TIMED_OUT));
 }
 
-// 快取裡的備援副本：先找這個請求自己的，再退到殼層那兩把鑰匙。
+// ── 頁面副本一律存在「不帶查詢字串」的鑰匙底下（2026-09-24 棒 AA，可用性總審第一節 #10）──
+// 改前導覽請求原樣 `put(request)`，快取鑰匙含查詢字串：`?fbclid=…`、`utm_*`、測試用的
+// `?nc=…` 每一種各存一份整頁（1.7 MB），而且從來不清——`data/` 有 pruneOldVersions，頁面
+// 沒有。審查棒 A 一輪測試後快取裡疊了 9 份。這個站是單頁：查詢字串不改變頁面內容（狀態
+// 全在 `#hash` 與 localStorage），所以同一個路徑只該有一份副本。
+// 另一個好處是補掉審查記的邊角：平常從帶查詢字串的網址進站的人，`./` 那份副本可能是很久
+// 以前的，它引用的舊版 `data/` 已被清掉，離線開 `./` 會進資料降級態——鑰匙統一之後，
+// 每一次成功的導覽都在刷新同一份。
+function pageKey(request) {
+  const u = new URL(request.url);
+  u.search = "";
+  u.hash = "";
+  return u.href;
+}
+
+// 清掉同快取裡其他「帶查詢字串的頁面副本」。**只認頁面**：`data/` 的 `?v=` 是它自己的版本
+// 鑰匙（由 pruneOldVersions 管），manifest／icons 是殼層資源，兩者都不碰。
+async function prunePageCopies(cache) {
+  const keys = await cache.keys();
+  await Promise.all(
+    keys
+      .filter((req) => {
+        const u = new URL(req.url);
+        return u.search !== "" && !isDataAsset(u) && !isShellAsset(u);
+      })
+      .map((req) => cache.delete(req))
+  );
+}
+
+// 快取裡的備援副本：先找這個頁面自己的（不帶查詢字串那把鑰匙），再退到殼層那兩把鑰匙。
 function cachedFallback(cache, request) {
   return cache
-    .match(request)
+    .match(pageKey(request))
     .then((hit) => hit || cache.match("./"))
     .then((hit) => hit || cache.match("./index.html"));
 }
@@ -148,7 +190,10 @@ async function networkFirst(request, event) {
     // **put 刻意不 await**（跟加 timeout 之前逐字相同）：等寫完才回應會替
     // 正常路徑平白加上一次寫入的時間。
     if (fresh && fresh.ok) {
-      (await opening).put(request, fresh.clone());
+      // 存進不帶查詢字串的鑰匙（棒 AA，見 pageKey）；舊的帶查詢字串副本順手清掉。
+      // put 與清理照舊不 await（上面那條理由），清理的失敗吞掉——它是整理，不是正確性的一部分。
+      const cache = await opening;
+      cache.put(pageKey(request), fresh.clone()).then(() => prunePageCopies(cache)).catch(() => {});
     }
     return fresh;
   });
