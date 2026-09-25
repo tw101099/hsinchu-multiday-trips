@@ -2692,6 +2692,8 @@ function buildMap(tiles){
 
 const WARM = {leaflet:false, map:false, markers:false};
 let DRAW_SIG=null, DRAW_GEN=0, WARM_ON=false, WARM_AGAIN=false;
+
+let LIVE_SIG=null;
 const MARK_BATCH=50;
 function whenIdle(fn){
   if (window.requestIdleCallback) requestIdleCallback(()=>fn(), {timeout:2000});
@@ -2825,11 +2827,19 @@ function mapVisibleBases(){
 function draw(){
 
   if (!ready){ warmStale(); return; }
+
+  const sig = drawSig();
+  if (hasMapCard()){
+    if (!mapWanted()) return;        // 手機、地圖隱藏：不看、不畫，狀態變化留給下次切回地圖頁的簽章比對
+    if (sig===LIVE_SIG) return;      // 手機、跟目前畫在地圖上的一模一樣：不重畫
+  }
   if (DRAW_SIG){
-    if (WARM.markers && DRAW_SIG===drawSig()) return;
+
+    if (WARM.markers && DRAW_SIG===sig){ LIVE_SIG=sig; return; }
     DRAW_GEN++; DRAW_SIG=null;
   }
   drawBody(null);
+  LIVE_SIG=sig;      // 這一輪真的把地圖畫成 sig 這一份了，回填給下一次的手機閘比對
 }
 
 function drawBody(jobs){
@@ -6304,7 +6314,12 @@ applyHash(true);
 if (S.sel || BASE_SEL){
   const before=S.tab;
   gotoTab("place");
-  if (S.tab!==before) render();
+  if (S.tab!==before){
+
+    if (S.sel) SCROLL_TO={id:S.sel};
+    else if (BASE_SEL) SCROLL_BASE=BASE_SEL;
+    render();
+  }
 }
 save();
 
