@@ -2450,15 +2450,16 @@ function dataWarn(what, e){
   console.warn("[多日遊] " + what + " 載入失敗，維持降級態（下次需要時再試一次）：", e);
 }
 
-function dataFetch(url, how){
-  return fetch(url).then(r=>{ if (!r.ok) throw new Error("HTTP " + r.status); return r[how](); });
+function dataFetch(url, how, low){
+  return fetch(url, low ? {priority:"low"} : undefined)
+    .then(r=>{ if (!r.ok) throw new Error("HTTP " + r.status); return r[how](); });
 }
-function ensureLegs(){
+function ensureLegs(low){
   if (LEGS_READY) return Promise.resolve(true);
   if (LEGS_P) return LEGS_P;
   const u=dataURL("legs");
   if (!u) return Promise.resolve(false);
-  LEGS_P = dataFetch(u, "json").then(j=>{
+  LEGS_P = dataFetch(u, "json", low).then(j=>{
     LEGS = j || {};
     LEGS_READY = true;
 
@@ -2479,10 +2480,14 @@ function neighChanged(){
     render();
   }, 0);
 }
+
 function ensureNeigh(){
+  return Promise.all([ensureTri(), ensureOrig()]);
+}
+function ensureTri(low){
   if (!TRI_READY && !TRI_P){
     const u=dataURL("neighbors");
-    if (u) TRI_P = dataFetch(u, "arrayBuffer").then(buf=>{
+    if (u) TRI_P = dataFetch(u, "arrayBuffer", low).then(buf=>{
 
       NEIGH_TRI = buf && buf.byteLength>=2 ? new Uint16Array(buf) : null;
       TRI_READY = !!NEIGH_TRI;
@@ -2490,17 +2495,19 @@ function ensureNeigh(){
       return TRI_READY;
     }).catch(e=>{ TRI_P=null; NEIGH_TRI=null; dataWarn("點對車程矩陣 neighbors.bin", e); return false; });
   }
+  return TRI_P || Promise.resolve(TRI_READY);
+}
+function ensureOrig(low){
   if (!ORIG_READY && !ORIG_P){
     const u=dataURL("origins");
-    if (u) ORIG_P = dataFetch(u, "json").then(j=>{
+    if (u) ORIG_P = dataFetch(u, "json", low).then(j=>{
       NEIGH_ORIG = j || {};
       ORIG_READY = true;
       neighChanged();
       return true;
     }).catch(e=>{ ORIG_P=null; dataWarn("原點列 neighbors-origins.json", e); return false; });
   }
-  return Promise.all([TRI_P || Promise.resolve(TRI_READY),
-                      ORIG_P || Promise.resolve(ORIG_READY)]);
+  return ORIG_P || Promise.resolve(ORIG_READY);
 }
 const IDX_OF={}; PLACES.forEach((p,i)=>{ IDX_OF[p.id]=i; });
 function neighGet(aid,bid){
@@ -2569,14 +2576,21 @@ function note(html){
   if (!html){ el.style.display="none"; return; }
   el.style.display="block"; el.innerHTML=html;
 }
+
+let LEAFLET_CSS=null;
 function loadOSM(why){
   if (engine) return;
   engine="loading";
-  const css=document.createElement("link");
-  css.rel="stylesheet"; css.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-  document.head.appendChild(css);
+
+  const msg=document.getElementById("mapmsg");
+  if (msg) msg.style.display="none";
+  if (!LEAFLET_CSS){
+    LEAFLET_CSS=document.createElement("link");
+    LEAFLET_CSS.rel="stylesheet"; LEAFLET_CSS.href="vendor/leaflet/leaflet.css";
+    document.head.appendChild(LEAFLET_CSS);
+  }
   const js=document.createElement("script");
-  js.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+  js.src="vendor/leaflet/leaflet.js";
   js.onload=()=>initOSM(why);
   js.onerror=()=>{
     engine=null;
@@ -5810,6 +5824,12 @@ function syncViews(){
   document.querySelectorAll("#mnav button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.t===S.tab));
   document.getElementById("app").dataset.mtab = S.tab;
   document.getElementById("main").classList.toggle("nomap", MOBILE_STATE && S.tab!=="map");
+  ensureMap();      // 地圖第一次露臉才建（2026-09-25 棒 AI，效能 M2，見下面那支）
+}
+
+function mapWanted(){ return !hasMapCard() || S.tab==="map"; }
+function ensureMap(){
+  if (!engine && mapWanted()) loadOSM("");
 }
 
 document.querySelectorAll("#mnav button").forEach(b=>{
@@ -6105,8 +6125,8 @@ function cycleTheme(){
   applyTheme(); save(); render();
 }
 document.getElementById("theme").onclick=cycleTheme;
+
 syncViews();
-loadOSM("");
 render();
 
 applyHash(true);
@@ -6120,9 +6140,19 @@ save();
 
 (function(){
   let fired=false;
-  function go(){ if (fired) return; fired=true; ensureLegs(); ensureNeigh(); }
-  if (window.requestIdleCallback) requestIdleCallback(go, {timeout:2500});
-  setTimeout(go, 1200);
+  function go(){
+    if (fired) return; fired=true;
+    ensureLegs(true)
+      .then(()=>ensureTri(true))
+      .then(()=>ensureOrig(true));
+  }
+  function arm(){
+    if (window.requestIdleCallback) requestIdleCallback(go, {timeout:1500});
+    setTimeout(go, 600);
+  }
+  if (document.readyState==="complete") arm();
+  else addEventListener("load", arm, {once:true});
+  setTimeout(go, 8000);
 })();
 </script>
 <script>

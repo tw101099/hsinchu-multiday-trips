@@ -63,7 +63,16 @@
 // **照上面那條紀律不推**：動的是 network-first 那條路的取用方式，不是「殼層資源要不要重新抓」
 // ——`data/` 與 manifest／icons 一行沒改；推號會把逾時閘門倚靠的頁面副本與 `data/` 備援一起清掉。
 // CDN 那一層（邊緣節點自己的快取）這一刀管不到，本來就不在 SW 的權限裡。
-const CACHE_VERSION = "v6";
+// v6→v7：2026-09-25 棒 AI（效能 M3，本人裁；PERF 報告 §5）把 Leaflet 1.9.4 從 unpkg 搬進站內
+// `vendor/leaflet/`（leaflet.js／leaflet.css＋CSS 引用的 images/ 五張），並列進下面的 SHELL_ASSETS
+// 走 cache-first——**殼層資源多了，照檔頭那條規則推號**（任務書也明文要推）。推號的代價就是檔頭
+// 講的那一件：activate 清掉整份 v6，逾時閘門倚靠的頁面副本與 `data/` 備援要等下一次成功造訪才
+// 補回來；換到的是「install 那一刻就把地圖引擎放進快取」——離線再訪時地圖殼（控制項、圖釘、
+// 腿線）載得起來，只有跨源的 OSM 圖磚是空白（本來就不快取）。改前 Leaflet 走 unpkg，跨源請求
+// 這支 SW 一律不經手，離線時連引擎都載不進來。
+// **往後升 Leaflet 版本＝整組換檔＋改 template.html 的兩個路徑＋再推一號**：cache-first 命中不
+// revalidate，不推號的話回訪者會永遠拿到舊版引擎（同 v1→v2 icons 那一次的病）。
+const CACHE_VERSION = "v7";
 const CACHE_NAME = `hsinchu-multiday-${CACHE_VERSION}`;
 
 // 殼層資源：install 時預熱，之後 cache-first。都是同源、幾乎不變的檔案。
@@ -75,6 +84,16 @@ const SHELL_ASSETS = [
   "./icons/icon-192-maskable.png",
   "./icons/icon-512-maskable.png",
   "./icons/apple-touch-icon.png",
+  // Leaflet 站內託管（v7，2026-09-25 棒 AI，效能 M3）。五張圖是 leaflet.css 的 `url(images/…)`
+  // （layers／layers-2x／marker-icon）加上 Leaflet 預設圖示在 JS 裡會用到的另外兩張；站上的圖釘
+  // 全是 `L.divIcon`，預設圖示目前用不到，但檔案跟著引擎走，預熱它們只多 3 KB。
+  "./vendor/leaflet/leaflet.js",
+  "./vendor/leaflet/leaflet.css",
+  "./vendor/leaflet/images/layers.png",
+  "./vendor/leaflet/images/layers-2x.png",
+  "./vendor/leaflet/images/marker-icon.png",
+  "./vendor/leaflet/images/marker-icon-2x.png",
+  "./vendor/leaflet/images/marker-shadow.png",
 ];
 
 self.addEventListener("install", (event) => {
@@ -123,7 +142,10 @@ function isNavigationRequest(request) {
 
 function isShellAsset(url) {
   // manifest 與 icons：同源、路徑在 scope 底下的 manifest.webmanifest 或 icons/*
-  return /\/manifest\.webmanifest$/.test(url.pathname) || /\/icons\//.test(url.pathname);
+  // vendor/*：站內託管的第三方靜態資源（v7 起＝Leaflet，2026-09-25 棒 AI）。檔名不帶內容摘要，
+  // 版本靠 CACHE_VERSION 推號換新（見檔頭 v6→v7 那段）。
+  return /\/manifest\.webmanifest$/.test(url.pathname) || /\/icons\//.test(url.pathname) ||
+    /\/vendor\//.test(url.pathname);
 }
 
 // 拆出頁面外的三份大資料（2026-09-10 棒 SPLIT）：`data/legs.json`、
