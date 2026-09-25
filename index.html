@@ -211,7 +211,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 
 @media (hover:hover){.row-select:hover, .row-toggle:hover{background-color:var(--hover-bg)}}
 
-.row-toggle[aria-expanded=true] .chev{transform:rotate(180deg)}
+.row-toggle .chev{transform:rotate(-90deg)}
+.row-toggle[aria-expanded=true] .chev{transform:rotate(0deg)}
 .btn-act{cursor:pointer}
 
 @media (hover:hover){.btn-act:hover, #sort:hover + .sortlbl{border-color:var(--accent)!important; color:var(--accent)!important}}
