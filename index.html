@@ -990,9 +990,6 @@ html.sheeton .panel{overflow:hidden}
 .qbases{padding:0 14px}
 .qbases .rrow{margin-left:4px; width:calc(100% - 4px)}
 
-.trow .tl .qol{margin-left:7px; font-size:11.5px; color:var(--ink3)}
-.trow[aria-pressed=true] .tl .qol{color:var(--ink2); font-weight:400}
-
 .qmorew{display:flex; margin:10px 0 10px 4px}
 .qmore{
   display:inline-flex; align-items:center; justify-content:center;
@@ -1054,18 +1051,12 @@ html.sheeton .panel{overflow:hidden}
   display:flex; align-items:flex-start; gap:7px; text-align:left; font:inherit;
   margin:0; padding:9px var(--base-inset) 10px;   
 }
-.gintro .gstyle{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 8px}
-.gintro .gchip{
-  font-size:11px; padding:2px 8px; border-radius:999px; background:var(--panel);
-  border:1px solid var(--line2); color:var(--ink2); white-space:nowrap;
-}
 
 .gintro .gdesc{
   flex:1; min-width:0; line-height:1.65; margin:0;
 
 }
 
-.gintro .groads{font-size:11.5px; color:var(--ink3); line-height:1.5; margin:0}
 .row{
   position:relative; display:flex; width:100%; text-align:left; gap:8px; align-items:flex-start;
   border:1px solid transparent; border-radius:var(--r); background:none; padding:7px 9px;
@@ -1543,10 +1534,6 @@ html.sheeton .panel{overflow:hidden}
 .precheck .stico{line-height:inherit}
 
 .precheck.tdstat{margin-top:14px}
-
-.gw{font-family:inherit; max-width:230px; line-height:1.5}
-.gw b{font-size:14px}
-.gw span{display:block; font-size:12px; color:var(--ink2); margin-top:2px}
 
 .hubpin{
   width:22px !important; height:22px !important; margin:-11px 0 0 -11px !important;
@@ -2541,15 +2528,6 @@ function fetchNear(p, pool){
   NEAR_DONE.add(p.id);
 }
 
-function originDist(oid, p){
-  const row=NEIGH_ORIG[oid];
-  if (!row) return null;
-  const i=IDX_OF[p.id];
-  if (i==null) return null;
-  const v=row[i];
-  return (v && v[0]!==65535) ? {km:v[0]/10, min:v[1]} : null;
-}
-
 const esc = s => (s||"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 let engine=null, map=null, marks={}, lines=null, pts=null, ready=false, zoom=11;
@@ -3400,8 +3378,6 @@ function condBits(){
   if (S.q)           out.push(["搜尋", `「${S.q}」`, "q"]);
   return out;
 }
-
-const condBitsOf = g => condBits().filter(b => b[2]===g);
 
 function anyCondition(){
   return !!(condBits().length || BASE_SEL || QEXP.trips || QEXP.bases);
