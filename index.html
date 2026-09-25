@@ -2578,27 +2578,39 @@ function note(html){
 }
 
 let LEAFLET_CSS=null;
+
+let LEAFLET_P=null;
+function leafletLoad(){
+  if (window.L) return Promise.resolve(true);
+  if (LEAFLET_P) return LEAFLET_P;
+  if (!LEAFLET_CSS){
+    LEAFLET_CSS=document.createElement("link");
+    LEAFLET_CSS.rel="stylesheet"; LEAFLET_CSS.href="vendor/leaflet/leaflet.css";
+    document.head.appendChild(LEAFLET_CSS);
+  }
+  LEAFLET_P=new Promise(res=>{
+    const js=document.createElement("script");
+    js.src="vendor/leaflet/leaflet.js";
+    js.onload=()=>res(!!window.L);
+    js.onerror=()=>{ LEAFLET_P=null; js.remove(); res(false); };
+    document.head.appendChild(js);
+  });
+  return LEAFLET_P;
+}
 function loadOSM(why){
   if (engine) return;
   engine="loading";
 
   const msg=document.getElementById("mapmsg");
   if (msg) msg.style.display="none";
-  if (!LEAFLET_CSS){
-    LEAFLET_CSS=document.createElement("link");
-    LEAFLET_CSS.rel="stylesheet"; LEAFLET_CSS.href="vendor/leaflet/leaflet.css";
-    document.head.appendChild(LEAFLET_CSS);
-  }
-  const js=document.createElement("script");
-  js.src="vendor/leaflet/leaflet.js";
-  js.onload=()=>initOSM(why);
-  js.onerror=()=>{
+
+  leafletLoad().then(ok=>{
+    if (ok){ initOSM(why); return; }
     engine=null;
     const m=document.getElementById("mapmsg");
     m.style.display="flex";
     m.textContent="底圖載不進來，可能是沒連網。切到「清單」，內容一樣看得到。";
-  };
-  document.head.appendChild(js);
+  });
 }
 
 function fitBases(){
@@ -2627,16 +2639,33 @@ function applyInitialView(){
   INIT_FIT = !!(el && el.clientWidth>0 && el.clientHeight>0);
   zoom=map.getZoom();
 }
-function initOSM(why){
-  engine="osm";
-  map=L.map("map",{zoomControl:true}).setView([24.76,121.06], 11);
 
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+let TILES=null;
+function showTiles(){
+  if (TILES) return;
+  TILES=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",
               {maxZoom:18,
                attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" ' +
                            'target="_blank" rel="noopener">OpenStreetMap</a> contributors' +
                            ' · <a href="https://opendatacommons.org/licenses/odbl/" ' +
                            'target="_blank" rel="noopener">ODbL</a>'}).addTo(map);
+}
+function initOSM(why){
+  engine="osm";
+
+  const pre=!!map;
+  if (pre) map.invalidateSize({animate:false});
+  else buildMap(true);
+  ready=true;
+  applyInitialView();   // fitTrip 要 ready 才動得了，所以排在這一行之後
+  if (pre) showTiles();
+  note(why ? "底圖用 OpenStreetMap：" + why : "");
+  draw();
+}
+function buildMap(tiles){
+  map=L.map("map",{zoomControl:true}).setView([24.76,121.06], 11);
+
+  if (tiles) showTiles();
   lines=L.layerGroup().addTo(map);
   pts=L.layerGroup().addTo(map);
   L.marker([HOME.lat,HOME.lng],{icon:L.divIcon({className:"hubpin",
@@ -2658,10 +2687,98 @@ function initOSM(why){
     zoom=z;
     if (crossed) draw();
   });
-  ready=true;
-  applyInitialView();   // fitTrip 要 ready 才動得了，所以排在這一行之後
-  note(why ? "底圖用 OpenStreetMap：" + why : "");
-  draw();
+
+}
+
+const WARM = {leaflet:false, map:false, markers:false};
+let DRAW_SIG=null, DRAW_GEN=0, WARM_ON=false, WARM_AGAIN=false;
+const MARK_BATCH=50;
+function whenIdle(fn){
+  if (window.requestIdleCallback) requestIdleCallback(()=>fn(), {timeout:2000});
+  else setTimeout(fn, 1200);
+}
+
+const yieldThen = (fn) => (window.scheduler && typeof scheduler.postTask === "function")
+  ? scheduler.postTask(fn, {priority:"background"})
+  : ("requestIdleCallback" in window)
+    ? requestIdleCallback(()=>fn(), {timeout:500})
+    : setTimeout(fn, 0);
+
+function drawSig(){
+  return JSON.stringify([S, EXTRA, BASE_SEL, INLINE, HOVER_PLACE, ZONE_FOCUS, NIGHT, DARK, LEGS_READY,
+    zoom>=ICON_ZOOM, zoom>=POI_ZOOM, zoom>=BASE_LABEL_ZOOM, zoom>=STOP_LABEL_ZOOM],
+    (k, v)=> k==="tab" ? undefined : (v instanceof Set ? [...v] : v));
+}
+function warmStart(){
+  if (WARM_ON || engine || ready || !hasMapCard() || mapWanted()) return;
+  WARM_ON=true;
+  whenIdle(()=>{
+    warmLeaflet().then(ok=>{
+      if (!ok) return;
+      whenIdle(()=>{ warmMap(); if (WARM.map) whenIdle(warmMarkers); });
+    });
+  });
+}
+function warmLeaflet(){
+  if (window.L){ WARM.leaflet=true; return Promise.resolve(true); }
+
+  const get=u=>fetch(u, {priority:"low"}).then(r=>r.ok ? r.arrayBuffer() : null).catch(()=>null);
+  const pre = LEAFLET_P ? Promise.resolve()
+            : Promise.all([get("vendor/leaflet/leaflet.js"), get("vendor/leaflet/leaflet.css")]);
+  return pre.then(()=>leafletLoad()).then(ok=>{ WARM.leaflet=ok; return ok; });
+}
+function warmMap(){
+  if (map || engine || !window.L || mapWanted()) return;   // 使用者已經切過去＝轉正那條路自己建
+  buildMap(false);
+  warmView();
+  WARM.map=true;
+}
+
+function warmView(){
+  const hb = BASE_SEL && BS[BASE_SEL], hp = S.sel && BY_ID[S.sel];
+
+  if (hp){ map.setView([hp.lat, hp.lng], Math.max(11,13), {animate:false}); return; }
+  if (hb && hb.anchor){ map.setView(hb.anchor, Math.max(11,12), {animate:false}); return; }
+  let ll=[];
+  const days = S.trip ? tripLegs() : null;
+  if (days){
+    days.forEach(d=>(d.legs||[]).forEach(l=>(l.coords||[]).forEach(c=>ll.push(c))));
+    if (!ll.length) return;
+  } else ll = BASES.filter(b=>b.anchor).map(b=>b.anchor);
+  if (!ll.length) return;
+  const main=document.getElementById("main"), sz=map.getSize();
+  const dx=(main.clientWidth - sz.x)/2, dy=(main.clientHeight - sz.y)/2;
+  if (!(dx>0 && dy>0)) return;
+  map.fitBounds(L.latLngBounds(ll).pad(.12),
+                {animate:false, paddingTopLeft:[-dx,-dy], paddingBottomRight:[-dx,-dy]});
+}
+function warmMarkers(){
+  if (!WARM.map || ready) return;
+
+  DRAW_SIG=null;
+  warmView();
+  const gen=++DRAW_GEN;
+  WARM.markers=false;
+  DRAW_SIG=drawSig();
+  const jobs=[];
+  drawBody(jobs);
+  let i=0;
+  const step=()=>{
+    if (gen!==DRAW_GEN || ready) return;      // 作廢了，或地圖已轉正（轉正後的 draw() 接手）
+    const end=Math.min(i+MARK_BATCH, jobs.length);
+    for (; i<end; i++) jobs[i]();
+    if (i<jobs.length) yieldThen(step);
+    else WARM.markers=true;
+  };
+  step();
+}
+
+function warmStale(){
+  if (!DRAW_SIG || DRAW_SIG===drawSig()) return;
+  DRAW_GEN++; DRAW_SIG=null; WARM.markers=false;
+  if (WARM_AGAIN) return;
+  WARM_AGAIN=true;
+  whenIdle(()=>{ WARM_AGAIN=false; warmMarkers(); });
 }
 
 function markerHTML(p, dim, asStop){
@@ -2706,7 +2823,17 @@ function mapVisibleBases(){
   return vis;
 }
 function draw(){
-  if (!ready) return;
+
+  if (!ready){ warmStale(); return; }
+  if (DRAW_SIG){
+    if (WARM.markers && DRAW_SIG===drawSig()) return;
+    DRAW_GEN++; DRAW_SIG=null;
+  }
+  drawBody(null);
+}
+
+function drawBody(jobs){
+  const run = f => jobs ? jobs.push(f) : f();
 
   hoverDrop();
 
@@ -2736,7 +2863,7 @@ function draw(){
     if (ZONE_FOCUS.ids.has(p.id) && !ids.has(p.id)){ list.push(p); ids.add(p.id); }
   });
 
-  if (engine==="osm"){
+  if (engine==="osm" || jobs){      // `|| jobs`＝預熱那條路（2026-09-25 棒 AJ，見上）
     lines.clearLayers(); pts.clearLayers(); marks={}; bmarks={};
     drawLegs();
 
@@ -2746,12 +2873,12 @@ function draw(){
 
     if (focused || zoom >= POI_ZOOM) list.forEach(p=>{
 
-      addPlaceMarker(p, !!(VIS && !stopIds.has(p.id) && !placeOn(p.id)));
+      run(()=>addPlaceMarker(p, !!(VIS && !stopIds.has(p.id) && !placeOn(p.id))));   // run：見 `drawBody()`（棒 AJ）
     });
 
 
 
-    drawBasePins();
+    drawBasePins(run);
   }
 }
 
@@ -2824,7 +2951,8 @@ function drawLegs(){
   });
 }
 
-function drawBasePins(){
+function drawBasePins(run){
+  run = run || (f=>f());
   const trip = S.trip && TRIP_BY_ID[S.trip];
   const ftripActive = !!(trip && trip.cat==="ㄊ");   
   const showLabel = zoom >= BASE_LABEL_ZOOM;
@@ -2833,7 +2961,7 @@ function drawBasePins(){
 
   const qActive = qTerms().length > 0;
   const qHit = qActive ? new Set(qBaseHits().map(x=>x.id)) : null;
-  BASES.forEach(b=>{
+  BASES.forEach(b=>run(()=>{
     if (!b.anchor) return;
     if (VIS && !VIS.has(b.id)) return;
     const sel = S.base.has(b.id);
@@ -2867,7 +2995,7 @@ function drawBasePins(){
 
     if (isFtrip){ const el=m.getElement(); if (el) el.style.setProperty("--tc", TRIP_COLOR); }
 
-  });
+  }));
 }
 function fit(items){
   if (!ready || !items.length) return;
@@ -5041,6 +5169,8 @@ function unfoldLane(which){
 function gotoTab(t){
   if (!hasMapCard() || HASH_APPLYING || S.tab===t) return;
   mpageSave();      // 趁舊的那一族還看得見，先把它的捲動位置收起來（見下面那段）
+
+  if (S.tab==="place") cvRemember(cvHarvest(document.getElementById("panel"), scrollBox()));
   S.tab=t;
   syncViews();
 }
@@ -5405,6 +5535,14 @@ function measureSheet(){
 })();
 
 const CV_ROW_SEL=".results > .corr > .bgroup > .grp > .row";
+
+let CV_MEM=null;
+function cvRemember(cur){
+  if (!cur) return CV_MEM;
+  if (!CV_MEM || Math.abs(CV_MEM.w - cur.w) > 0.5) CV_MEM={w:cur.w, hs:new Map()};
+  cur.hs.forEach((h, id)=>CV_MEM.hs.set(id, h));
+  return CV_MEM;
+}
 function cvHarvest(root, oldBox){
   if (!oldBox || isRail(oldBox)) return null;
   const extra=new Map(), hs=new Map();
@@ -5432,6 +5570,47 @@ function cvApply(box, carry){
   }
   if (done.length && Math.abs(box.clientWidth - carry.w) > 0.5) done.forEach(r=>{ r.style.containIntrinsicSize=""; });
 }
+
+let REFIX=null;
+
+function refixKey(el){
+  const row = el.classList.contains("place-card") ? el.querySelector(":scope > .row[data-id]") : el;
+  if (row && row.classList.contains("row") && row.dataset.id)
+    return {id:row.dataset.id, card:el.classList.contains("place-card")};
+  if (el.classList.contains("ghead") && el.dataset.bid && !el.classList.contains("tripgrp")) return {bid:el.dataset.bid};
+  return null;
+}
+function refixFind(R, box){
+  if (R.el.isConnected) return R.el;
+  const k=R.key;
+  if (!k) return null;
+  if (k.bid) return box.querySelector(`.ghead[data-bid="${k.bid}"]`);
+  const row=box.querySelector(`.results > .corr > .bgroup > .grp > .place-card > .row[data-id="${k.id}"]`)
+         || box.querySelector(`.results > .corr > .bgroup > .grp > .row[data-id="${k.id}"]`);
+  return (k.card && row) ? (row.closest(".place-card") || row) : row;
+}
+function refixLanding(fromFrame){
+  const R=REFIX;
+  if (!R) return;
+  if (R.passes>=3){ REFIX=null; return; }
+  const box=scrollBox();
+  if (!box || isRail(box)){ REFIX=null; return; }
+  const el=refixFind(R, box);
+  if (!el || !el.offsetParent || !box.contains(el)){ REFIX=null; return; }
+  const diff=R.flow(el)-R.floorY;
+  if (Math.abs(diff)<1){ if (fromFrame && REFIX===R) REFIX=null; return; }
+  R.passes++;
+  const want2=box.scrollTop+diff, max2=box.scrollHeight-box.clientHeight;
+  if (want2>max2){
+    const padEl=box.querySelector(":scope > .scrollpad");
+    if (padEl) padEl.style.height=((parseFloat(padEl.style.height)||0)+Math.ceil(want2-max2))+"px";
+  }
+  box.scrollTop=Math.max(0, want2);
+  document.querySelectorAll(".lane, #panel").forEach(syncStuck);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>refixLanding(true)));
+}
+
+const CV_RO = (typeof ResizeObserver==="function") ? new ResizeObserver(()=>refixLanding()) : null;
 function renderPanel(){
   const panel=document.getElementById("panel");
   const two=isTwoLane();
@@ -5449,7 +5628,7 @@ function renderPanel(){
     MPAGE=pkey;
     if (pkey && pkey!=="map" && MJUMP==null) MJUMP=MSCROLL[pkey]||0;
   }
-  const cvCarry=cvHarvest(panel, oldBox);
+  const cvCarry=cvRemember(cvHarvest(panel, oldBox));
   panel.innerHTML="";
   panel.classList.toggle("twolane", two);
   LANE_STATE=two;   // 讓 syncLanes 知道現在畫的是哪一種，不用再自己去比 DOM
@@ -5568,6 +5747,8 @@ function renderPanel(){
   const box=two?expHost:panel;
 
   cvApply(box, cvCarry);
+  if (CV_RO){ CV_RO.disconnect(); const res=box.querySelector(".results"); if (res) CV_RO.observe(res); }
+  if (SCROLL_RESET || MJUMP!=null || SECJUMP || SCROLL_BASE || SCROLL_ITIN || SCROLL_LIST || SCROLL_TO || PIN || SCROLL_NEAR) REFIX=null;
 
 
 
@@ -5610,20 +5791,9 @@ function renderPanel(){
     box.scrollTop=Math.max(0, desired);
     ANCHORED=true;
 
-    let passes=0;
-    const refix=()=>{
-      if (passes>=3 || !el.isConnected || !box.isConnected) return;
-      const diff=flowTop(el)-floorY;
-      if (Math.abs(diff)<1) return;
-      passes++;
-      const want2=box.scrollTop+diff, max2=box.scrollHeight-box.clientHeight;
-      if (want2>max2) padEl.style.height=((parseFloat(padEl.style.height)||0)+Math.ceil(want2-max2))+"px";
-      box.scrollTop=Math.max(0, want2);
-      ANCHORED=true;
-      document.querySelectorAll(".lane, #panel").forEach(syncStuck);
-      requestAnimationFrame(()=>requestAnimationFrame(refix));
-    };
-    requestAnimationFrame(()=>requestAnimationFrame(refix)); setTimeout(refix, 0);
+
+    REFIX={el, key:refixKey(el), floorY, passes:0, flow:flowTop};
+    requestAnimationFrame(()=>requestAnimationFrame(()=>refixLanding(true))); setTimeout(refixLanding, 0);
     return true;
   };
   if (SCROLL_RESET){
@@ -6142,9 +6312,11 @@ save();
   let fired=false;
   function go(){
     if (fired) return; fired=true;
+
     ensureLegs(true)
       .then(()=>ensureTri(true))
-      .then(()=>ensureOrig(true));
+      .then(()=>ensureOrig(true))
+      .then(()=>warmStart());
   }
   function arm(){
     if (window.requestIdleCallback) requestIdleCallback(go, {timeout:1500});
