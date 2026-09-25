@@ -721,6 +721,12 @@ html.sheeton .panel{overflow:hidden}
   }
 
 
+  .panel.twolane .lane-trip > .sec.secitin{
+    position:sticky; top:calc(var(--l1h) * 2); z-index:399; background:var(--panel);
+  }
+
+  @media (hover:hover){.panel.twolane .lane-trip > .sec.secitin:hover{background-color:var(--hover-bg)}}
+
   @media (hover:hover){.panel.twolane .lane-trip > .sec.toplevel:first-child:hover{background-color:var(--hover-bg)}}
 
 
@@ -790,9 +796,6 @@ html.sheeton .panel{overflow:hidden}
 @container fbar (max-width:331px){
   .fbar:not(.tbar) > .fnum.fl .fn{display:none}
 }
-@container fbar (max-width:272px){
-  .fbar.tbar:has(> .fsum > .ftxt) > .fnum.fl .fn{display:none}
-}
 
 .fpop{
   position:absolute; top:100%; left:0; right:0; z-index:410;
@@ -823,7 +826,6 @@ html.sheeton .panel{overflow:hidden}
 }
 .fsum .ssico{display:inline-flex; align-items:center; gap:3px}
 .fsum .ic{width:15px; height:15px; margin-right:0}
-.fsum .ftxt{overflow:hidden; text-overflow:ellipsis}
 
 .fnum{flex:none; white-space:nowrap}
 
@@ -876,7 +878,7 @@ html.sheeton .panel{overflow:hidden}
   text-align:left;
 }
 
-@media (hover:hover){.sec:not(.secitin):hover{color:var(--accent)}}
+@media (hover:hover){.sec:hover{color:var(--accent)}}
 
 .sec .n{display:inline-flex; align-items:center; font-variant-numeric:tabular-nums}   
 
@@ -896,10 +898,9 @@ html.sheeton .panel{overflow:hidden}
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 
-@media (hover:hover){.sec:not(.secitin):hover .ssub{color:var(--ink)}}
+@media (hover:hover){.sec:hover .ssub{color:var(--ink)}}
 
 .sec.secitin{
-  cursor:default;
   box-shadow:inset 0 -1px 0 var(--hair);   
 }
 
@@ -1662,6 +1663,7 @@ html.sheeton .panel{overflow:hidden}
 
 .panel.twolane .lane-explore > .sec.basesec,
 
+.panel.twolane .lane-trip > .sec.secitin,
 .panel.twolane .lane-trip > .sec.toplevel:first-child{
   background-image:var(--paper-panel);
 }
@@ -1989,6 +1991,7 @@ const S = { tab:"trip", base:new Set(), themes:new Set(), diffs:new Set(),
             basesOpen:false, sort:"total", sortPicked:false, near:0, footOpen:false,
 
             trip:null, tripsOpen:true,
+            itinOpen:true,   // 2026-09-25 棒 AM 重新啟用（第三列＝時間軸開合把手），見上面 S.itinOpen 那段
             fDays:new Set(), fDrive:new Set(), fStam:new Set(), fFeel:new Set(), tipSeen:false,
             foldTrip:false, foldExp:false,
             catsOpen:new Set(), corrOpen:new Set(),
@@ -2200,7 +2203,7 @@ function save(){
       inseason:S.inseason, sort:S.sort, sortPicked:S.sortPicked, theme:THEME,   // `view:` 2026-09-13 棒 G3 起不寫（S.view 退役）
       seen:true, basesOpen:S.basesOpen,
       footOpen:S.footOpen,
-      trip:S.trip, tripsOpen:S.tripsOpen,
+      trip:S.trip, tripsOpen:S.tripsOpen, itinOpen:S.itinOpen,   // itinOpen：2026-09-25 棒 AM 重新存檔
       fDays:[...S.fDays], fDrive:[...S.fDrive], fStam:[...S.fStam], fFeel:[...S.fFeel],
       tipSeen:S.tipSeen, foldTrip:S.foldTrip, foldExp:S.foldExp,
       catsOpen:[...S.catsOpen], corrOpen:[...S.corrOpen],
@@ -2234,6 +2237,8 @@ function restore(){
 
     if (d.foldTrip===true) S.foldTrip=true;
     if (d.foldExp===true) S.foldExp=true;
+
+    if (d.itinOpen===false) S.itinOpen=false;
 
     if (Array.isArray(d.catsOpen)) S.catsOpen=new Set(d.catsOpen.filter(x=>CT[x]));
     if (Array.isArray(d.corrOpen)) S.corrOpen=new Set(d.corrOpen.filter(x=>CR[x]));
@@ -3706,13 +3711,7 @@ function barNum(n, total, filtered, unit, noun, title){
 function renderTripBar(){
   const bar=document.createElement("div"); bar.className="fbar tbar";
   const sum=document.createElement("div"); sum.className="fsum";
-  const t = S.trip && TRIP_BY_ID[S.trip];
-  if (t){
 
-    const txt = tripLabel(t).trim();
-    sum.innerHTML=`<span class="ftxt">${esc(txt)}</span>`;
-    sum.title = txt;
-  }
   bar.appendChild(sum);
   const n=tripCount();
 
@@ -4139,11 +4138,13 @@ function tripShown(t){ return tripPass(t) || S.trip===t.id; }
 function tripCount(){ return anyTripFilter() ? TRIPS.filter(tripShown).length : TRIPS.length; }
 
 function clearTripFilters(){
+  const changed=anyTripFilter();
   S.fDays=new Set(); S.fDrive=new Set(); S.fStam=new Set(); S.fFeel=new Set();
+  if (changed) tripFilterChanged();
   save(); render();
 }
 
-function toggleTripFilter(set, v){ toggleSet(set, v); save(); render(); }
+function toggleTripFilter(set, v){ toggleSet(set, v); tripFilterChanged(); save(); render(); }
 
 const BASE_CORRIDOR = {};
 BASES.forEach(b=>{
@@ -4203,6 +4204,8 @@ function selectTrip(id){
     SCROLL_TRIPTOP=true;
     S.tripsOpen=false; openTripPath(TRIP_BY_ID[id]); fitTrip();   // （`openItin()` 2026-09-12 棒 DM3 退役）
 
+    S.itinOpen=true;
+
   } else {
     dropTrip();
 
@@ -4220,6 +4223,29 @@ function dropTrip(){
   S.autoCats.forEach(k=>S.baseCatsOpen.delete(k));
   S.autoCats=new Set();
   S.tripsOpen=true;
+
+}
+
+function setItinOpen(open){
+  S.itinOpen=!!open;
+  S.tripsOpen=!open;
+  if (isTwoLane()) SCROLL_TRIPTOP=true;
+  else if (!isMapOnly()) SCROLL_LIST=true;
+}
+function pickTrip(id){
+  if (S.trip===id && !S.itinOpen){
+
+    unfoldLane("trip");
+    gotoTab("trip");
+    setItinOpen(true);
+    save(); render();
+    return;
+  }
+  selectTrip(id);
+}
+function tripFilterChanged(){
+  if (!S.trip) return;
+  if (S.itinOpen || !S.tripsOpen) setItinOpen(false);
 }
 
 function fitTrip(){
@@ -4471,7 +4497,7 @@ function tripPicker(mini){
       `<span class="tdays num">${t.days.length} 天</span>`;
 
     b.title = tripLabel(t);
-    b.onclick=()=>selectTrip(t.id);
+    b.onclick=()=>pickTrip(t.id);
 
     hoverWire(b, "trip", t.id);
     return b;
@@ -4900,7 +4926,7 @@ function baseTripsBlock(b){
       `<span class="tl">${esc(tripLabel(t))}</span>` +
       tripFlagHTML(t.id) +
       `<span class="tdays num">${(t.days||[]).length} 天</span>`;
-    el.onclick=()=>selectTrip(t.id);
+    el.onclick=()=>pickTrip(t.id);
     hoverWire(el, "trip", t.id);
     box.appendChild(el);
   });
@@ -5013,7 +5039,7 @@ function qTripSection(){
       `<span class="tl">${esc(tripLabel(t))}</span>` +
       tripFlagHTML(t.id) +
       `<span class="tdays num">${(t.days||[]).length} 天</span>`;
-    el.onclick=()=>selectTrip(t.id);
+    el.onclick=()=>pickTrip(t.id);
     hoverWire(el, "trip", t.id);
     frag.appendChild(el);
   });
@@ -5732,6 +5758,12 @@ function renderPanel(){
 
     tripHost.appendChild(renderTripBar());
 
+    if (t){
+      tripHost.appendChild(section("詳細行程", null, S.itinOpen,
+        ()=>{ setItinOpen(!S.itinOpen); save(); render(); },
+        "toplevel deskonly secitin", itinSub(t)));
+    }
+
     const qt=qTripSection();
     if (qt){
 
@@ -5746,13 +5778,8 @@ function renderPanel(){
 
 
 
-      const ih=document.createElement("div");
-      ih.className="sec toplevel deskonly secitin";
-      const isub=itinSub(t);
-      ih.innerHTML="詳細行程" +
-        `<span class="ssub"${isub ? ` title="${esc(isub.title)}"` : ""}>${isub ? "· "+esc(isub.text) : ""}</span>`;
-      tripHost.appendChild(ih);
-      tripHost.appendChild(renderItinerary());
+
+      if (S.itinOpen) tripHost.appendChild(renderItinerary());
     }
   }
 
@@ -6094,6 +6121,7 @@ function syncStuck(box){
   if (!box) return;
 
   const bt=box.getBoundingClientRect().top + box.clientTop; let last=null;
+
 
 
 
