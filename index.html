@@ -551,7 +551,8 @@ button{font:inherit; color:inherit; cursor:pointer}
     position:sticky; background:var(--panel); background-image:var(--paper-panel);
   }
 
-  #app[data-mtab=trip] .sec.sectrips{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--hair)}
+  #app[data-mtab=trip] .sec.sectrips{top:var(--l1h); z-index:399; box-shadow:inset 0 -1px 0 var(--hair)}
+  #app[data-mtab=trip] .sec.sectrips::after{content:none}
 
   #app[data-mtab=place] .sec.basesec{top:0; z-index:400; box-shadow:inset 0 -1px 0 var(--hair)}   
 
@@ -716,19 +717,20 @@ html.sheeton .panel{overflow:hidden}
 
 
 
-  .panel.twolane .lane-trip > .sec.toplevel:first-child{
-    position:sticky; top:0; z-index:400; background:var(--panel);
+  .panel.twolane .lane-trip > .sec.sectrips{
+    position:sticky; top:var(--l1h); z-index:399; background:var(--panel);
     box-shadow:inset 0 -1px 0 var(--hair);   
   }
+  .panel.twolane .lane-trip > .sec.sectrips::after{content:none}   
 
 
   .panel.twolane .lane-trip > .sec.secitin{
-    position:sticky; top:calc(var(--l1h) * 2); z-index:399; background:var(--panel);
+    position:sticky; top:calc(var(--l1h) * 2); z-index:398; background:var(--panel);
   }
 
   @media (hover:hover){.panel.twolane .lane-trip > .sec.secitin:hover{background-color:var(--hover-bg)}}
 
-  @media (hover:hover){.panel.twolane .lane-trip > .sec.toplevel:first-child:hover{background-color:var(--hover-bg)}}
+  @media (hover:hover){.panel.twolane .lane-trip > .sec.sectrips:hover{background-color:var(--hover-bg)}}
 
 
 
@@ -785,6 +787,13 @@ html.sheeton .panel{overflow:hidden}
   padding:4px 14px; min-height:var(--l1h); background:var(--panel);
   background-image:var(--paper-panel); box-shadow:inset 0 -1px 0 var(--hair);   
   container:fbar / inline-size;   
+}
+
+.fbar.tbar{top:0}
+
+.rlist + .fbar:not(.stuck)::before{
+  content:""; position:absolute; left:0; right:0; top:-1px; height:1px;
+  background:var(--hair); pointer-events:none;
 }
 
 @container fbar (max-width:300px){
@@ -1665,7 +1674,8 @@ html.sheeton .panel{overflow:hidden}
 .panel.twolane .lane-explore > .sec.basesec,
 
 .panel.twolane .lane-trip > .sec.secitin,
-.panel.twolane .lane-trip > .sec.toplevel:first-child{
+
+.panel.twolane .lane-trip > .sec.sectrips{
   background-image:var(--paper-panel);
 }
 
@@ -5752,12 +5762,12 @@ function renderPanel(){
 
 
 
+
+    tripHost.appendChild(renderTripBar());
     const secT=section("推薦行程", null, S.tripsOpen,
       ()=>{ secJumpHit(secT, "trips", S.tripsOpen); S.tripsOpen=!S.tripsOpen; save(); render(); },
       "toplevel deskonly sectrips", tripSub(t));
     tripHost.appendChild(secT);
-
-    tripHost.appendChild(renderTripBar());
 
     if (t){
       tripHost.appendChild(section("詳細行程", null, S.itinOpen,
@@ -5899,11 +5909,13 @@ function renderPanel(){
     if (sbox && sec){
       if (SECJUMP.mode==="back"){ sbox.scrollTop = SECJUMP.to; }
       else {
+
         const sbt=sbox.getBoundingClientRect().top + sbox.clientTop;
+        const stop=parseFloat(getComputedStyle(sec).top)||0;
         const prev=sec.style.position; sec.style.position="static";
         const ft=sec.getBoundingClientRect().top;
         sec.style.position=prev;
-        sbox.scrollTop += (ft - sbt);
+        sbox.scrollTop += (ft - sbt - stop);
       }
       if (sbox===box) ANCHORED=true;
     }
@@ -5930,7 +5942,8 @@ function renderPanel(){
     if (grp) anchorTo(grp, stopAt(grp));
     else if (two){ const rs=box.querySelector(".results"); anchorTo(rs, stopAt(rs)); }
     else {
-      const sec=box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin");
+
+      const sec=box.querySelector(".fbar.tbar") || box.querySelector(".sec.sectrips") || box.querySelector(".sec.secitin");
 
       if (sec){
         const pinned=[sec, sec.parentElement].find(e=>e && e!==box && getComputedStyle(e).position==="sticky");
