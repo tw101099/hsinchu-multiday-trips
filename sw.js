@@ -149,7 +149,9 @@ function isShellAsset(url) {
 }
 
 // 拆出頁面外的三份大資料（2026-09-10 棒 SPLIT）：`data/legs.json`、
-// `data/neighbors.bin`、`data/neighbors-origins.json`。
+// `data/neighbors.bin`、`data/neighbors-origins.json`。2026-09-25 棒 WT（效能 M5）起多第四份
+// `data/place-text.json`（景點的 desc／note 兩欄）——同一條路由、同一套 `?v=` 分版與舊版清理，
+// 本檔邏輯一行不必改；**不推號**（沒有動到殼層資源，理由同檔頭 v6 那兩段）。
 function isDataAsset(url) {
   return /\/data\//.test(url.pathname);
 }
