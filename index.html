@@ -856,7 +856,9 @@ html.sheeton .panel{overflow:hidden}
   margin:0; padding:0; border:0; opacity:0; z-index:1;
 }
 
-#sort:focus-visible + .sortlbl{outline:2px solid var(--accent); outline-offset:2px}
+#sort:focus-visible + .sortlbl{
+  background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600;
+}
 
 .lfilters{padding:8px 14px 10px; border-bottom:1px solid var(--hair)}   
 .frow{display:flex; align-items:flex-start; gap:9px; padding:4px 0}
@@ -1616,8 +1618,8 @@ html.sheeton .panel{overflow:hidden}
 }
 
 .pin.on, .lodgemk.on .ld, .basepin.sel .bp, .basepin.on .bp{
-  outline:2.5px solid var(--accent); outline-offset:1px;
-  box-shadow:0 0 0 7.5px rgba(var(--accent-rgb),.18), 0 1px 5px rgba(var(--sh),.32);
+  outline:2px solid color-mix(in srgb, var(--accent) 70%, transparent); outline-offset:1px;
+  box-shadow:0 0 0 7px rgba(var(--accent-rgb),.14), 0 1px 5px rgba(var(--sh),.32);
 }
 
 .pin.has-halo, .poidot.has-halo, .lodgemk.has-halo{position:relative}
