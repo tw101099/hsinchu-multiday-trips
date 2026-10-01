@@ -76,7 +76,10 @@
 // favicon-32.png、行程頁冷啟動扉頁圖 trip-empty.webp——列進 SHELL_ASSETS 走 cache-first；manifest 同一刀
 // 加了 `id`。照檔頭規則推號。代價同檔頭：activate 清掉整份 v7，逾時閘門倚靠的頁面副本與 `data/` 備援
 // 等下一次成功造訪才補回。
-const CACHE_VERSION = "v8";
+// v8→v9：2026-10-02 棒 JX（本人裁）彩蛋卡落款改用本人提供的朱印母稿縮成的 `icons/seal.webp`，取代頁面內嵌的
+// SVG 空心印——`icons/` 多一個殼層資源，列進 SHELL_ASSETS（install 時預熱，離線開彩蛋照樣有圖）。照檔頭規則推號，
+// 代價同 v7→v8。
+const CACHE_VERSION = "v9";
 const CACHE_NAME = `hsinchu-multiday-${CACHE_VERSION}`;
 
 // 殼層資源：install 時預熱，之後 cache-first。都是同源、幾乎不變的檔案。
@@ -91,6 +94,7 @@ const SHELL_ASSETS = [
   "./icons/favicon.svg",
   "./icons/favicon-32.png",
   "./icons/trip-empty.webp",
+  "./icons/seal.webp",
   // Leaflet 站內託管（v7，2026-09-25 棒 AI，效能 M3）。五張圖是 leaflet.css 的 `url(images/…)`
   // （layers／layers-2x／marker-icon）加上 Leaflet 預設圖示在 JS 裡會用到的另外兩張；站上的圖釘
   // 全是 `L.divIcon`，預設圖示目前用不到，但檔案跟著引擎走，預熱它們只多 3 KB。

@@ -1814,8 +1814,13 @@ html.sheeton .panel{overflow:hidden}
 
 .egg .eggcard:focus{outline:none}
 
-.egg .eggseal{display:block; width:max-content; margin:12px -16px -12px auto; line-height:0; color:var(--eggred)}
-.egg .eggseal svg{display:block; height:48px; width:auto; fill:currentColor; stroke:none}
+.egg .eggseal{
+  display:block; margin:12px -16px -12px auto; height:56px; width:29.75px;
+  background-color:var(--eggred); visibility:hidden;
+  -webkit-mask-image:url("./icons/seal.webp"); -webkit-mask-size:contain; -webkit-mask-repeat:no-repeat; -webkit-mask-position:center;
+  mask-image:url("./icons/seal.webp"); mask-size:contain; mask-repeat:no-repeat; mask-position:center;
+}
+.egg .eggseal.ok{visibility:visible}
 
 #msback, #msearch, #mmore, #mmenu, #mcond{display:none}
 @media (max-width:899px), (max-height:559px){
@@ -7053,7 +7058,10 @@ window.__iosStandaloneFix = { active:false, gap:null, screenH:null, appliedH:nul
   const LINE1 = "我愛我那環海多山的國家";
   const FALLBACK = "Author: 行路有風溫柔閣驕傲的臺灣查某囝";
 
-  const SEAL_SVG = '<svg viewBox="0 0 231 480" focusable="false"><path fill-rule="evenodd" d="M153 0l-3 3-5 1-3 3-4 3-4 2-1 3-5 1-3 2-5 0-7 3-3 3-4 6-3 3-6 3-1 5-3 5-4 3 0 5-3 4-1 4-3 3-2 4 0 4-3 3-4 2 2 6-2 3-4 2-4 1-3 4-2 6-2 4-1 7-3 4-1 4-2 4 1 4-3 4 0 5-2 4-2 4 2 5-1 3-3 4-2 3 0 5-3 2-2 4-1 4-1 4-3 5-4 3-2 6 0 4-3 5-2 4-4 3 0 6-2 4 2 5-3 4 2 5-1 4 1 4-2 4 3 5-2 4-4 1-3 4 1 3-3 3-3 7 0 5-2 8 1 4 0 9 0 5 5 9 5 2 2 2 3 2 2 2-2 6 2 1 2 4 2 2 1 5 2 7 2 4 4 6 3 3 3 3 2 4 3 3 2 4 2 4 4 3 4 3 2 3 4 4 2 4 2 5 4 3 2 1 4 3 1 3 3 3 1 4 3 3 3 3 3 3-1 4 4 3-1 4 2 4 1 3 1 4 2 3-1 5 1 10 3 4 7 6 3 4 15 3 15-2 2-5 9-6 1-4 3-9 3-4 1-6 3-4 0-7-3-4 1-3-2-5 1-3 0-4 0-5 3-3 1-4-1-5 0-3 2-4 2-3 0-4 2-3 3-3 1-4 3-3 3-4 2-5 1-4 4-4 1-4 3-3 1-4 1-4 2-4 2-4 2-4 3-3 1-4 3-5 1-4 3-4 1-4 3-6 1-4 0-6 1-4 1-5 0-4 0-5-1-4 2-4 3-4-2-5 3-3-2-6 2-4-1-5 1-4-1-5-1-4 1-5 1-4 0-5 0-4-1-4 0-5 1-4-2-4 0-5 0-4 2-4-1-5 3-4-2-4 3-5 0-3 1-4-2-4-1-4 3-4 0-4 1-5 2-3 3-6 0-4 2-6-1-4 1-8-2-4-2-7-1-4-2-3-1-4-4-3-1-4-2-1 0-5 2-2 1-5-1-5 0-5 0-6-5-8-2-4-6-5-5-5-4-1-7-1-4-2-2-1-4-1-2-1-2-4-10-4zM164 19l-4 2-3 3-3 4-3 2-5 1-5 4-3 2-5 3-4 0 0 2-4 2 0 1-3 3-3 1-3 3-2 2-1 4 0 5-2 4 1 5-2 4 1 5-2 5-2 4-2 5-1 4-2 6-5 2-5 3-2 4-1 2-4 3-1 2 0 4-1 5 1 5-3 4-3 4-2 3-2 4-2 3 0 5-2 5-3 4-1 6-2 3-4 4 0 5-4 4-4 2-2 2-2 4 1 3 0 5-2 2-3 4-1 4 0 3-2 5 0 4 0 4 0 4-3 4 3 5 0 5-3 4 0 4-2 7-2 4-3 5-2 4 2 2-1 4-4 0 1 4-1 0 4 4-1-1 3 3 3 5 3 3 3 6 2 4 0 7 2 4 4 5-2 5 3 0 1 4 2 0 2 4 4 3 2 4 2 5 2 3 2 3 2 5 4 1 1 5 4 2 2 4 1 4 5 1 5 3 2 4 2 6 2 3 4 4 2 4 3 3 3 3 3 5 2 4 4 5 2 3 2 6 0 4 1 5 0 5 0-1 2 4 0-1 4 3-5-4-6 0 5 0-1 0 3-3-2 1 0-5 0-3 4-3-1-3 1-4 3-6-1-4 1-5 2-4 3-5 0-4 0-5 3-4-1-5 0-5 2-5 2-4 3-5 1-4 3-4 3-4 3-3 2-3 0-5 1-3 3-4 2-4 2-4 2-4 5-2 2-5 0-4 0-6 3-3 2-3 3-3 2-3 2-4-1-3 2-4 0-3 1-4 0-5 0-4-1-4 1-4 0-5-1-5 1-4 4-4-2-4 1-4 1-4-1-5 2-3-1-4 0-5 0-4 2-4 1-5 0-4 2-4 0-5-2-4 1-4-1-5 0-4 2-4-2-5 1-4 2-4-1-6 2-4 0-6-1-5 2-4 0-4 2-4 3-4-2-3 0-5 1-2 3-4-2-2 0-4-2-1-1-4-2-4-4-4 0-5-1-4-2-8-1-4 1-6-1-5 0-2 1-5 1-3 0 0-3-3-2 2-1-1-3-3-1-2-5-1-6-2-4-3-5-4-4-2 3-2z"/><path d="M135 107l-1 3-1 4-1 3-1 4-1 4-2 3-3 3-3 2-3 2-4 0-4 2-3 0-4 0-4-1-3-2-3-1-3-2-3-2-2-3-3-2-1-4-1-3-1-3-2-4-1-3 0-4 1-4 1-3 3-3 3-2 3-2 3-2 3-2 3-1 3-1 4-1 3-1 4 0 3 1 3 2 4 2 3 1 3 2 3 3 2 3 2 4 1 4z"/></svg>';
+  const SEAL_SRC = "./icons/seal.webp";
+  const SEAL_MASK = !!(window.CSS && CSS.supports &&
+    (CSS.supports("mask-image", "url(\"a.webp\")") || CSS.supports("-webkit-mask-image", "url(\"a.webp\")")));
+  let SEAL_STATE = null;   // null＝還沒試過／"ok"＝載入成功過／"dead"＝載不到
 
   let total = null;      // 拿到過的總數（字串，已含千分位）；null＝還沒拿到
   let panel = null, closing = false;
@@ -7106,11 +7114,19 @@ window.__iosStandaloneFix = { active:false, gap:null, screenH:null, appliedH:nul
     l2.textContent = countText();
     card.appendChild(l1);
     card.appendChild(l2);
-    const seal = document.createElement("span");
-    seal.className = "eggseal";
-    seal.setAttribute("aria-hidden", "true");
-    seal.innerHTML = SEAL_SVG;
-    card.appendChild(seal);
+    if (SEAL_MASK && SEAL_STATE !== "dead"){
+      const seal = document.createElement("span");
+      seal.className = SEAL_STATE === "ok" ? "eggseal ok" : "eggseal";
+      seal.setAttribute("aria-hidden", "true");
+      card.appendChild(seal);
+      if (SEAL_STATE !== "ok"){
+        const pre = new Image();
+        pre.crossOrigin = "anonymous";   // CSS 遮罩依規格用 CORS 模式抓圖；預載也用同一模式，兩邊才共用同一份、不抓兩次
+        pre.onload = function(){ SEAL_STATE = "ok"; seal.classList.add("ok"); };
+        pre.onerror = function(){ SEAL_STATE = "dead"; if (seal.parentNode) seal.parentNode.removeChild(seal); };
+        pre.src = SEAL_SRC;
+      }
+    }
     panel.appendChild(card);
 
     card.addEventListener("click", function(e){ e.stopPropagation(); });
