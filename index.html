@@ -367,8 +367,8 @@ button{font:inherit; color:inherit; cursor:pointer}
 .mapbtns button[aria-pressed=true]{background:var(--accent-soft); border-color:var(--accent); color:var(--ink); font-weight:600}
 
 .mcondsum{
-  position:absolute; top:10px; left:54px; right:10px; z-index:500; display:none;
-  flex-direction:column; align-items:stretch; gap:0; max-width:calc(100% - 64px);
+  position:absolute; top:10px; left:64px; right:10px; z-index:500; display:none;
+  flex-direction:column; align-items:stretch; gap:0; max-width:calc(100% - 74px);
   background-color:var(--surface-sheet); background-image:var(--paper-sheet); border:0; border-radius:0;
   padding:2px; font-size:11.5px; line-height:1.5; color:var(--ink2);
   box-shadow:0 1px 6px rgba(var(--sh),.13);
@@ -1106,6 +1106,12 @@ html.sheeton .panel{overflow:hidden}
 .empty .ec .cb{white-space:nowrap}
 .empty .ea{margin-top:12px; display:flex}
 
+.empty .esug{margin:12px 0 0; align-items:center; gap:6px}
+.empty .esug .ek{font-size:12.5px; color:var(--ink3); margin-right:2px}
+.empty .ecr{margin-top:12px; display:flex; flex-wrap:wrap; gap:8px}
+.empty .ecb .k{color:var(--ink3)}
+.empty .ecb .x{margin-left:7px; font-size:15px; line-height:1; color:var(--ink3)}
+
 .detail{
   border:1px solid var(--accent); border-top:0; border-radius:0 0 var(--r) var(--r);
   margin:-1px 9px 10px; padding:11px 13px 13px; background:none; overflow:hidden;
@@ -1669,6 +1675,34 @@ html.sheeton .panel{overflow:hidden}
 .leaflet-tooltip.tt i{font-style:normal; color:var(--ink3); display:flex; align-items:center; flex-wrap:wrap; font-size:11.5px}
 
 :root .leaflet-tile{filter:var(--tile)}
+
+#map{background-color:var(--bg); background-image:var(--paper-bg); font-family:inherit}
+#map .leaflet-bar{
+  border:1px solid var(--hair); border-radius:999px; overflow:hidden; background-clip:padding-box;
+  background-color:var(--panel); background-image:var(--paper-panel); box-shadow:0 1px 6px rgba(var(--sh),.20);
+}
+#map .leaflet-bar a{
+  display:flex; align-items:center; justify-content:center; width:40px; height:40px; line-height:1;
+  background:none; border:0; border-bottom:1px solid var(--hair); border-radius:0;
+  font:inherit; text-indent:0; cursor:pointer;
+}
+#map .leaflet-bar a:last-child{border-bottom:0}
+#map .leaflet-bar a:not(.on){color:var(--ink2)}
+#map .leaflet-bar a svg{display:block; width:16px; height:16px; fill:none; stroke:currentColor;
+  stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+#map .leaflet-bar a:focus{background-color:transparent}
+@media (hover:hover){ #map .leaflet-bar a:hover{background-color:var(--hover-bg)}
+  #map .leaflet-bar a:not(.on):hover{color:var(--accent)} }
+#map .leaflet-bar a.leaflet-disabled{background-color:transparent; color:var(--ink3); opacity:.45; cursor:default}
+#map .leaflet-bar a:focus-visible{outline:2px solid var(--accent); outline-offset:-3px}
+@media (pointer:coarse), (max-width:899px), (max-height:559px){
+  #map .leaflet-bar a{width:44px; height:44px}
+}
+#map .leaflet-control-attribution{
+  font-family:inherit; font-size:11px; line-height:1.5; padding:0 6px; color:var(--ink3);
+  background:color-mix(in srgb, var(--bg) 78%, transparent);
+}
+#map .leaflet-control-attribution a{color:var(--ink2); text-decoration:underline; text-underline-offset:2px}
 
 .bar, .panel, .fbar, .mapcard, .loctip, .leaflet-tooltip.tt,
 .lanefold,
@@ -2380,12 +2414,43 @@ const months = p => Array.isArray(p.season_months) ? p.season_months : [];
 const gview = p => p.gmap_coord ? `${p.lat},${p.lng}` : (p.gmap || (p.name + " " + p.town));
 const gnav  = p => p.nav_target || gview(p);
 
+const NORM_S = "台温汤宁岭庙馆阳头东兰区门观湾滩园桥云龙凤乡镇县岛屿泽涧峡坝场车驿农渔鱼营栈线树红绿蓝黄宝寿华兴广长罗苏杨陈吴郑仑沟浅湿济关归怀鸟鹤莲纪铁矿盐历迹遗灯楼阁宫圣双万两闽远进过边达运连叶猫鹰鹭虾乐爱碍径岗汇濑滨灵钟鸣雾风飞处时间设计览赏戏体验讲导艺术剧窑厂铺丝织缆栏难险级条规证许预约订购卖买钱费价当网页电话号码开闭业办节庆会礼献静净凉热疗养侨荣浊";
+const NORM_T = "臺溫湯寧嶺廟館陽頭東蘭區門觀灣灘園橋雲龍鳳鄉鎮縣島嶼澤澗峽壩場車驛農漁魚營棧線樹紅綠藍黃寶壽華興廣長羅蘇楊陳吳鄭崙溝淺濕濟關歸懷鳥鶴蓮紀鐵礦鹽歷跡遺燈樓閣宮聖雙萬兩閩遠進過邊達運連葉貓鷹鷺蝦樂愛礙徑崗匯瀨濱靈鐘鳴霧風飛處時間設計覽賞戲體驗講導藝術劇窯廠舖絲織纜欄難險級條規證許預約訂購賣買錢費價當網頁電話號碼開閉業辦節慶會禮獻靜淨涼熱療養僑榮濁";
+const NORM_MAP = {};
+for (let i=0; i<NORM_S.length; i++) NORM_MAP[NORM_S[i]] = NORM_T[i];
+const NORM_RE = new RegExp("[" + NORM_S + "]", "g");
+function norm(s){
+  return String(s==null ? "" : s)
+    .replace(/[！-～]/g, c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0))
+    .replace(NORM_RE, c=>NORM_MAP[c])
+    .replace(/\s+/g, "")
+    .toLowerCase();
+}
+
+let HAY=new Map(), HAY_PT=null;
+function hayOf(p){
+  if (HAY_PT!==PT_READY){ HAY=new Map(); HAY_PT=PT_READY; }
+  let h=HAY.get(p.id);
+  if (!h){
+    h={all:norm(p.name+p.town+(p.desc||"")+(p.note||"")+(p.season||"")+(p.kind||"")+(p.tags||[]).join("")),
+       name:norm(p.name), tags:(p.tags||[]).map(norm)};
+    HAY.set(p.id, h);
+  }
+  return h;
+}
+let QN_KEY=null, QN=[];
+function qTermsN(){
+  const k=S.q + "\u0001" + S.qtags.join("\u0001");
+  if (k!==QN_KEY){ QN_KEY=k; QN=qTerms().map(norm).filter(Boolean); }
+  return QN;
+}
 const TAGSET=new Set();
-PLACES.forEach(p=>(p.tags||[]).forEach(t=>TAGSET.add(String(t).toLowerCase())));
-function termHit(p, hay, t){
+PLACES.forEach(p=>(p.tags||[]).forEach(t=>TAGSET.add(norm(t))));
+
+function termHit(p, h, t){
   if (TAGSET.has(t))
-    return (p.tags||[]).some(x=>String(x).toLowerCase()===t) || p.name.toLowerCase().includes(t);
-  return hay.includes(t);
+    return h.tags.some(x=>x===t) || h.name.includes(t);
+  return h.all.includes(t);
 }
 
 const PASS_AXES = [
@@ -2400,9 +2465,8 @@ function matchQ(p){
   if (!(S.q || S.qtags.length)) return true;
 
   if (!PT_READY) placeTextPending(false);
-  const hay=(p.name+p.town+(p.desc||"")+(p.note||"")+p.season+p.kind+(p.tags||[]).join("")).toLowerCase();
-  if (S.q && !termHit(p, hay, S.q)) return false;
-  for (const t of S.qtags) if (!termHit(p, hay, t)) return false;
+  const h=hayOf(p);
+  for (const t of qTermsN()) if (!termHit(p, h, t)) return false;
   return true;
 }
 function passExcept(p, skip){
@@ -2427,7 +2491,7 @@ const shown = () => {
 const anyFilter = () => !!(S.base.size||S.themes.size||S.diffs.size||S.inseason||S.q||S.qtags.length);
 
 const BASE_HAY = Object.fromEntries(
-  BASES.map(b=>[b.id, ((b.name||"")+(b.town||"")).toLowerCase()]));
+  BASES.map(b=>[b.id, norm((b.name||"")+(b.town||""))]));
 function qTerms(){
   return (S.q ? [S.q] : []).concat(S.qtags);
 }
@@ -2437,7 +2501,7 @@ const QEXP = { trips:false, bases:false };
 function qExpReset(){ QEXP.trips=false; QEXP.bases=false; }
 
 function qBaseHits(){
-  const terms=qTerms();
+  const terms=qTermsN();   // 已正規化的詞（2026-10-01 棒 AX）
   if (!terms.length) return [];
   const hit = b => { const hay=BASE_HAY[b.id]||""; return terms.every(t=>hay.includes(t)); };
   const out=[];
@@ -2446,12 +2510,12 @@ function qBaseHits(){
   return out;
 }
 
-const TRIP_HAY = Object.fromEntries(
-  TRIPS.map(t=>[t.id, ((t.name||"") + (t.one_line||"") +
-                       ((CR[t.code] && CR[t.code].name) || "")).toLowerCase()]));
+const TRIP_HAY = Object.fromEntries(   // `norm()` 取代 `toLowerCase()`（2026-10-01 棒 AX）
+  TRIPS.map(t=>[t.id, norm((t.name||"") + (t.one_line||"") +
+                       ((CR[t.code] && CR[t.code].name) || ""))]));
 
 function qTripHits(){
-  const terms=qTerms();
+  const terms=qTermsN();   // 已正規化的詞（2026-10-01 棒 AX）
   if (!terms.length) return [];
   const ci = c => { const i=CATS.findIndex(x=>x.id===c); return i<0 ? 99 : i; };
   const ri = r => { const i=CORRIDORS.findIndex(x=>x.id===r); return i<0 ? 999 : i; };
@@ -2668,8 +2732,15 @@ function loadOSM(why){
   });
 }
 
+const OVERVIEW_BOX = {s:21.7, n:25.5, w:119.2, e:122.2};
+function overviewAnchors(){
+  const all=BASES.filter(b=>b.anchor).map(b=>b.anchor);
+  const box=OVERVIEW_BOX;
+  const main=all.filter(a=>a[0]>=box.s && a[0]<=box.n && a[1]>=box.w && a[1]<=box.e);
+  return main.length ? main : all;
+}
 function fitBases(){
-  const anchors=BASES.filter(b=>b.anchor).map(b=>b.anchor);
+  const anchors=overviewAnchors();
   if (!anchors.length){ map.setView([24.76,121.06], 11, {animate:false}); return; }
   if (!mapSized()){ PENDING_FIT=true; return; }   // 見 PENDING_FIT
   map.fitBounds(L.latLngBounds(anchors).pad(.12), {animate:false});
@@ -2718,7 +2789,12 @@ function initOSM(why){
   draw();
 }
 function buildMap(tiles){
-  map=L.map("map",{zoomControl:true}).setView([24.76,121.06], 11);
+
+  map=L.map("map",{zoomControl:false}).setView([24.76,121.06], 11);
+  L.control.zoom({
+    zoomInText:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>',
+    zoomOutText:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/></svg>'
+  }).addTo(map);
 
   if (tiles) showTiles();
   lines=L.layerGroup().addTo(map);
@@ -2801,7 +2877,7 @@ function warmView(){
   if (days){
     days.forEach(d=>(d.legs||[]).forEach(l=>(l.coords||[]).forEach(c=>ll.push(c))));
     if (!ll.length) return;
-  } else ll = BASES.filter(b=>b.anchor).map(b=>b.anchor);
+  } else ll = overviewAnchors();   // 同 `fitBases()`（2026-10-01 棒 AX：只框本島＋澎湖）
   if (!ll.length) return;
   const main=document.getElementById("main"), sz=map.getSize();
   const dx=(main.clientWidth - sz.x)/2, dy=(main.clientHeight - sz.y)/2;
@@ -4277,7 +4353,56 @@ function fitTrip(){
   days.forEach(d=>(d.legs||[]).forEach(l=>(l.coords||[]).forEach(c=>pts.push(c))));
   if (!pts.length) return;
   if (!mapSized()){ PENDING_FIT=true; return; }   // 見 PENDING_FIT（本輪世界地圖那件的源頭就在這裡）
+  if (fitTripMobile(pts)) return;
   map.fitBounds(L.latLngBounds(pts).pad(.12), {animate:false});
+}
+
+const LBL_GAP = 21;   // 圖釘中心到標籤左緣（`.pin.tripstop .pinlbl{left:36px}`－圖釘半寬 16＋框 1，實測）
+let LBL_CTX=null;
+function lblWidth(text){
+  if (!LBL_CTX){ const c=document.createElement("canvas"); LBL_CTX=c.getContext("2d"); }
+  if (!LBL_CTX) return 12 + String(text).length*11.5;
+  LBL_CTX.font = "11.5px " + getComputedStyle(document.body).fontFamily;
+  return LBL_CTX.measureText(String(text)).width + 12;
+}
+function fitTripMobile(pts){
+  if (!hasMapCard() || S.tab!=="map") return false;
+  const mapEl=document.getElementById("map");
+  const mr=mapEl && mapEl.getBoundingClientRect();
+  if (!mr || !mr.width || !mr.height) return false;
+  let top=0, bot=0;
+  document.querySelectorAll("#mcondsum.on, #map .leaflet-top.leaflet-left").forEach(el=>{
+    const r=el.getBoundingClientRect(); if (r.height) top=Math.max(top, r.bottom-mr.top);
+  });
+  document.querySelectorAll("#mapbtns > *, #map .leaflet-control-attribution").forEach(el=>{
+    const r=el.getBoundingClientRect(); if (r.height) bot=Math.max(bot, mr.bottom-r.top);
+  });
+  const pl=16, pr=16, pt=Math.round(top)+12, pb=Math.round(bot)+12;
+  const W=mr.width-pl-pr, H=mr.height-pt-pb;
+  if (W<40 || H<40) return false;
+
+  const bb=L.latLngBounds(pts).pad(.02);
+  const lbl=[];
+  tripStops().forEach(p=>lbl.push([[p.lat,p.lng], lblWidth(p.name)]));
+  baseIdsOfTrip(S.trip).forEach(id=>{ const b=BS[id]; if (b && b.anchor) lbl.push([b.anchor, lblWidth(b.name)]); });
+  let z=map.getBoundsZoom(bb, false, L.point(pl+pr, pt+pb));
+  const zmin=map.getMinZoom();
+  for (;; z--){
+    const nw=map.project(bb.getNorthWest(), z), se=map.project(bb.getSouthEast(), z);
+    let x0=nw.x, x1=se.x, y0=nw.y, y1=se.y;
+    const on=z>=STOP_LABEL_ZOOM;   // 標籤這一級畫不畫；圖釘本體（±16）每一級都算
+    lbl.forEach(([ll,w])=>{
+      const q=map.project(ll, z);
+      x0=Math.min(x0, q.x-16); x1=Math.max(x1, q.x+(on ? LBL_GAP+w : 16));
+      y0=Math.min(y0, q.y-16); y1=Math.max(y1, q.y+16);
+    });
+    if ((x1-x0<=W && y1-y0<=H) || z<=zmin){
+
+      const c=L.point((x0+x1)/2 + (pr-pl)/2, (y0+y1)/2 + (pb-pt)/2);
+      map.setView(map.unproject(c, z), z, {animate:false});
+      return true;
+    }
+  }
 }
 
 const LEG_MODE = {
@@ -4452,6 +4577,12 @@ function dismissTripHint(fade){
     setTimeout(()=>h.remove(), 400);
   } else h.remove();
 }
+
+document.addEventListener("click", e=>{
+  if (S.tipSeen) return;
+  const t=e.target;
+  if (t && t.closest && t.closest(".tcat > .tcath, .rthead, .trow")) dismissTripHint(true);
+}, true);
 
 const tchipLabel = (text, n) => `${esc(text)}<span class="cnt num">${n}</span>`;
 function tripFilterRows(mini){
@@ -5089,6 +5220,63 @@ function qGlobalNote(hits, withBtn){
   return d;
 }
 
+const EMPTY_SUGG = ["溫泉","瀑布","露營","步道","森林","古道","老街","部落","海岸"];
+function emptyFocusQ(e){
+  if (e && e.detail===0){ const qi=document.getElementById("q"); if (qi) qi.focus({preventScroll:true}); }
+}
+function emptyExits(d, hasQ){
+  const ea=document.createElement("div"); ea.className="ea";
+  if (hasQ){
+    const b=document.createElement("button");
+    b.type="button"; b.className="qmore btn-act primary"; b.textContent="清除搜尋";
+    b.onclick=e=>{ e.stopPropagation(); resetQ(); filterChanged(); emptyFocusQ(e); };
+    ea.appendChild(b);
+    d.appendChild(ea);
+
+    const open=PLACES.filter(p=>!PASS_AXES.some(a=>a.blocks(p)));
+    const sug=EMPTY_SUGG.map(w=>{ const t=norm(w); return [w, open.filter(p=>termHit(p, hayOf(p), t)).length]; })
+      .filter(x=>x[1]>0);
+    const pick=sug.slice(0,3);   // 候選序取前三個有結果的（本人點名的三個優先），再依個數排
+    if (pick.length){
+      pick.sort((a,b)=>b[1]-a[1]);
+      const row=document.createElement("div"); row.className="tags esug";
+      const k=document.createElement("span"); k.className="ek"; k.textContent="試試"; row.appendChild(k);
+      pick.forEach(([w,n])=>{
+        const t=document.createElement("button");
+        t.type="button"; t.className="tag btn-act"; t.textContent=w;
+        t.title=`改搜「${w}」（目前條件下 ${n} 個景點）`;
+        t.onclick=e=>{
+          e.stopPropagation();
+          resetQ();
+          const qi=document.getElementById("q"); if (qi) qi.value=w;
+          S.q=w.trim().toLowerCase(); syncQX(); qExpReset(); filterChanged(); emptyFocusQ(e);
+        };
+        row.appendChild(t);
+      });
+      d.appendChild(row);
+    }
+  }
+  const CLEAR={
+    "行程":()=>dropTrip(),
+    "基地":()=>{ S.base=new Set(); S.tripAdded=new Set(); closeBaseDetail(); },
+    "主題":()=>{ S.themes=new Set(); },
+    "費力":()=>{ S.diffs=new Set(); },
+    "季節":()=>{ S.inseason=false; }
+  };
+  const bits=condBits().filter(([k])=>CLEAR[k]);
+  if (bits.length){
+    const row=document.createElement("div"); row.className="ecr";
+    bits.forEach(([k,v])=>{
+      const b=document.createElement("button");
+      b.type="button"; b.className="qmore btn-act ecb";
+      b.setAttribute("aria-label", `移除條件：${k} ${v}`); b.title=`移除這個條件（${k}：${v}）`;
+      b.innerHTML=`<span class="k">${esc(k)}｜</span><span class="v">${esc(v)}</span><span class="x" aria-hidden="true">×</span>`;
+      b.onclick=e=>{ e.stopPropagation(); CLEAR[k](); filterChanged(); emptyFocusQ(e); };
+      row.appendChild(b);
+    });
+    d.appendChild(row);
+  }
+}
 function renderList(){
   const wrap=document.createElement("div"); wrap.className="results";
   const list=shown();
@@ -5107,6 +5295,7 @@ function renderList(){
     const terms=qTerms();
     h.textContent=terms.length ? `找不到符合「${terms.join("、")}」的內容。` : "目前條件下沒有內容。";
     d.appendChild(h);
+    emptyExits(d, terms.length>0);   // 出路（2026-10-01 棒 AX，本人裁 C7），見那一支
     wrap.appendChild(d); return wrap;
   }
   const cmp=(SORTS.find(s=>s.id===S.sort)||SORTS[0]).fn;
