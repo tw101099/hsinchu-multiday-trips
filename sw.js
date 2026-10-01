@@ -72,7 +72,11 @@
 // 這支 SW 一律不經手，離線時連引擎都載不進來。
 // **往後升 Leaflet 版本＝整組換檔＋改 template.html 的兩個路徑＋再推一號**：cache-first 命中不
 // revalidate，不推號的話回訪者會永遠拿到舊版引擎（同 v1→v2 icons 那一次的病）。
-const CACHE_VERSION = "v7";
+// v7→v8：2026-10-01 棒 DX（本人裁 C1／C2，同一日遊 v6→v7）`icons/` 多三個殼層資源——favicon.svg、
+// favicon-32.png、行程頁冷啟動扉頁圖 trip-empty.webp——列進 SHELL_ASSETS 走 cache-first；manifest 同一刀
+// 加了 `id`。照檔頭規則推號。代價同檔頭：activate 清掉整份 v7，逾時閘門倚靠的頁面副本與 `data/` 備援
+// 等下一次成功造訪才補回。
+const CACHE_VERSION = "v8";
 const CACHE_NAME = `hsinchu-multiday-${CACHE_VERSION}`;
 
 // 殼層資源：install 時預熱，之後 cache-first。都是同源、幾乎不變的檔案。
@@ -84,6 +88,9 @@ const SHELL_ASSETS = [
   "./icons/icon-192-maskable.png",
   "./icons/icon-512-maskable.png",
   "./icons/apple-touch-icon.png",
+  "./icons/favicon.svg",
+  "./icons/favicon-32.png",
+  "./icons/trip-empty.webp",
   // Leaflet 站內託管（v7，2026-09-25 棒 AI，效能 M3）。五張圖是 leaflet.css 的 `url(images/…)`
   // （layers／layers-2x／marker-icon）加上 Leaflet 預設圖示在 JS 裡會用到的另外兩張；站上的圖釘
   // 全是 `L.divIcon`，預設圖示目前用不到，但檔案跟著引擎走，預熱它們只多 3 KB。

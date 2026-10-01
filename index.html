@@ -9,15 +9,22 @@
 <title>新竹出發多日遊｜挑一趟過夜的行程</title>
 <meta name="description" content="從新竹出發、過一夜以上的自駕行程：1009 個景點與住宿，依基地、主題與時間篩選，可以直接排成一趟兩天一夜。">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="新竹出發多日遊">
 <meta property="og:title" content="新竹出發多日遊｜挑一趟過夜的行程">
 <meta property="og:description" content="以過夜基地為中心的景點與住宿地圖，挑完直接開 Google 地圖導航。">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:url" content="https://tw101099.github.io/hsinchu-multiday-trips/">
-<meta property="og:image" content="https://tw101099.github.io/hsinchu-multiday-trips/og-image.png">
+<meta property="og:image" content="https://tw101099.github.io/hsinchu-multiday-trips/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="水墨淡彩的台灣島浮在藍色海面上，一條由紅、橙、黃、綠漸變到藍的路線從北端經過新竹的紫色圓點，一路往南延伸到島的南端，上方寫著「新竹出發多日遊」。">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://tw101099.github.io/hsinchu-multiday-trips/og-image.png">
+<meta name="twitter:title" content="新竹出發多日遊｜挑一趟過夜的行程">
+<meta name="twitter:description" content="以過夜基地為中心的景點與住宿地圖，挑完直接開 Google 地圖導航。">
+<meta name="twitter:image" content="https://tw101099.github.io/hsinchu-multiday-trips/og-image.jpg">
+<meta name="twitter:image:alt" content="水墨淡彩的台灣島浮在藍色海面上，一條由紅、橙、黃、綠漸變到藍的路線從北端經過新竹的紫色圓點，一路往南延伸到島的南端，上方寫著「新竹出發多日遊」。">
+<link rel="icon" type="image/svg+xml" href="./icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
 <style>
 
@@ -1269,6 +1276,13 @@ html.sheeton .panel{overflow:hidden}
 
 .tpick .nonear, .tpick .tguide{margin:6px 2px 2px; font-size:12px; color:var(--ink3); line-height:1.6}
 
+.tpick .tfront{margin:18px 2px 10px}
+.tpick .tfront img{display:block; width:100%; max-width:320px; height:auto; border:1px solid var(--hair); background:var(--bg)}
+.tpick .tfront .tftag{margin:14px 0 0; font-size:18px; font-weight:600; line-height:1.4; color:var(--ink)}
+
+:root[data-theme="dark"] .tpick .tfront img{filter:brightness(.72) saturate(.85)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .tpick .tfront img{filter:brightness(.72) saturate(.85)} }
+
 .tpickmini .sec.mini{
   min-height:30px; margin-top:0; padding:2px 14px 4px; border-top:0;
   font-size:12px; letter-spacing:.06em; color:var(--ink2);
@@ -1784,6 +1798,9 @@ html.sheeton .panel{overflow:hidden}
 
 .egg .eggcard:focus{outline:none}
 
+.egg .eggseal{display:block; width:max-content; margin:12px -16px -12px auto; line-height:0; color:var(--ink)}
+.egg .eggseal svg{display:block; height:48px; width:auto; fill:none; stroke:currentColor; stroke-width:50; stroke-linejoin:round}
+
 #msback, #msearch, #mmore, #mmenu, #mcond{display:none}
 @media (max-width:899px), (max-height:559px){
 
@@ -1952,7 +1969,7 @@ html.sheeton .panel{overflow:hidden}
 
 <link rel="manifest" href="./manifest.webmanifest">
 
-<meta name="theme-color" content="#4a4038">
+<meta name="theme-color" content="#fffefb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="新竹出發多日遊">
@@ -2191,6 +2208,12 @@ function applyTheme(){
   if (THEME==="auto") root.removeAttribute("data-theme");
   else root.setAttribute("data-theme", THEME);
   DARK = THEME==="dark" || (THEME==="auto" && SYS.matches);
+
+  const tc=document.querySelector('meta[name="theme-color"]');
+  if (tc){
+    const v=getComputedStyle(root).getPropertyValue("--panel").trim();
+    if (v) tc.setAttribute("content", v);
+  }
   THEMES.forEach((t,i)=>{ t.color = (DARK && t.dark) ? t.dark : LIGHT_TH[i]; });
   const b=document.getElementById("theme");
   if (b){
@@ -2831,6 +2854,8 @@ function buildMap(tiles){
   map=L.map("map",{zoomControl:false}).setView([24.76,121.06], 11);
   map.getPane("markerPane").setAttribute("aria-hidden", "true");
 
+  map.getPane("overlayPane").setAttribute("aria-hidden", "true");
+
   L.control.zoom({
     zoomInText:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>',
     zoomOutText:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/></svg>',
@@ -3267,6 +3292,11 @@ function drawLegs(){
                      {sticky:true, className:"tt", opacity:1})
 
         .on("click", ()=>{ if (isMapOnly()) openSheet("mtrip"); })
+
+        .on("add", e=>{
+          const el=e.target.getElement && e.target.getElement();
+          if (el){ el.setAttribute("tabindex", "-1"); el.setAttribute("aria-hidden", "true"); }
+        })
         .addTo(lines);
     });
   });
@@ -4969,8 +4999,25 @@ function tripPicker(mini){
     g.textContent="先挑一趟行程，或直接看基地與景點";
     pick.insertBefore(g, pick.firstChild);
   }
+
+  if (!mini && hasMapCard() && !anyCondition() && !S.sel && !TFRONT_DEAD && pick.querySelector(".tcat")){
+    if (!TFRONT){
+      const fr=document.createElement("div"); fr.className="tfront";
+      const im=document.createElement("img");
+      im.loading="lazy"; im.decoding="async"; im.setAttribute("fetchpriority", "low");
+      im.width=640; im.height=480;
+      im.src="./icons/trip-empty.webp";
+      im.alt="水墨淡彩的台灣島：一條彩色路線從新竹的紫色圓點出發，往北、往南沿著全島延伸";
+      im.onerror=()=>{ TFRONT_DEAD=true; fr.remove(); };
+      const tg=document.createElement("p"); tg.className="tftag"; tg.textContent="從新竹，開始找下一趟旅程";
+      fr.append(im,tg);
+      TFRONT=fr;
+    }
+    pick.appendChild(TFRONT);
+  }
   return pick;
 }
+let TFRONT=null, TFRONT_DEAD=false;   // 手機冷啟動扉頁的那一顆節點／圖載不到就不再渲（見 `tripPicker()` 尾巴）
 
 function renderTrips(){
   const box=document.createElement("div"); box.className="tripbox";
@@ -6966,6 +7013,8 @@ window.__iosStandaloneFix = { active:false, gap:null, screenH:null, appliedH:nul
   const LINE1 = "我愛我那環海多山的國家";
   const FALLBACK = "Author: 行路有風溫柔閣驕傲的臺灣查某囝";
 
+  const SEAL_SVG = '<svg viewBox="-40 -40 559 1075" focusable="false"><path d="M363 0 347 7 330 15 314 24 296 31 278 36 261 47 247 62 236 78 227 97 219 114 212 132 202 149 192 166 180 181 167 197 157 214 149 232 140 250 132 268 124 286 116 304 107 322 96 338 85 354 72 370 62 387 54 406 48 425 43 444 39 463 35 482 31 501 26 521 18 538 8 555 1 574 0 596 6 614 17 628 27 644 35 662 40 681 42 700 49 716 59 731 70 747 80 763 90 778 101 793 113 808 126 822 138 837 148 854 157 871 166 888 173 906 178 925 183 944 186 964 195 981 209 994 223 995 238 985 249 971 255 952 260 932 262 912 266 893 271 874 276 856 283 836 290 818 300 801 310 785 322 769 333 752 342 735 352 718 363 701 373 685 384 669 393 652 401 635 407 618 412 599 416 580 420 561 424 542 428 522 432 503 435 483 437 463 439 444 441 424 443 404 445 384 447 364 449 343 451 323 454 303 460 284 467 265 473 245 477 226 479 206 476 186 469 168 462 150 457 131 456 111 458 91 458 75 456 62 450 51 439 42 425 33 407 27 390 16 376 2Z"/></svg>';
+
   let total = null;      // 拿到過的總數（字串，已含千分位）；null＝還沒拿到
   let panel = null, closing = false;
 
@@ -7017,6 +7066,11 @@ window.__iosStandaloneFix = { active:false, gap:null, screenH:null, appliedH:nul
     l2.textContent = countText();
     card.appendChild(l1);
     card.appendChild(l2);
+    const seal = document.createElement("span");
+    seal.className = "eggseal";
+    seal.setAttribute("aria-hidden", "true");
+    seal.innerHTML = SEAL_SVG;
+    card.appendChild(seal);
     panel.appendChild(card);
 
     card.addEventListener("click", function(e){ e.stopPropagation(); });
